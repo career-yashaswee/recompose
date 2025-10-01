@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { signIn } from "@/lib/auth-client";
+import { signInWithGithub } from "@/lib/auth-client";
 import { useSearchParams } from "next/navigation";
 
 export function LoginForm({
@@ -25,7 +25,7 @@ export function LoginForm({
           variant="outline"
           className="w-full"
           onClick={() =>
-            signIn({
+            signInWithGithub({
               callbackURL,
               errorCallbackURL: "/log-in",
               newUserCallbackURL: "/stage",

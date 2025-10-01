@@ -10,9 +10,9 @@ export type SignInOptions = {
   newUserCallbackURL?: string;
 };
 
-export const signIn = async (
+export async function signInWithGithub(
   options: SignInOptions = {}
-): Promise<void> => {
+): Promise<void> {
   const {
     callbackURL = "/stage",
     errorCallbackURL = "/log-in",
@@ -24,4 +24,47 @@ export const signIn = async (
     errorCallbackURL,
     newUserCallbackURL,
   });
-};
+}
+
+export type EmailCredentials = { email: string; password: string };
+
+export async function signInWithEmail(
+  creds: EmailCredentials,
+  options: SignInOptions = {}
+): Promise<{ ok: boolean; error?: string }> {
+  const { callbackURL = "/stage" } = options;
+  const { error } = await authClient.signIn.email({ ...creds, callbackURL });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export type SignUpPayload = { email: string; password: string; name?: string };
+
+export async function signUpWithEmail(
+  payload: SignUpPayload
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await authClient.signUp.email(payload);
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function requestPasswordReset(
+  email: string,
+  redirectTo = "/reset-password"
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await authClient.requestPasswordReset({
+    email,
+    redirectTo,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function resetPassword(
+  newPassword: string,
+  token: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await authClient.resetPassword({ newPassword, token });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
