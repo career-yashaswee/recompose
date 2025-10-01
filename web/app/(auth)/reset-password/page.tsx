@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/lib/auth-client";
 
-export default function Page(): React.ReactElement {
+function ResetPassword(): React.ReactElement {
   const params = useSearchParams();
   const router = useRouter();
   const [token, setToken] = useState<string>("");
@@ -23,7 +23,9 @@ export default function Page(): React.ReactElement {
     if (err) setError("Invalid or expired link. Request a new one.");
   }, [params]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>): Promise<void> {
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     e.preventDefault();
     setLoading(true);
     setError(undefined);
@@ -52,10 +54,20 @@ export default function Page(): React.ReactElement {
       <form className="grid gap-4" onSubmit={handleSubmit}>
         <div className="grid gap-2">
           <Label htmlFor="password">New password</Label>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
-        {message && <p className="text-sm text-green-600 dark:text-green-500">{message}</p>}
+        {message && (
+          <p className="text-sm text-green-600 dark:text-green-500">
+            {message}
+          </p>
+        )}
         <Button type="submit" disabled={loading} className="w-full">
           {loading ? "Updating..." : "Reset password"}
         </Button>
@@ -70,4 +82,10 @@ export default function Page(): React.ReactElement {
   );
 }
 
-
+export default function Page(): React.ReactElement {
+  return (
+    <Suspense fallback={<div />}>
+      <ResetPassword />
+    </Suspense>
+  );
+}

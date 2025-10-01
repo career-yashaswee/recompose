@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { signInWithGithub, signInWithEmail } from "@/lib/auth-client";
 import { Github } from "lucide-react";
 
-export default function Page(): React.ReactElement {
+function Login(): React.ReactElement {
   const params = useSearchParams();
   const callbackURL = params.get("callbackURL") ?? "/stage";
   const [email, setEmail] = useState<string>("");
@@ -90,5 +90,13 @@ export default function Page(): React.ReactElement {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function Page(): React.ReactElement {
+  return (
+    <Suspense fallback={<div />}>
+      <Login />
+    </Suspense>
   );
 }
