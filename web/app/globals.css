@@ -438,10 +438,10 @@
   }
 }
 
-/* @utility container {
+@utility container {
   margin-inline: auto;
   padding-inline: 2rem;
-} */
+}
 
 @layer components {
   button {
