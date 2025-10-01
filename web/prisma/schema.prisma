@@ -26,6 +26,7 @@ model User {
   accounts              Account[]
   Composition           Composition[]
   CompositionCompletion CompositionCompletion[]
+  CompositionProgress   CompositionProgress[]
 
   @@map("user")
 }
@@ -81,11 +82,14 @@ model Composition {
   id          String                  @id @default(cuid())
   title       String
   description String?
+  /// Difficulty of the composition
+  difficulty  Difficulty              @default(MEDIUM)
   createdAt   DateTime                @default(now())
   updatedAt   DateTime                @default(now()) @updatedAt
   createdById String?
   createdBy   User?                   @relation(fields: [createdById], references: [id])
   completions CompositionCompletion[]
+  progresses  CompositionProgress[]
 
   @@map("composition")
 }
@@ -104,4 +108,31 @@ model CompositionCompletion {
   @@unique([userId, dateKey])
   @@index([userId, dateKey])
   @@map("composition_completion")
+}
+
+/// Track per-user progress on compositions (Solved/Attempting/Unsolved)
+model CompositionProgress {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  compositionId String
+  composition   Composition  @relation(fields: [compositionId], references: [id])
+  status        ProgressStatus
+  updatedAt     DateTime     @default(now()) @updatedAt
+
+  @@unique([userId, compositionId])
+  @@index([userId, status])
+  @@map("composition_progress")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ProgressStatus {
+  SOLVED
+  ATTEMPTING
+  UNSOLVED
 }

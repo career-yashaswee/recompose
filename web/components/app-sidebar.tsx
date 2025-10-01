@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Command, Settings, SquareTerminal } from "lucide-react";
+import { Command, SquareTerminal } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -28,8 +28,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Concepts",
-          url: "concepts",
+          title: "Compositions",
+          url: "compositions",
         },
       ],
     },

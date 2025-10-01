@@ -1,0 +1,30 @@
+import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+
+type Body = { compositionId: string; status: "SOLVED" | "ATTEMPTING" | "UNSOLVED" };
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session?.user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = (await req.json().catch(() => null)) as Body | null;
+  if (!body || !body.compositionId || !body.status)
+    return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+
+  const { compositionId, status } = body;
+  try {
+    const row = await prisma.compositionProgress.upsert({
+      where: { userId_compositionId: { userId: session.user.id, compositionId } },
+      update: { status },
+      create: { userId: session.user.id, compositionId, status },
+    });
+    return NextResponse.json({ ok: true, id: row.id });
+  } catch (error) {
+    console.error("progress set error", error);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+
+
