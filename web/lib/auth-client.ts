@@ -38,7 +38,7 @@ export async function signInWithEmail(
   return { ok: true };
 }
 
-export type SignUpPayload = { email: string; password: string; name?: string };
+export type SignUpPayload = { email: string; password: string; name: string };
 
 export async function signUpWithEmail(
   payload: SignUpPayload

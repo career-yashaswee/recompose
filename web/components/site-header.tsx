@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import ModeToggle from "@/components/ui/mode-toggle";
 
 export function SiteHeader() {
   const { toggleSidebar } = useSidebar();
@@ -42,6 +44,8 @@ export function SiteHeader() {
           </BreadcrumbList>
         </Breadcrumb>
         <SearchForm className="w-full sm:ml-auto sm:w-auto" />
+        <LanguageSwitcher />
+        <ModeToggle />
       </div>
     </header>
   );
