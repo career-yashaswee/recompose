@@ -15,15 +15,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  email         String    @unique
-  name          String?
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id                    String                  @id
+  email                 String                  @unique
+  name                  String?
+  emailVerified         Boolean                 @default(false)
+  image                 String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now()) @updatedAt
+  sessions              Session[]
+  accounts              Account[]
+  Composition           Composition[]
+  CompositionCompletion CompositionCompletion[]
 
   @@map("user")
 }
@@ -71,4 +73,35 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+/// A piece of material the user can complete. Not strictly required for daily completion,
+/// but stored for future expansion and attribution.
+model Composition {
+  id          String                  @id @default(cuid())
+  title       String
+  description String?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @default(now()) @updatedAt
+  createdById String?
+  createdBy   User?                   @relation(fields: [createdById], references: [id])
+  completions CompositionCompletion[]
+
+  @@map("composition")
+}
+
+/// Records that a user completed at least one composition on a specific day (Asia/Kolkata).
+model CompositionCompletion {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  compositionId String?
+  composition   Composition? @relation(fields: [compositionId], references: [id])
+  /// YYYY-MM-DD string for the day in Asia/Kolkata timezone
+  dateKey       String
+  completedAt   DateTime     @default(now())
+
+  @@unique([userId, dateKey])
+  @@index([userId, dateKey])
+  @@map("composition_completion")
 }

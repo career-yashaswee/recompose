@@ -13,7 +13,8 @@ export default function NetworkWatcher(): React.ReactElement | null {
       firstRenderRef.current = false;
       if (network.online === false) {
         toast.error("You are offline", {
-          description: "Some features may not work until connection is restored.",
+          description:
+            "Some features may not work until connection is restored.",
           duration: 5000,
         });
       }
@@ -37,14 +38,17 @@ export default function NetworkWatcher(): React.ReactElement | null {
   return null;
 }
 
-function buildOnlineDetails(network: ReturnType<typeof useNetworkState>): string {
+function buildOnlineDetails(
+  network: ReturnType<typeof useNetworkState>
+): string {
   const parts: string[] = [];
-  if (typeof network.effectiveType === "string") parts.push(`Type: ${network.effectiveType}`);
-  if (typeof network.downlink === "number") parts.push(`Downlink: ${network.downlink} Mbps`);
+  if (typeof network.effectiveType === "string")
+    parts.push(`Type: ${network.effectiveType}`);
+  if (typeof network.downlink === "number")
+    parts.push(`Downlink: ${network.downlink} Mbps`);
   if (typeof network.rtt === "number") parts.push(`RTT: ${network.rtt} ms`);
-  if (typeof network.saveData === "boolean" && network.saveData) parts.push("Data Saver: On");
+  if (typeof network.saveData === "boolean" && network.saveData)
+    parts.push("Data Saver: On");
   if (typeof network.type === "string") parts.push(`Conn: ${network.type}`);
   return parts.length ? parts.join(" • ") : "Connection restored";
 }
-
-

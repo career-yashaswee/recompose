@@ -1,10 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Command,
-  SquareTerminal,
-} from "lucide-react";
+import { Command, Settings, SquareTerminal } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavProjects } from "@/components/nav-projects";
@@ -73,12 +70,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         {session?.user && (
-          <NavUser 
-            user={{
-              name: session.user.name || "User",
-              email: session.user.email || "",
-              avatar: session.user.image || "",
-            } as UserDisplayData} 
+          <NavUser
+            user={
+              {
+                name: session.user.name || "User",
+                email: session.user.email || "",
+                avatar:
+                  session.user.image || "https://ui.shadcn.com/placeholder.svg",
+              } as UserDisplayData
+            }
           />
         )}
       </SidebarFooter>

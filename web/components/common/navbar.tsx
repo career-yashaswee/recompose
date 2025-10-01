@@ -29,9 +29,21 @@ import Link from "next/link";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useTranslation } from "react-i18next";
 import ModeToggle from "@/components/ui/mode-toggle";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const { t } = useTranslation();
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await authClient.signOut();
+      router.replace("/log-in");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   const features = [
     {
       title: "Dashboard",
@@ -134,15 +146,29 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu> */}
           <div className="hidden items-center gap-2 lg:flex">
-            <Link href="/log-in">
-              <Button variant="outline">{t("navbar.login")}</Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button>
-                {t("navbar.start")}
-                <Music4 className="h-4 w-4" />
-              </Button>
-            </Link>
+            {session?.user ? (
+              <>
+                <Link href="/stage">
+                  <Button>
+                    Back to Stage
+                    <Music4 className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button variant="outline" onClick={handleLogout}>Log out</Button>
+              </>
+            ) : (
+              <>
+                <Link href="/log-in">
+                  <Button variant="outline">{t("navbar.login")}</Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button>
+                    {t("navbar.start")}
+                    <Music4 className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </>
+            )}
             <LanguageSwitcher />
             <ModeToggle />
           </div>
@@ -210,15 +236,29 @@ const Navbar = () => {
                   </a>
                 </div>
                 <div className="mt-6 flex flex-col gap-4">
-                  <Link href="/log-in">
-                    <Button variant="outline">Log in</Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button>
-                      Start Composing
-                      <Music4 className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                  {session?.user ? (
+                    <>
+                      <Link href="/stage">
+                        <Button>
+                          Back to Stage
+                          <Music4 className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button variant="outline" onClick={handleLogout}>Log out</Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/log-in">
+                        <Button variant="outline">Log in</Button>
+                      </Link>
+                      <Link href="/sign-up">
+                        <Button>
+                          Start Composing
+                          <Music4 className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                   <LanguageSwitcher />
                   <ModeToggle />
                 </div>
