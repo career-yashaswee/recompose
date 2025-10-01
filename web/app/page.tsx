@@ -1,13 +1,9 @@
 import { Pointer, TruckElectric, Wrench, Github } from "lucide-react";
-
 import { ContainerTextFlip } from "@/components/aceternity/container-text-flip";
-import { Navbar } from "@/components/common/navbar";
-
 export default function Home() {
   return (
     <>
       <section className="h-full w-screen overflow-hidden">
-        <Navbar />
         <div className="container border-b border-t border-dashed">
           <div className="relative flex w-full max-w-5xl flex-col justify-start border border-t-0 border-dashed px-5 py-12 md:items-center md:justify-center lg:mx-auto">
             <p className="text-muted-foreground flex items-center gap-2 text-sm">

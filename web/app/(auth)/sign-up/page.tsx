@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUpWithEmail, signInWithGithub } from "@/lib/auth-client";
+import { Github } from "lucide-react";
 
 export default function Page(): React.ReactElement {
   const [name, setName] = useState<string>("");
@@ -13,7 +14,9 @@ export default function Page(): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  async function handleSignUp(e: React.FormEvent<HTMLFormElement>): Promise<void> {
+  async function handleSignUp(
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     e.preventDefault();
     setLoading(true);
     setError(undefined);
@@ -32,15 +35,31 @@ export default function Page(): React.ReactElement {
       <form className="grid gap-4" onSubmit={handleSignUp}>
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={loading} className="w-full">
@@ -53,12 +72,18 @@ export default function Page(): React.ReactElement {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" onClick={() => signInWithGithub({ callbackURL: "/stage" })}>
-        Continue with GitHub
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={() => signInWithGithub({ callbackURL: "/stage" })}
+      >
+        Continue with GitHub <Github className="h-4 w-4" />
       </Button>
 
       <div className="text-center text-sm">
@@ -69,5 +94,3 @@ export default function Page(): React.ReactElement {
     </div>
   );
 }
-
-

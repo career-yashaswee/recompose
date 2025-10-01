@@ -26,8 +26,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useTranslation } from "react-i18next";
+import ModeToggle from "@/components/ui/mode-toggle";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const features = [
     {
       title: "Dashboard",
@@ -129,16 +133,18 @@ const Navbar = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu> */}
-          <div className="hidden items-center gap-4 lg:flex">
+          <div className="hidden items-center gap-2 lg:flex">
             <Link href="/log-in">
-              <Button variant="outline">Log in</Button>
+              <Button variant="outline">{t("navbar.login")}</Button>
             </Link>
             <Link href="/sign-up">
               <Button>
-                Start Composing
+                {t("navbar.start")}
                 <Music4 className="h-4 w-4" />
               </Button>
             </Link>
+            <LanguageSwitcher />
+            <ModeToggle />
           </div>
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
@@ -159,7 +165,7 @@ const Navbar = () => {
                       alt="Shadcn UI Navbar"
                     />
                     <span className="text-lg font-semibold tracking-tighter">
-                      Shadcnblocks.com
+                      Recompose
                     </span>
                   </a>
                 </SheetTitle>
@@ -213,6 +219,8 @@ const Navbar = () => {
                       <Music4 className="h-4 w-4" />
                     </Button>
                   </Link>
+                  <LanguageSwitcher />
+                  <ModeToggle />
                 </div>
               </div>
             </SheetContent>
