@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, Music4 } from "lucide-react";
 
 import {
   Accordion,
@@ -25,8 +25,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Link from "next/link";
 
-const Navbar5 = () => {
+const Navbar = () => {
   const features = [
     {
       title: "Dashboard",
@@ -74,10 +75,10 @@ const Navbar5 = () => {
               alt="Shadcn UI Navbar"
             />
             <span className="text-lg font-semibold tracking-tighter">
-              Shadcnblocks.com
+              Recompose
             </span>
           </a>
-          <NavigationMenu className="hidden lg:block">
+          {/* <NavigationMenu className="hidden lg:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Features</NavigationMenuTrigger>
@@ -127,10 +128,17 @@ const Navbar5 = () => {
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
-          </NavigationMenu>
+          </NavigationMenu> */}
           <div className="hidden items-center gap-4 lg:flex">
-            <Button variant="outline">Sign in</Button>
-            <Button>Start for free</Button>
+            <Link href="/log-in">
+              <Button variant="outline">Log in</Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button>
+                Start Composing
+                <Music4 className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
@@ -196,8 +204,15 @@ const Navbar5 = () => {
                   </a>
                 </div>
                 <div className="mt-6 flex flex-col gap-4">
-                  <Button variant="outline">Sign in</Button>
-                  <Button>Start for free</Button>
+                  <Link href="/log-in">
+                    <Button variant="outline">Log in</Button>
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button>
+                      Start Composing
+                      <Music4 className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </SheetContent>
@@ -208,4 +223,4 @@ const Navbar5 = () => {
   );
 };
 
-export { Navbar5 };
+export { Navbar };
