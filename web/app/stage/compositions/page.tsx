@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useCompositions, useToggleCompositionFavorite } from '@/hooks/api';
+import { useDebounce } from '@/hooks/use-debounce';
 import {
   useReactTable,
   getCoreRowModel,
@@ -67,10 +68,18 @@ function TableInner(): React.ReactElement {
   const [pageIndex, setPageIndex] = React.useState<number>(0);
   const [pageSize] = React.useState<number>(10);
 
+  // Debounce search query to reduce API calls
+  const debouncedQ = useDebounce(q, 300);
+
+  // Reset pagination when filters change
+  React.useEffect(() => {
+    setPageIndex(0);
+  }, [debouncedQ, favoriteOnly, difficulty, status, selectedTags]);
+
   const sort = sorting[0];
 
   const { data, isLoading } = useCompositions({
-    q,
+    q: debouncedQ,
     favoriteOnly,
     difficulty,
     status,
@@ -259,12 +268,19 @@ function TableInner(): React.ReactElement {
           <Shuffle className='size-4 mr-2' />
           Pick One
         </Button>
-        <Input
-          placeholder='Search compositions...'
-          value={q}
-          onChange={e => setQ(e.target.value)}
-          className='w-56'
-        />
+        <div className='relative'>
+          <Input
+            placeholder='Search compositions...'
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            className='w-56'
+          />
+          {q !== debouncedQ && q.length > 0 && (
+            <div className='absolute right-2 top-1/2 transform -translate-y-1/2'>
+              <div className='w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
+            </div>
+          )}
+        </div>
         <select
           className='border rounded px-2 py-2'
           value={difficulty}
@@ -293,9 +309,6 @@ function TableInner(): React.ReactElement {
           />{' '}
           Favorites
         </label>
-        <Button onClick={() => window.location.reload()} variant='secondary'>
-          Search
-        </Button>
       </div>
 
       {/* Selected Tags Filter */}

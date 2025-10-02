@@ -53,7 +53,12 @@ const fetchNotifications = async (filters?: {
   if (filters?.offset) params.set('offset', String(filters.offset));
 
   const response = await fetch(`/api/notifications?${params.toString()}`);
-  if (!response.ok) throw new Error('Failed to fetch notifications');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch notifications');
+  }
   return response.json();
 };
 
@@ -65,7 +70,12 @@ const markNotificationAsRead = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ isRead: true }),
   });
-  if (!response.ok) throw new Error('Failed to mark notification as read');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to mark notification as read');
+  }
   return response.json();
 };
 
@@ -75,8 +85,12 @@ const markAllNotificationsAsRead =
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
-    if (!response.ok)
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required');
+      }
       throw new Error('Failed to mark all notifications as read');
+    }
     return response.json();
   };
 
@@ -86,7 +100,12 @@ const deleteNotification = async (
   const response = await fetch(`/api/notifications/${notificationId}`, {
     method: 'DELETE',
   });
-  if (!response.ok) throw new Error('Failed to delete notification');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to delete notification');
+  }
   return response.json();
 };
 

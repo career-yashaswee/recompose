@@ -157,6 +157,10 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     try {
       const response = await fetch('/api/notifications');
       if (!response.ok) {
+        if (response.status === 401) {
+          // User is not authenticated, skip fetching notifications
+          return;
+        }
         throw new Error('Failed to fetch notifications');
       }
 

@@ -21,7 +21,12 @@ export interface PointsData {
 // API functions
 const getPoints = async (): Promise<PointsData> => {
   const response = await fetch('/api/points');
-  if (!response.ok) throw new Error('Failed to get points data');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to get points data');
+  }
   return response.json();
 };
 
@@ -36,7 +41,12 @@ const createPoint = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to create point');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to create point');
+  }
   return response.json();
 };
 

@@ -46,13 +46,23 @@ const fetchStreakCalendar = async (
   const response = await fetch(
     `/api/streak/calendar?year=${year}&month=${month}`
   );
-  if (!response.ok) throw new Error('Failed to fetch streak calendar');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch streak calendar');
+  }
   return response.json();
 };
 
 const fetchStreakStats = async (): Promise<StreakStats> => {
   const response = await fetch('/api/streak/stats');
-  if (!response.ok) throw new Error('Failed to fetch streak stats');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch streak stats');
+  }
   return response.json();
 };
 
@@ -64,7 +74,12 @@ const markStreakComplete = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to mark streak complete');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to mark streak complete');
+  }
   return response.json();
 };
 

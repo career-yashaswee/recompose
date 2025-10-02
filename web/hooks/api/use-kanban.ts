@@ -37,7 +37,12 @@ export const kanbanKeys = {
 // API Functions
 const fetchKanbanTasks = async (): Promise<KanbanResponse> => {
   const response = await fetch('/api/kanban');
-  if (!response.ok) throw new Error('Failed to fetch kanban tasks');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch kanban tasks');
+  }
   return response.json();
 };
 
@@ -49,7 +54,12 @@ const updateKanbanTask = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to update kanban task');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to update kanban task');
+  }
   return response.json();
 };
 

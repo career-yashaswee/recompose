@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { pointsKeys } from './use-points';
 
 // Types
@@ -60,7 +60,12 @@ const fetchCompositions = async (
   params: URLSearchParams
 ): Promise<CompositionsResponse> => {
   const response = await fetch(`/api/compositions?${params.toString()}`);
-  if (!response.ok) throw new Error('Failed to fetch compositions');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch compositions');
+  }
   return response.json();
 };
 
@@ -68,7 +73,12 @@ const fetchCompositionStats = async (): Promise<CompositionStats> => {
   const response = await fetch('/api/compositions/stats', {
     cache: 'no-store',
   });
-  if (!response.ok) throw new Error('Failed to fetch composition stats');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch composition stats');
+  }
   return response.json();
 };
 
@@ -78,7 +88,12 @@ const fetchCompositionProgress = async (
   const response = await fetch(
     `/api/compositions/progress?compositionId=${compositionId}`
   );
-  if (!response.ok) throw new Error('Failed to fetch composition progress');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch composition progress');
+  }
   return response.json();
 };
 
@@ -88,7 +103,12 @@ const fetchCompositionReaction = async (
   const response = await fetch(
     `/api/compositions/reaction?compositionId=${compositionId}`
   );
-  if (!response.ok) throw new Error('Failed to fetch composition reaction');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to fetch composition reaction');
+  }
   return response.json();
 };
 
@@ -101,7 +121,12 @@ const updateCompositionProgress = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to update composition progress');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to update composition progress');
+  }
   return response.json();
 };
 
@@ -111,7 +136,12 @@ const getCompositionFavorite = async (
   const response = await fetch(
     `/api/compositions/favorite?compositionId=${compositionId}`
   );
-  if (!response.ok) throw new Error('Failed to get favorite status');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to get favorite status');
+  }
   return response.json();
 };
 
@@ -124,7 +154,12 @@ const toggleCompositionFavorite = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to toggle favorite');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to toggle favorite');
+  }
   return response.json();
 };
 
@@ -137,7 +172,12 @@ const updateCompositionReaction = async (data: {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('Failed to update reaction');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to update reaction');
+  }
   return response.json();
 };
 
@@ -148,7 +188,12 @@ const getCompositionHeatmap = async (): Promise<{
   dailyCompletions: Record<string, number>;
 }> => {
   const response = await fetch('/api/compositions/heatmap');
-  if (!response.ok) throw new Error('Failed to get heatmap data');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Authentication required');
+    }
+    throw new Error('Failed to get heatmap data');
+  }
   return response.json();
 };
 
@@ -182,6 +227,8 @@ export const useCompositions = (filters: {
       return fetchCompositions(params);
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+    placeholderData: keepPreviousData, // Keep previous data while loading new data
   });
 };
 
@@ -292,10 +339,9 @@ export const useToggleCompositionFavorite = () => {
       });
 
       // Get previous favorite state
-      const previousFavorite = queryClient.getQueryData<{ isFavorite: boolean }>([
-        'composition-favorite',
-        compositionId,
-      ]);
+      const previousFavorite = queryClient.getQueryData<{
+        isFavorite: boolean;
+      }>(['composition-favorite', compositionId]);
 
       // Optimistically update all lists
       previousQueries.forEach(([queryKey, data]) => {
