@@ -27,6 +27,7 @@ model User {
   Composition           Composition[]
   CompositionCompletion CompositionCompletion[]
   CompositionProgress   CompositionProgress[]
+  CompositionFavorite   CompositionFavorite[]
 
   @@map("user")
 }
@@ -90,6 +91,7 @@ model Composition {
   createdBy   User?                   @relation(fields: [createdById], references: [id])
   completions CompositionCompletion[]
   progresses  CompositionProgress[]
+  favorites   CompositionFavorite[]
 
   @@map("composition")
 }
@@ -112,17 +114,32 @@ model CompositionCompletion {
 
 /// Track per-user progress on compositions (Solved/Attempting/Unsolved)
 model CompositionProgress {
-  id            String       @id @default(cuid())
+  id            String         @id @default(cuid())
   userId        String
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   compositionId String
-  composition   Composition  @relation(fields: [compositionId], references: [id])
+  composition   Composition    @relation(fields: [compositionId], references: [id])
   status        ProgressStatus
-  updatedAt     DateTime     @default(now()) @updatedAt
+  updatedAt     DateTime       @default(now()) @updatedAt
 
   @@unique([userId, compositionId])
   @@index([userId, status])
   @@map("composition_progress")
+}
+
+/// Track user favorites for compositions
+model CompositionFavorite {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  compositionId String
+  composition   Composition @relation(fields: [compositionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, compositionId])
+  @@index([userId])
+  @@index([compositionId])
+  @@map("composition_favorite")
 }
 
 enum Difficulty {
