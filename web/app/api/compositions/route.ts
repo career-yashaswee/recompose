@@ -62,14 +62,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // Aggregate likes per composition
   const [likeGroups, userReactions] = await Promise.all([
     ids.length
-      ? (prisma as any).compositionReaction.groupBy({
+      ? prisma.compositionReaction.groupBy({
           by: ["compositionId", "value"],
           where: { compositionId: { in: ids }, value: "LIKE" },
           _count: { _all: true },
         })
       : Promise.resolve([] as { compositionId: string; value: string; _count: { _all: number } }[]),
     ids.length
-      ? (prisma as any).compositionReaction.findMany({
+      ? prisma.compositionReaction.findMany({
           where: { compositionId: { in: ids }, userId: session.user.id },
           select: { compositionId: true, value: true },
         })
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const likesMap: Record<string, number> = {};
   for (const g of likeGroups) likesMap[g.compositionId] = g._count._all;
   const userReactionMap: Record<string, "LIKE" | "DISLIKE"> = {};
-  for (const ur of userReactions) userReactionMap[ur.compositionId] = ur.value as any;
+  for (const ur of userReactions) userReactionMap[ur.compositionId] = ur.value as "LIKE" | "DISLIKE";
 
   const data = rows.map((r) => ({
     id: r.id,

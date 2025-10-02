@@ -4,7 +4,7 @@ import { NotificationService } from "@/lib/notification-service";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -16,12 +16,13 @@ export async function GET(
     }
 
     try {
+      const resolvedParams = await params;
       const result = await NotificationService.getUserNotifications(session.user.id, {
         limit: 1,
         offset: 0,
       });
 
-      const notification = result.notifications.find(n => n.id === params.id);
+      const notification = result.notifications.find(n => n.id === resolvedParams.id);
 
       if (!notification) {
         return NextResponse.json(
@@ -31,7 +32,7 @@ export async function GET(
       }
 
       return NextResponse.json(notification);
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: "Notification not found" },
         { status: 404 }
@@ -48,7 +49,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -61,11 +62,12 @@ export async function PATCH(
 
     const body = await request.json();
     const { isRead } = body;
+    const resolvedParams = await params;
 
     if (isRead === true) {
       const updatedNotification = await NotificationService.markAsRead(
         session.user.id,
-        params.id
+        resolvedParams.id
       );
       return NextResponse.json(updatedNotification);
     } else {
@@ -85,7 +87,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -96,9 +98,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     const result = await NotificationService.deleteNotification(
       session.user.id,
-      params.id
+      resolvedParams.id
     );
 
     return NextResponse.json(result);

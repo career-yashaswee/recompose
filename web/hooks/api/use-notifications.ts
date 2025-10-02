@@ -112,7 +112,7 @@ export const useMarkNotificationAsRead = () => {
 
   return useMutation({
     mutationFn: markNotificationAsRead,
-    onMutate: async ({ notificationId }) => {
+    onMutate: async (notificationId: string) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
@@ -138,8 +138,8 @@ export const useMarkNotificationAsRead = () => {
       });
 
       // Update unread count
-      queryClient.setQueryData(notificationKeys.unreadCount(), (old: any) => ({
-        count: Math.max(0, (old?.count || 0) - 1),
+      queryClient.setQueryData(notificationKeys.unreadCount(), (old: unknown) => ({
+        count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
       }));
 
       return { previousQueries, notificationId };
@@ -215,7 +215,7 @@ export const useDeleteNotification = () => {
 
   return useMutation({
     mutationFn: deleteNotification,
-    onMutate: async ({ notificationId }) => {
+    onMutate: async (notificationId: string) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
@@ -243,8 +243,8 @@ export const useDeleteNotification = () => {
       const allNotifications = queryClient.getQueryData<NotificationsResponse>(notificationKeys.list({}));
       const deletedNotification = allNotifications?.notifications.find(n => n.id === notificationId);
       if (deletedNotification && !deletedNotification.isRead) {
-        queryClient.setQueryData(notificationKeys.unreadCount(), (old: any) => ({
-          count: Math.max(0, (old?.count || 0) - 1),
+        queryClient.setQueryData(notificationKeys.unreadCount(), (old: unknown) => ({
+          count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
         }));
       }
 

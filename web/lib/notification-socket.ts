@@ -10,7 +10,7 @@ export interface NotificationData {
   timestamp: string;
   isRead: boolean;
   category: "system" | "user" | "composition";
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface NotificationSocketEvent {
@@ -23,7 +23,7 @@ class NotificationSocket {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private listeners: Map<string, Set<(data: any) => void>> = new Map();
+  private listeners: Map<string, Set<(data: unknown) => void>> = new Map();
   private isConnecting = false;
 
   constructor() {
@@ -39,7 +39,7 @@ class NotificationSocket {
 
     try {
       const session = await authClient.getSession();
-      
+
       if (!session?.data?.user?.id) {
         this.isConnecting = false;
         return;
@@ -67,8 +67,11 @@ class NotificationSocket {
       this.socket.onclose = (event) => {
         this.isConnecting = false;
         this.socket = null;
-        
-        if (!event.wasClean && this.reconnectAttempts < this.maxReconnectAttempts) {
+
+        if (
+          !event.wasClean &&
+          this.reconnectAttempts < this.maxReconnectAttempts
+        ) {
           this.scheduleReconnect();
         }
       };
@@ -77,7 +80,6 @@ class NotificationSocket {
         console.error("WebSocket error:", error);
         this.isConnecting = false;
       };
-
     } catch (error) {
       console.error("Error connecting to notification socket:", error);
       this.isConnecting = false;
@@ -87,7 +89,7 @@ class NotificationSocket {
   private scheduleReconnect(): void {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
+
     setTimeout(() => {
       this.connect();
     }, delay);
@@ -112,7 +114,7 @@ class NotificationSocket {
     }
   }
 
-  public on(event: string, callback: (data: any) => void): () => void {
+  public on(event: string, callback: (data: unknown) => void): () => void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
@@ -124,10 +126,10 @@ class NotificationSocket {
     };
   }
 
-  public emit(event: string, data: any): void {
+  public emit(event: string, data: unknown): void {
     const eventListeners = this.listeners.get(event);
     if (eventListeners) {
-      eventListeners.forEach(callback => {
+      eventListeners.forEach((callback) => {
         try {
           callback(data);
         } catch (error) {
@@ -137,7 +139,7 @@ class NotificationSocket {
     }
   }
 
-  public send(event: string, data: any): void {
+  public send(event: string, data: unknown): void {
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify({ type: event, data }));
     } else {
@@ -179,7 +181,7 @@ export const createNotification = (
   title: string,
   message: string,
   category: NotificationData["category"],
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): NotificationData => {
   return {
     id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -195,41 +197,41 @@ export const createNotification = (
 
 // Common notification types for the app
 export const NotificationTypes = {
-  USER_LOGIN: (userName: string) => createNotification(
-    "success",
-    "Welcome Back!",
-    `You logged in successfully. Ready to continue your writing journey?`,
-    "system",
-    { userName, loginTime: new Date().toISOString() }
-  ),
+  USER_LOGIN: (userName: string) =>
+    createNotification(
+      "success",
+      "Welcome Back!",
+      `You logged in successfully. Ready to continue your writing journey?`,
+      "system",
+      { userName, loginTime: new Date().toISOString() }
+    ),
 
-  COMPOSITION_COMPLETED: (compositionTitle: string, compositionId: string) => createNotification(
-    "success",
-    "Composition Completed",
-    `You successfully completed '${compositionTitle}' composition.`,
-    "composition",
-    { compositionId, compositionTitle }
-  ),
+  COMPOSITION_COMPLETED: (compositionTitle: string, compositionId: string) =>
+    createNotification(
+      "success",
+      "Composition Completed",
+      `You successfully completed '${compositionTitle}' composition.`,
+      "composition",
+      { compositionId, compositionTitle }
+    ),
 
-  STREAK_MILESTONE: (streakDays: number) => createNotification(
-    "success",
-    "Streak Milestone",
-    `Congratulations! You've maintained a ${streakDays}-day writing streak.`,
-    "user",
-    { streakDays }
-  ),
+  STREAK_MILESTONE: (streakDays: number) =>
+    createNotification(
+      "success",
+      "Streak Milestone",
+      `Congratulations! You've maintained a ${streakDays}-day writing streak.`,
+      "user",
+      { streakDays }
+    ),
 
-  STREAK_REMINDER: () => createNotification(
-    "warning",
-    "Streak Reminder",
-    "Don't forget to complete today's writing practice to maintain your streak.",
-    "system"
-  ),
+  STREAK_REMINDER: () =>
+    createNotification(
+      "warning",
+      "Streak Reminder",
+      "Don't forget to complete today's writing practice to maintain your streak.",
+      "system"
+    ),
 
-  SYSTEM_UPDATE: (updateMessage: string) => createNotification(
-    "info",
-    "System Update",
-    updateMessage,
-    "system"
-  ),
+  SYSTEM_UPDATE: (updateMessage: string) =>
+    createNotification("info", "System Update", updateMessage, "system"),
 } as const;

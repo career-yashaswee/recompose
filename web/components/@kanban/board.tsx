@@ -64,7 +64,7 @@ export function KanbanBoard() {
   const { data: kanbanData, isLoading: loading, error } = useKanbanTasks();
   const updateTask = useUpdateKanbanTask();
   
-  const tasks = kanbanData?.data || [];
+  const tasks = React.useMemo(() => kanbanData?.data || [], [kanbanData?.data]);
 
   const { query, setQuery, filtered } = useSearchFilter(tasks);
 

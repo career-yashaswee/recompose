@@ -72,7 +72,7 @@ export default function CompositionStatusControl(props: CompositionStatusControl
         Favorite
       </Button>
       <ShareDialog compositionId={props.compositionId} compositionTitle={props.compositionTitle} />
-      <ReportDialog compositionId={props.compositionId} compositionTitle={props.compositionTitle} />
+      <ReportDialog />
     </div>
   );
 }

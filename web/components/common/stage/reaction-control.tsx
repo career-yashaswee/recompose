@@ -9,7 +9,6 @@ interface ReactionControlProps {
   compositionTitle?: string;
 }
 
-type ReactionValue = "LIKE" | "DISLIKE";
 
 export default function ReactionControl(
   props: ReactionControlProps

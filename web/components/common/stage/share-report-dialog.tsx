@@ -2,17 +2,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Share2, Flag, Copy, Check } from "lucide-react";
-import { useState } from "react";
 
 interface ShareDialogProps {
   compositionId: string;
   compositionTitle: string;
 }
 
-interface ReportDialogProps {
-  compositionId: string;
-  compositionTitle: string;
-}
 
 export function ShareDialog(props: ShareDialogProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -135,7 +130,7 @@ export function ShareDialog(props: ShareDialogProps): React.ReactElement {
   );
 }
 
-export function ReportDialog(props: ReportDialogProps): React.ReactElement {
+export function ReportDialog(): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
 
   if (!isOpen) {

@@ -7,7 +7,7 @@ export interface CreateNotificationData {
   title: string;
   message: string;
   category: NotificationCategory;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface NotificationFilters {
@@ -30,7 +30,9 @@ export class NotificationService {
           title: data.title,
           message: data.message,
           category: data.category,
-          metadata: data.metadata || null,
+          metadata: data.metadata
+            ? JSON.parse(JSON.stringify(data.metadata))
+            : undefined,
         },
       });
 
@@ -52,7 +54,7 @@ export class NotificationService {
     filters: NotificationFilters = {}
   ) {
     try {
-      const where: any = {
+      const where: Record<string, unknown> = {
         userId,
       };
 
@@ -263,7 +265,7 @@ export class NotificationService {
   // WebSocket event emitters
   private static async emitNotificationEvent(
     userId: string,
-    notification: any
+    notification: Record<string, unknown>
   ) {
     try {
       const wsServerUrl =
@@ -294,14 +296,11 @@ export class NotificationService {
 
   private static async emitNotificationUpdateEvent(
     userId: string,
-    notification: any
+    notification: Record<string, unknown>
   ) {
     try {
-      const { getNotificationServer } = await import(
-        "../scripts/websocket-server"
-      );
-      const server = getNotificationServer();
-      await server.emitNotificationUpdate(userId, notification);
+      const server = await import("../scripts/websocket-server");
+      await server.default.emitNotification(userId, notification);
     } catch (error) {
       console.error("Error emitting notification update event:", error);
     }
@@ -312,11 +311,11 @@ export class NotificationService {
     notificationId: string
   ) {
     try {
-      const { getNotificationServer } = await import(
-        "../scripts/websocket-server"
-      );
-      const server = getNotificationServer();
-      await server.emitNotificationDelete(userId, notificationId);
+      const server = await import("../scripts/websocket-server");
+      await server.default.sendToUser(userId, {
+        type: 'delete',
+        data: { notificationId }
+      });
     } catch (error) {
       console.error("Error emitting notification delete event:", error);
     }
@@ -324,11 +323,11 @@ export class NotificationService {
 
   private static async emitMarkAllReadEvent(userId: string) {
     try {
-      const { getNotificationServer } = await import(
-        "../scripts/websocket-server"
-      );
-      const server = getNotificationServer();
-      await server.emitMarkAllRead(userId);
+      const server = await import("../scripts/websocket-server");
+      await server.default.sendToUser(userId, {
+        type: 'mark_all_read',
+        data: { userId }
+      });
     } catch (error) {
       console.error("Error emitting mark all read event:", error);
     }

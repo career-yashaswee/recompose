@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useStreakCalendar, useStreakStats, useMarkStreakComplete } from "@/hooks/api";
 
-type Stats = { currentStreak: number; longestStreak: number };
-type CalendarResponse = { completedDays: number[]; missedDays: number[] };
 
 function getMonthKey(date: Date): { year: number; month0: number } {
   return { year: date.getFullYear(), month0: date.getMonth() };

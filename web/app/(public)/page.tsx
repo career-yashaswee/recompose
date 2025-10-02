@@ -1,6 +1,5 @@
 import { Pointer, TruckElectric, Wrench, Github } from "lucide-react";
 import { ContainerTextFlip } from "@/components/aceternity/container-text-flip";
-import { Navbar } from "@/components/common/navbar";
 export default function Home() {
   return (
     <>

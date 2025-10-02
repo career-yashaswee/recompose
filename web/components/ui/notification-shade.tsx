@@ -96,7 +96,7 @@ export function NotificationShade({
     markAsRead,
     markAllAsRead: contextMarkAllAsRead,
     deleteNotification,
-    fetchNotifications
+    fetchNotifications,
   } = useNotifications();
 
   const notifications = propNotifications || contextNotifications;
@@ -351,21 +351,21 @@ export function NotificationShade({
               <Check className="h-4 w-4 mr-1" />
               Mark all as read
             </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => fetchNotifications()}
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push("/stage/notifications")}
-        >
-          View all notifications
-        </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchNotifications()}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/stage/notifications")}
+            >
+              View all notifications
+            </Button>
           </div>
         </div>
       </DropdownMenuContent>

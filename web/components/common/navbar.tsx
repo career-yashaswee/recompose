@@ -11,11 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
@@ -26,6 +24,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
+import Image from "next/image";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useTranslation } from "react-i18next";
 import ModeToggle from "@/components/ui/mode-toggle";
@@ -85,8 +84,10 @@ const Navbar = () => {
             href={process.env.NEXT_PUBLIC_APP_URL}
             className="flex items-center gap-2"
           >
-            <img
+            <Image
               src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+              width={32}
+              height={32}
               className="max-h-8"
               alt="Shadcn UI Navbar"
             />
@@ -188,8 +189,10 @@ const Navbar = () => {
                     href="https://www.shadcnblocks.com"
                     className="flex items-center gap-2"
                   >
-                    <img
+                    <Image
                       src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+                      width={32}
+                      height={32}
                       className="max-h-8"
                       alt="Shadcn UI Navbar"
                     />

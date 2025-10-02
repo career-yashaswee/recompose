@@ -35,7 +35,7 @@ export default function NetworkWatcher(): React.ReactElement | null {
 
     // Update the previous state
     previousOnlineState.current = network.online;
-  }, [network.online]);
+  }, [network]);
 
   return null;
 }

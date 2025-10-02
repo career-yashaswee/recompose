@@ -59,17 +59,17 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   useEffect(() => {
     const unsubscribeNotification = notificationSocket.on(
       "notification",
-      (notification: NotificationData) => {
-        setNotifications((prev) => [notification, ...prev]);
+      (notification: unknown) => {
+        setNotifications((prev) => [notification as NotificationData, ...prev]);
       }
     );
 
     const unsubscribeMarkRead = notificationSocket.on(
       "mark_read",
-      (data: { notificationId: string }) => {
+      (data: unknown) => {
         setNotifications((prev) =>
           prev.map((n) =>
-            n.id === data.notificationId ? { ...n, isRead: true } : n
+            n.id === (data as { notificationId: string }).notificationId ? { ...n, isRead: true } : n
           )
         );
       }
@@ -84,9 +84,9 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
     const unsubscribeDelete = notificationSocket.on(
       "delete",
-      (data: { notificationId: string }) => {
+      (data: unknown) => {
         setNotifications((prev) =>
-          prev.filter((n) => n.id !== data.notificationId)
+          prev.filter((n) => n.id !== (data as { notificationId: string }).notificationId)
         );
       }
     );
