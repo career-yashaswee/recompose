@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Command, SquareTerminal } from 'lucide-react';
+import { Command, SquareTerminal, Trophy } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
@@ -36,6 +36,12 @@ const data = {
           url: 'kanban',
         },
       ],
+    },
+    {
+      title: 'Badges',
+      url: 'badges',
+      icon: Trophy,
+      isActive: false,
     },
   ],
   navSecondary: [],

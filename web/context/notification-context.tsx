@@ -63,12 +63,9 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   // Socket event handlers
   useEffect(() => {
-    const unsubscribeConnected = notificationSocket.on(
-      'connected',
-      () => {
-        setConnectionStatus('connected');
-      }
-    );
+    const unsubscribeConnected = notificationSocket.on('connected', () => {
+      setConnectionStatus('connected');
+    });
 
     const unsubscribeDisconnected = notificationSocket.on(
       'disconnected',

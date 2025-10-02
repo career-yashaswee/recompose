@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { NotificationService } from '@/lib/notification-service';
 import { awardCompositionPoints } from '@/lib/points-system';
+import { updateBadgeProgress } from '@/lib/badge-system';
 import { NextRequest, NextResponse } from 'next/server';
 
 type Body = {
@@ -78,9 +79,23 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
 
         // Award points for completion
-        await awardCompositionPoints(session.user.id, compositionId, difficulty);
+        await awardCompositionPoints(
+          session.user.id,
+          compositionId,
+          difficulty
+        );
+
+        // Update badge progress for composition completion
+        await updateBadgeProgress(
+          session.user.id,
+          'compositions_completed',
+          1
+        );
       } catch (notificationError) {
-        console.error('Failed to create notification or award points:', notificationError);
+        console.error(
+          'Failed to create notification or award points:',
+          notificationError
+        );
         // Don't fail the whole request if notification/points fail
       }
     }

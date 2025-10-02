@@ -9,7 +9,7 @@ export default function Stage(): React.ReactElement {
     <div className='p-6 space-y-6'>
       {/* Heatmap - Full width */}
       <CompositionHeatmap />
-      
+
       {/* Other widgets in grid */}
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
         <CompletionCalendar />

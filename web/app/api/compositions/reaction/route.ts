@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { updateBadgeProgress } from '@/lib/badge-system';
 import { NextRequest, NextResponse } from 'next/server';
 
 type ReactionValue = 'LIKE' | 'DISLIKE';
@@ -61,6 +62,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         where: { userId: session.user.id, compositionId },
       });
     } else {
+      // Check if this is a new like (not an update from dislike to like)
+      const existingReaction = await prisma.compositionReaction.findUnique({
+        where: {
+          userId_compositionId: { userId: session.user.id, compositionId },
+        },
+        select: { value: true },
+      });
+
       await prisma.compositionReaction.upsert({
         where: {
           userId_compositionId: { userId: session.user.id, compositionId },
@@ -68,6 +77,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         update: { value },
         create: { userId: session.user.id, compositionId, value },
       });
+
+      // Update badge progress for new likes only
+      if (value === 'LIKE' && (!existingReaction || existingReaction.value !== 'LIKE')) {
+        await updateBadgeProgress(
+          session.user.id,
+          'compositions_liked',
+          1
+        );
+      }
     }
     const [likes, dislikes] = await Promise.all([
       prisma.compositionReaction.count({

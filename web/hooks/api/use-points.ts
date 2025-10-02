@@ -7,7 +7,14 @@ export interface UserPoint {
   id: string;
   points: number;
   reason: string;
-  category: 'COMPOSITION_COMPLETE' | 'DAILY_STREAK' | 'WEEKLY_STREAK' | 'MONTHLY_STREAK' | 'FIRST_COMPLETION' | 'DIFFICULTY_BONUS' | 'ACHIEVEMENT';
+  category:
+    | 'COMPOSITION_COMPLETE'
+    | 'DAILY_STREAK'
+    | 'WEEKLY_STREAK'
+    | 'MONTHLY_STREAK'
+    | 'FIRST_COMPLETION'
+    | 'DIFFICULTY_BONUS'
+    | 'ACHIEVEMENT';
   metadata?: any;
   createdAt: string;
 }

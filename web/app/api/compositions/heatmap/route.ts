@@ -32,8 +32,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Group by date and count completions per day
     const dailyCompletions: Record<string, number> = {};
-    
-    completionData.forEach((completion) => {
+
+    completionData.forEach(completion => {
       const dateKey = completion.updatedAt.toISOString().split('T')[0]; // YYYY-MM-DD format
       dailyCompletions[dateKey] = (dailyCompletions[dateKey] || 0) + 1;
     });
@@ -41,18 +41,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // Calculate stats
     const totalCompletions = completionData.length;
     const activeDays = Object.keys(dailyCompletions).length;
-    
+
     // Calculate max streak
     const sortedDates = Object.keys(dailyCompletions).sort();
     let maxStreak = 0;
     let currentStreak = 0;
-    
+
     for (let i = 0; i < sortedDates.length; i++) {
       const currentDate = new Date(sortedDates[i]);
-      const nextDate = i < sortedDates.length - 1 ? new Date(sortedDates[i + 1]) : null;
-      
+      const nextDate =
+        i < sortedDates.length - 1 ? new Date(sortedDates[i + 1]) : null;
+
       if (nextDate) {
-        const daysDiff = Math.floor((nextDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+        const daysDiff = Math.floor(
+          (nextDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
         if (daysDiff === 1) {
           currentStreak++;
         } else {

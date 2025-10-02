@@ -102,12 +102,12 @@ function TableInner(): React.ReactElement {
 
     const randomIndex = Math.floor(Math.random() * data.data.length);
     const randomComposition = data.data[randomIndex];
-    
+
     toast.success('Random composition selected!', {
       description: `Opening "${randomComposition.title}" for practice`,
       duration: 2000,
     });
-    
+
     router.push(`/stage/compositions/${randomComposition.id}`);
   };
 

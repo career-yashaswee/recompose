@@ -5,6 +5,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { BreadcrumbsProvider } from '@/hooks/use-breadcrumbs';
 import { useNotifications } from '@/context/notification-context';
+import { BadgeNotification } from '@/components/badges';
 import { authClient } from '@/lib/auth-client';
 import { useEffect } from 'react';
 
@@ -42,6 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <AppSidebar />
             <SidebarInset>
               <div className='flex flex-1 flex-col gap-4 p-4'>{children}</div>
+              <BadgeNotification />
             </SidebarInset>
           </div>
         </BreadcrumbsProvider>

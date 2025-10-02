@@ -4,7 +4,14 @@ export interface AwardPointsParams {
   userId: string;
   points: number;
   reason: string;
-  category: 'COMPOSITION_COMPLETE' | 'DAILY_STREAK' | 'WEEKLY_STREAK' | 'MONTHLY_STREAK' | 'FIRST_COMPLETION' | 'DIFFICULTY_BONUS' | 'ACHIEVEMENT';
+  category:
+    | 'COMPOSITION_COMPLETE'
+    | 'DAILY_STREAK'
+    | 'WEEKLY_STREAK'
+    | 'MONTHLY_STREAK'
+    | 'FIRST_COMPLETION'
+    | 'DIFFICULTY_BONUS'
+    | 'ACHIEVEMENT';
   metadata?: Record<string, unknown>;
 }
 
@@ -15,7 +22,9 @@ export async function awardPoints(params: AwardPointsParams): Promise<void> {
       points: params.points,
       reason: params.reason,
       category: params.category,
-      metadata: params.metadata ? JSON.parse(JSON.stringify(params.metadata)) : undefined,
+      metadata: params.metadata
+        ? JSON.parse(JSON.stringify(params.metadata))
+        : undefined,
     },
   });
 }
@@ -77,19 +86,23 @@ async function checkAndAwardStreakBonuses(userId: string): Promise<void> {
   // Calculate current streak
   const today = new Date();
   const todayKey = today.toISOString().split('T')[0];
-  
+
   let currentStreak = 0;
-  const todayCompleted = completions.some(completion => completion.dateKey === todayKey);
-  
+  const todayCompleted = completions.some(
+    completion => completion.dateKey === todayKey
+  );
+
   if (todayCompleted) {
     currentStreak = 1;
     const checkDate = new Date(today);
     checkDate.setDate(checkDate.getDate() - 1);
-    
+
     while (true) {
       const checkKey = checkDate.toISOString().split('T')[0];
-      const dayCompleted = completions.some(completion => completion.dateKey === checkKey);
-      
+      const dayCompleted = completions.some(
+        completion => completion.dateKey === checkKey
+      );
+
       if (dayCompleted) {
         currentStreak++;
         checkDate.setDate(checkDate.getDate() - 1);

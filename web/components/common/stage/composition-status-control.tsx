@@ -24,7 +24,8 @@ export default function CompositionStatusControl(
   props: CompositionStatusControlProps
 ): React.ReactElement {
   const { data, isLoading } = useCompositionProgress(props.compositionId);
-  const { data: favoriteData, isLoading: favoriteLoading } = useCompositionFavorite(props.compositionId);
+  const { data: favoriteData, isLoading: favoriteLoading } =
+    useCompositionFavorite(props.compositionId);
   const toggleFavorite = useToggleCompositionFavorite();
 
   if (isLoading || favoriteLoading) {
@@ -86,17 +87,15 @@ export default function CompositionStatusControl(
         size='sm'
         onClick={handleFavoriteToggle}
         className={`flex items-center gap-2 ${
-          isFavorite 
-            ? 'border-amber-500 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950' 
+          isFavorite
+            ? 'border-amber-500 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950'
             : 'hover:bg-slate-50 dark:hover:bg-slate-900'
         }`}
       >
-        <Star 
+        <Star
           className={`size-4 ${
-            isFavorite 
-              ? 'fill-amber-500 text-amber-500' 
-              : 'text-slate-400'
-          }`} 
+            isFavorite ? 'fill-amber-500 text-amber-500' : 'text-slate-400'
+          }`}
         />
         {isFavorite ? 'Favorited' : 'Favorite'}
       </Button>

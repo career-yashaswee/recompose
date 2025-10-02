@@ -25,19 +25,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     let currentStreak = 0;
     const today = new Date();
     const todayKey = today.toISOString().split('T')[0];
-    
+
     // Check if today is completed
-    const todayCompleted = streakData.some(completion => completion.dateKey === todayKey);
-    
+    const todayCompleted = streakData.some(
+      completion => completion.dateKey === todayKey
+    );
+
     if (todayCompleted) {
       currentStreak = 1;
-      let checkDate = new Date(today);
+      const checkDate = new Date(today);
       checkDate.setDate(checkDate.getDate() - 1);
-      
+
       while (true) {
         const checkKey = checkDate.toISOString().split('T')[0];
-        const dayCompleted = streakData.some(completion => completion.dateKey === checkKey);
-        
+        const dayCompleted = streakData.some(
+          completion => completion.dateKey === checkKey
+        );
+
         if (dayCompleted) {
           currentStreak++;
           checkDate.setDate(checkDate.getDate() - 1);
@@ -47,13 +51,15 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       }
     } else {
       // Check yesterday and backwards
-      let checkDate = new Date(today);
+      const checkDate = new Date(today);
       checkDate.setDate(checkDate.getDate() - 1);
-      
+
       while (true) {
         const checkKey = checkDate.toISOString().split('T')[0];
-        const dayCompleted = streakData.some(completion => completion.dateKey === checkKey);
-        
+        const dayCompleted = streakData.some(
+          completion => completion.dateKey === checkKey
+        );
+
         if (dayCompleted) {
           currentStreak++;
           checkDate.setDate(checkDate.getDate() - 1);
@@ -98,7 +104,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { points, reason, category, metadata } = body;
 
     if (!points || !reason || !category) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
     const userPoint = await prisma.userPoint.create({
