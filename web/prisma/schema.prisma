@@ -77,13 +77,10 @@ model Verification {
   @@map("verification")
 }
 
-/// A piece of material the user can complete. Not strictly required for daily completion,
-/// but stored for future expansion and attribution.
 model Composition {
   id          String                  @id @default(cuid())
   title       String
   description String?
-  /// Difficulty of the composition
   difficulty  Difficulty              @default(MEDIUM)
   createdAt   DateTime                @default(now())
   updatedAt   DateTime                @default(now()) @updatedAt
