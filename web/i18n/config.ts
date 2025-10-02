@@ -1,52 +1,13 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import en from "./en.json";
+import hi from "./hi.json";
+import pa from "./pa.json";
 
 const resources = {
-  en: {
-    translation: {
-      navbar: {
-        login: "Log in",
-        start: "Start Composing",
-        features: "Features",
-      },
-      language: {
-        label: "Language",
-        english: "English",
-        hindi: "हिंदी",
-        punjabi: "ਪੰਜਾਬੀ",
-      },
-    },
-  },
-  hi: {
-    translation: {
-      navbar: {
-        login: "लॉग इन",
-        start: "शुरू करें",
-        features: "विशेषताएँ",
-      },
-      language: {
-        label: "भाषा",
-        english: "English",
-        hindi: "हिंदी",
-        punjabi: "ਪੰਜਾਬੀ",
-      },
-    },
-  },
-  pa: {
-    translation: {
-      navbar: {
-        login: "ਲਾਗ ਇਨ",
-        start: "ਸ਼ੁਰੂ ਕਰੋ",
-        features: "ਫੀਚਰ",
-      },
-      language: {
-        label: "ਭਾਸ਼ਾ",
-        english: "English",
-        hindi: "ਹਿੰਦੀ",
-        punjabi: "ਪੰਜਾਬੀ",
-      },
-    },
-  },
+  en: { translation: en },
+  hi: { translation: hi },
+  pa: { translation: pa },
 } as const;
 
 if (!i18n.isInitialized) {

@@ -1,0 +1,14 @@
+{
+  "navbar": {
+    "login": "Log in",
+    "start": "Start Composing",
+    "features": "Features"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "hindi": "हिंदी",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
+

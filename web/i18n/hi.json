@@ -1,0 +1,14 @@
+{
+  "navbar": {
+    "login": "लॉग इन",
+    "start": "शुरू करें",
+    "features": "विशेषताएँ"
+  },
+  "language": {
+    "label": "भाषा",
+    "english": "English",
+    "hindi": "हिंदी",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
+

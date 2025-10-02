@@ -1,0 +1,14 @@
+{
+  "navbar": {
+    "login": "ਲਾਗ ਇਨ",
+    "start": "ਸ਼ੁਰੂ ਕਰੋ",
+    "features": "ਫੀਚਰ"
+  },
+  "language": {
+    "label": "ਭਾਸ਼ਾ",
+    "english": "English",
+    "hਿੰਦੀ": "ਹਿੰਦੀ",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
+
