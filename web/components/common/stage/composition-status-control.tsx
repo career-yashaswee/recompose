@@ -3,10 +3,12 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import MarkCompleteButton from "@/components/common/stage/mark-complete-button";
 import ReactionControl from "@/components/common/stage/reaction-control";
+import { ShareDialog, ReportDialog } from "@/components/common/stage/share-report-dialog";
 import { CheckCircle2 } from "lucide-react";
 
 interface CompositionStatusControlProps {
   compositionId: string;
+  compositionTitle: string;
 }
 
 type Status = "SOLVED" | "ATTEMPTING" | "UNSOLVED" | null;
@@ -33,9 +35,15 @@ export default function CompositionStatusControl(props: CompositionStatusControl
           <span className="font-medium">Solved</span>
         </div>
       ) : (
-        <MarkCompleteButton compositionId={props.compositionId} onCompleted={() => refetch()} />
+        <MarkCompleteButton 
+          compositionId={props.compositionId} 
+          compositionTitle={props.compositionTitle}
+          onCompleted={() => refetch()} 
+        />
       )}
       <ReactionControl compositionId={props.compositionId} />
+      <ShareDialog compositionId={props.compositionId} compositionTitle={props.compositionTitle} />
+      <ReportDialog compositionId={props.compositionId} compositionTitle={props.compositionTitle} />
     </div>
   );
 }

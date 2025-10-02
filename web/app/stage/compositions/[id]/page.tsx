@@ -140,7 +140,7 @@ export default async function Page(props: PageProps): Promise<React.ReactElement
     <div className="mx-auto w-full max-w-4xl">
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">{composition.title}</h1>
-        <CompositionStatusControl compositionId={composition.id} />
+        <CompositionStatusControl compositionId={composition.id} compositionTitle={composition.title} />
       </div>
       <article className="prose prose-neutral dark:prose-invert max-w-none">
         <div dangerouslySetInnerHTML={{ __html: html }} />

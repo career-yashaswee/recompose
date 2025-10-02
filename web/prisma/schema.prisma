@@ -29,6 +29,8 @@ model User {
   CompositionProgress   CompositionProgress[]
   CompositionFavorite   CompositionFavorite[]
   CompositionReaction   CompositionReaction[]
+  notifications         Notification[]
+  kanbanTasks          KanbanTask[]
 
   @@map("user")
 }
@@ -173,4 +175,60 @@ enum ProgressStatus {
 enum ReactionType {
   LIKE
   DISLIKE
+}
+
+/// User notifications for real-time updates
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  category  NotificationCategory
+  isRead    Boolean          @default(false)
+  metadata  Json?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now()) @updatedAt
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([userId, category])
+  @@map("notification")
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum NotificationCategory {
+  SYSTEM
+  USER
+  COMPOSITION
+}
+
+/// Kanban board tasks for user workflow management
+model KanbanTask {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  description String?
+  status    KanbanStatus  @default(SOURCED)
+  order     Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now()) @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, order])
+  @@map("kanban_task")
+}
+
+enum KanbanStatus {
+  SOURCED
+  IN_PROGRESS
+  INTERVIEW
 }

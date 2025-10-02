@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import ModeToggle from "@/components/ui/mode-toggle";
+import { NotificationShade } from "@/components/ui/notification-shade";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export function SiteHeader() {
@@ -57,6 +58,7 @@ export function SiteHeader() {
           </BreadcrumbList>
         </Breadcrumb>
         <SearchForm className="w-full sm:ml-auto sm:w-auto" />
+        <NotificationShade />
         <LanguageSwitcher />
         <ModeToggle />
       </div>

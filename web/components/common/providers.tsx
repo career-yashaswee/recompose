@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import "@/i18n/config";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { NotificationProvider } from "@/context/notification-context";
 
 const NetworkWatcher = dynamic(() => import("./network-watcher"), {
   ssr: false,
@@ -36,7 +37,9 @@ export default function Providers({
       <NetworkWatcher />
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </>

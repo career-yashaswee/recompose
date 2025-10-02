@@ -29,11 +29,7 @@ import { authClient } from "@/lib/auth-client";
 import { UserDisplayData } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
-export function NavUser({
-  user,
-}: {
-  user: UserDisplayData;
-}) {
+export function NavUser({ user }: { user: UserDisplayData }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
@@ -93,7 +89,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/stage/account')}>
+              <DropdownMenuItem onClick={() => router.push("/stage/account")}>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
@@ -101,7 +97,9 @@ export function NavUser({
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => router.push("/stage/notifications")}
+              >
                 <Bell />
                 Notifications
               </DropdownMenuItem>

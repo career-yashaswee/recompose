@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 
 interface MarkCompleteButtonProps {
   compositionId: string;
+  compositionTitle?: string;
   onCompleted?: () => void;
 }
 
@@ -28,11 +29,17 @@ export default function MarkCompleteButton(
           status: "SOLVED",
         }),
       });
-      if (!res.ok) throw new Error("Failed to update progress");
+      
+      if (!res.ok) {
+        throw new Error("Failed to update progress");
+      }
+      
       setMessage("Marked as complete.");
+      
       if (props.onCompleted) props.onCompleted();
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Error:", error);
       setMessage("Failed. Please try again.");
     } finally {
       setSubmitting(false);
