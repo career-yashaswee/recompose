@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type Stats = {
   easy: { solved: number; total: number };
@@ -15,15 +16,15 @@ const RADIUS = 56;
 const CIRC = 2 * Math.PI * RADIUS;
 
 export default function CompositionDifficultyWidget(): React.ReactElement {
-  const [stats, setStats] = useState<Stats | null>(null);
-
-  useEffect(() => {
-    const load = async (): Promise<void> => {
+  const { data: stats } = useQuery<Stats>({
+    queryKey: ["compositions", "stats"],
+    queryFn: async () => {
       const res = await fetch("/api/compositions/stats", { cache: "no-store" });
-      if (res.ok) setStats(await res.json());
-    };
-    void load();
-  }, []);
+      if (!res.ok) throw new Error("Failed to load composition stats");
+      return (await res.json()) as Stats;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   const totalSolved =
     (stats?.easy.solved || 0) +

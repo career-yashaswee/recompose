@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useQuery, useMutation, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, flexRender, ColumnDef, SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,14 +21,14 @@ type CompositionRow = {
 
 type ApiResponse = { total: number; page: number; pageSize: number; data: CompositionRow[] };
 
-const queryClient = new QueryClient();
+// Provided globally via Providers
 
-function difficultyBadge(d: CompositionRow["difficulty"]): JSX.Element {
+function difficultyBadge(d: CompositionRow["difficulty"]): React.ReactElement {
   const color = d === "EASY" ? "bg-emerald-100 text-emerald-800" : d === "MEDIUM" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800";
   return <span className={`px-2 py-1 rounded text-xs ${color}`}>{d}</span>;
 }
 
-function statusBadge(s: CompositionRow["status"]): JSX.Element | null {
+function statusBadge(s: CompositionRow["status"]): React.ReactElement | null {
   if (!s) return null;
   const map: Record<string, string> = {
     SOLVED: "bg-emerald-100 text-emerald-800",
@@ -38,7 +38,7 @@ function statusBadge(s: CompositionRow["status"]): JSX.Element | null {
   return <span className={`px-2 py-1 rounded text-xs ${map[s]}`}>{s}</span>;
 }
 
-function TableInner(): JSX.Element {
+function TableInner(): React.ReactElement {
   const [q, setQ] = React.useState<string>("");
   const [favoriteOnly, setFavoriteOnly] = React.useState<boolean>(false);
   const [difficulty, setDifficulty] = React.useState<string>("");
@@ -235,11 +235,7 @@ function TableInner(): JSX.Element {
   );
 }
 
-export default function CompositionsPage(): JSX.Element {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TableInner />
-    </QueryClientProvider>
-  );
+export default function CompositionsPage(): React.ReactElement {
+  return <TableInner />;
 }
 
