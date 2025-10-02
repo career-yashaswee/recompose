@@ -1,6 +1,7 @@
 "use client";
 
 import { SidebarIcon } from "lucide-react";
+import { Fragment } from "react";
 
 import { SearchForm } from "@/components/search-form";
 import {
@@ -16,9 +17,11 @@ import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import ModeToggle from "@/components/ui/mode-toggle";
+import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
 
 export function SiteHeader() {
   const { toggleSidebar } = useSidebar();
+  const { items } = useBreadcrumbs();
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
@@ -34,13 +37,21 @@ export function SiteHeader() {
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb className="hidden sm:block">
           <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="#">Stage</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-            </BreadcrumbItem>
+            {items.map((item, index) => {
+              const isLast = index === items.length - 1;
+              return (
+                <Fragment key={item.href}>
+                  <BreadcrumbItem>
+                    {isLast ? (
+                      <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                  {!isLast && <BreadcrumbSeparator />}
+                </Fragment>
+              );
+            })}
           </BreadcrumbList>
         </Breadcrumb>
         <SearchForm className="w-full sm:ml-auto sm:w-auto" />
