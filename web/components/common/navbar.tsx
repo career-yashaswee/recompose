@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuIcon, Music4 } from "lucide-react";
+import { MenuIcon, Music4, Wallet } from "lucide-react";
 
 import {
   Accordion,
@@ -82,7 +82,7 @@ const Navbar = () => {
       <div className="container">
         <nav className="flex items-center justify-between">
           <a
-            href="https://www.shadcnblocks.com"
+            href={process.env.NEXT_PUBLIC_APP_URL}
             className="flex items-center gap-2"
           >
             <img
@@ -94,9 +94,9 @@ const Navbar = () => {
               Recompose
             </span>
           </a>
-          {/* <NavigationMenu className="hidden lg:block">
+          <NavigationMenu className="hidden lg:block">
             <NavigationMenuList>
-              <NavigationMenuItem>
+              {/* <NavigationMenuItem>
                 <NavigationMenuTrigger>Features</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid w-[600px] grid-cols-2 p-3">
@@ -118,16 +118,17 @@ const Navbar = () => {
                     ))}
                   </div>
                 </NavigationMenuContent>
-              </NavigationMenuItem>
+              </NavigationMenuItem> */}
               <NavigationMenuItem>
                 <NavigationMenuLink
-                  href="#"
+                  href="/pricing"
                   className={navigationMenuTriggerStyle()}
                 >
-                  Products
+                  <Wallet className="h-4 w-4" />
+                  Pricing
                 </NavigationMenuLink>
               </NavigationMenuItem>
-              <NavigationMenuItem>
+              {/* <NavigationMenuItem>
                 <NavigationMenuLink
                   href="#"
                   className={navigationMenuTriggerStyle()}
@@ -142,9 +143,9 @@ const Navbar = () => {
                 >
                   Contact
                 </NavigationMenuLink>
-              </NavigationMenuItem>
+              </NavigationMenuItem> */}
             </NavigationMenuList>
-          </NavigationMenu> */}
+          </NavigationMenu>
           <div className="hidden items-center gap-2 lg:flex">
             {session?.user ? (
               <>
@@ -154,7 +155,9 @@ const Navbar = () => {
                     <Music4 className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="outline" onClick={handleLogout}>Log out</Button>
+                <Button variant="outline" onClick={handleLogout}>
+                  Log out
+                </Button>
               </>
             ) : (
               <>
@@ -244,7 +247,9 @@ const Navbar = () => {
                           <Music4 className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <Button variant="outline" onClick={handleLogout}>Log out</Button>
+                      <Button variant="outline" onClick={handleLogout}>
+                        Log out
+                      </Button>
                     </>
                   ) : (
                     <>

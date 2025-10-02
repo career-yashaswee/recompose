@@ -4,7 +4,6 @@ import { Navbar } from "@/components/common/navbar";
 export default function Home() {
   return (
     <>
-      <Navbar />
       <section className="h-full w-screen overflow-hidden">
         <div className="container border-b border-t border-dashed">
           <div className="relative flex w-full max-w-5xl flex-col justify-start border border-t-0 border-dashed px-5 py-12 md:items-center md:justify-center lg:mx-auto">
