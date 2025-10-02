@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { pointsKeys } from './use-points';
 
 // Types
 export interface Composition {
@@ -104,6 +105,16 @@ const updateCompositionProgress = async (data: {
   return response.json();
 };
 
+const getCompositionFavorite = async (
+  compositionId: string
+): Promise<{ isFavorite: boolean }> => {
+  const response = await fetch(
+    `/api/compositions/favorite?compositionId=${compositionId}`
+  );
+  if (!response.ok) throw new Error('Failed to get favorite status');
+  return response.json();
+};
+
 const toggleCompositionFavorite = async (data: {
   compositionId: string;
   favorite: boolean;
@@ -127,6 +138,17 @@ const updateCompositionReaction = async (data: {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error('Failed to update reaction');
+  return response.json();
+};
+
+const getCompositionHeatmap = async (): Promise<{
+  totalCompletions: number;
+  activeDays: number;
+  maxStreak: number;
+  dailyCompletions: Record<string, number>;
+}> => {
+  const response = await fetch('/api/compositions/heatmap');
+  if (!response.ok) throw new Error('Failed to get heatmap data');
   return response.json();
 };
 
@@ -229,7 +251,26 @@ export const useUpdateCompositionProgress = () => {
       });
       queryClient.invalidateQueries({ queryKey: compositionKeys.stats() });
       queryClient.invalidateQueries({ queryKey: compositionKeys.lists() });
+      // Invalidate points data when composition progress changes
+      queryClient.invalidateQueries({ queryKey: pointsKeys.user() });
     },
+  });
+};
+
+export const useCompositionFavorite = (compositionId: string) => {
+  return useQuery({
+    queryKey: ['composition-favorite', compositionId],
+    queryFn: () => getCompositionFavorite(compositionId),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+export const useCompositionHeatmap = () => {
+  return useQuery({
+    queryKey: ['composition-heatmap'],
+    queryFn: getCompositionHeatmap,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -241,11 +282,20 @@ export const useToggleCompositionFavorite = () => {
     onMutate: async ({ compositionId, favorite }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: compositionKeys.lists() });
+      await queryClient.cancelQueries({
+        queryKey: ['composition-favorite', compositionId],
+      });
 
       // Get all composition lists
       const previousQueries = queryClient.getQueriesData<CompositionsResponse>({
         queryKey: compositionKeys.lists(),
       });
+
+      // Get previous favorite state
+      const previousFavorite = queryClient.getQueryData<{ isFavorite: boolean }>([
+        'composition-favorite',
+        compositionId,
+      ]);
 
       // Optimistically update all lists
       previousQueries.forEach(([queryKey, data]) => {
@@ -262,7 +312,12 @@ export const useToggleCompositionFavorite = () => {
         }
       });
 
-      return { previousQueries };
+      // Optimistically update single favorite state
+      queryClient.setQueryData(['composition-favorite', compositionId], {
+        isFavorite: favorite,
+      });
+
+      return { previousQueries, previousFavorite };
     },
     onError: (err, variables, context) => {
       // Rollback on error
@@ -271,10 +326,23 @@ export const useToggleCompositionFavorite = () => {
           queryClient.setQueryData(queryKey, data);
         }
       });
+
+      // Rollback favorite state
+      if (context?.previousFavorite) {
+        queryClient.setQueryData(
+          ['composition-favorite', variables.compositionId],
+          context.previousFavorite
+        );
+      }
     },
     onSettled: () => {
       // Invalidate all composition lists
       queryClient.invalidateQueries({ queryKey: compositionKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: ['composition-favorite'],
+      });
+      // Invalidate points data when composition progress changes
+      queryClient.invalidateQueries({ queryKey: pointsKeys.user() });
     },
   });
 };

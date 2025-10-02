@@ -31,6 +31,7 @@ model User {
   CompositionReaction   CompositionReaction[]
   notifications         Notification[]
   kanbanTasks          KanbanTask[]
+  points               UserPoint[]
 
   @@map("user")
 }
@@ -232,4 +233,30 @@ enum KanbanStatus {
   SOURCED
   IN_PROGRESS
   INTERVIEW
+}
+
+/// User points system for gamification
+model UserPoint {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points      Int
+  reason      String      // e.g., "Completed composition", "Daily streak", etc.
+  category    PointCategory
+  metadata    Json?       // Additional data like compositionId, difficulty, etc.
+  createdAt   DateTime    @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, category])
+  @@map("user_point")
+}
+
+enum PointCategory {
+  COMPOSITION_COMPLETE
+  DAILY_STREAK
+  WEEKLY_STREAK
+  MONTHLY_STREAK
+  FIRST_COMPLETION
+  DIFFICULTY_BONUS
+  ACHIEVEMENT
 }

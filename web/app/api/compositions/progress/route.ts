@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { NotificationService } from '@/lib/notification-service';
+import { awardCompositionPoints } from '@/lib/points-system';
 import { NextRequest, NextResponse } from 'next/server';
 
 type Body = {
@@ -57,16 +58,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       create: { userId: session.user.id, compositionId, status },
     });
 
-    // If status is SOLVED, create a notification
+    // If status is SOLVED, create a notification and award points
     if (status === 'SOLVED') {
       try {
-        // Get composition title
+        // Get composition details
         const composition = await prisma.composition.findUnique({
           where: { id: compositionId },
-          select: { title: true },
+          select: { title: true, difficulty: true },
         });
 
         const compositionTitle = composition?.title || 'Composition';
+        const difficulty = composition?.difficulty || 'MEDIUM';
 
         // Create notification in database
         await NotificationService.notifyCompositionCompleted(
@@ -74,9 +76,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           compositionTitle,
           compositionId
         );
+
+        // Award points for completion
+        await awardCompositionPoints(session.user.id, compositionId, difficulty);
       } catch (notificationError) {
-        console.error('Failed to create notification:', notificationError);
-        // Don't fail the whole request if notification fails
+        console.error('Failed to create notification or award points:', notificationError);
+        // Don't fail the whole request if notification/points fail
       }
     }
 

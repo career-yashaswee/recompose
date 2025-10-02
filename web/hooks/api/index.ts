@@ -3,3 +3,4 @@ export * from './use-compositions';
 export * from './use-kanban';
 export * from './use-notifications';
 export * from './use-streak';
+export * from './use-points';

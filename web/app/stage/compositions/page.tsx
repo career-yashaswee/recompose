@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 // import { Card, CardContent, CardHeader } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import TagChip from '@/components/ui/tag-chip';
-import { Star, ThumbsUp } from 'lucide-react';
+import { Star, ThumbsUp, Shuffle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -81,6 +81,26 @@ function TableInner(): React.ReactElement {
   });
 
   const toggleFavorite = useToggleCompositionFavorite();
+
+  const handlePickRandom = () => {
+    if (!data?.data || data.data.length === 0) {
+      toast.error('No compositions available', {
+        description: 'Please try adjusting your filters or check back later.',
+        duration: 3000,
+      });
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * data.data.length);
+    const randomComposition = data.data[randomIndex];
+    
+    toast.success('Random composition selected!', {
+      description: `Opening "${randomComposition.title}" for practice`,
+      duration: 2000,
+    });
+    
+    router.push(`/stage/compositions/${randomComposition.id}`);
+  };
 
   const columns = React.useMemo<ColumnDef<CompositionRow>[]>(
     () => [
@@ -231,6 +251,14 @@ function TableInner(): React.ReactElement {
       </div> */}
 
       <div className='flex flex-wrap items-center gap-3'>
+        <Button
+          onClick={handlePickRandom}
+          disabled={isLoading || !data?.data || data.data.length === 0}
+          className='bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0'
+        >
+          <Shuffle className='size-4 mr-2' />
+          Pick One
+        </Button>
         <Input
           placeholder='Search compositions...'
           value={q}

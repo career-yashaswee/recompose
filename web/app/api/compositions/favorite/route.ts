@@ -4,6 +4,33 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type Body = { compositionId: string; favorite: boolean };
 
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session?.user)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const compositionId = searchParams.get('compositionId');
+  if (!compositionId)
+    return NextResponse.json(
+      { error: 'compositionId required' },
+      { status: 400 }
+    );
+
+  try {
+    const favorite = await prisma.compositionFavorite.findUnique({
+      where: {
+        userId_compositionId: { userId: session.user.id, compositionId },
+      },
+    });
+
+    return NextResponse.json({ isFavorite: !!favorite });
+  } catch (error) {
+    console.error('favorite get error', error);
+    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session?.user)
