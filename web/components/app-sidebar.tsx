@@ -31,6 +31,10 @@ const data = {
           title: "Compositions",
           url: "compositions",
         },
+        {
+          title: "Kanban",
+          url: "kanban",
+        },
       ],
     },
   ],

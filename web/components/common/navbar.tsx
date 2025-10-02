@@ -228,14 +228,15 @@ const Navbar = () => {
                   </AccordionItem>
                 </Accordion>
                 <div className="flex flex-col gap-6">
-                  <a href="#" className="font-medium">
+                  {/* <a href="#" className="font-medium">
                     Templates
                   </a>
                   <a href="#" className="font-medium">
                     Blog
-                  </a>
-                  <a href="#" className="font-medium">
+                  </a> */}
+                  <a href="/pricing" className="font-medium">
                     Pricing
+                    <Wallet className="h-4 w-4" />
                   </a>
                 </div>
                 <div className="mt-6 flex flex-col gap-4">
