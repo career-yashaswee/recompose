@@ -5,10 +5,10 @@ import Calendar from "@/components/ui/calendar";
 import { todayDateKeyIST } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStreakCalendar, useStreakStats, useMarkStreakComplete } from "@/hooks/api";
 
-type Stats = { current: number; longest: number };
-type CalendarResponse = { dates: string[] };
+type Stats = { currentStreak: number; longestStreak: number };
+type CalendarResponse = { completedDays: number[]; missedDays: number[] };
 
 function getMonthKey(date: Date): { year: number; month0: number } {
   return { year: date.getFullYear(), month0: date.getMonth() };
@@ -24,7 +24,6 @@ function getMonthKey(date: Date): { year: number; month0: number } {
  */
 export default function CompletionCalendar(): React.ReactElement {
   const [cursor, setCursor] = useState<Date>(new Date());
-  const queryClient = useQueryClient();
 
   const todayKey = todayDateKeyIST();
 
@@ -39,60 +38,10 @@ export default function CompletionCalendar(): React.ReactElement {
   }, []);
 
   const { year, month0 } = getMonthKey(cursor);
-  const { data: calendarData } = useQuery<CalendarResponse>({
-    queryKey: ["streak", "calendar", { year, month: month0 + 1 }],
-    queryFn: async () => {
-      const res = await fetch(`/api/streak/calendar?year=${year}&month=${month0 + 1}`);
-      if (!res.ok) throw new Error("Failed to load calendar");
-      return (await res.json()) as CalendarResponse;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-  const { data: stats } = useQuery<Stats>({
-    queryKey: ["streak", "stats"],
-    queryFn: async () => {
-      const res = await fetch(`/api/streak/stats`);
-      if (!res.ok) throw new Error("Failed to load stats");
-      return (await res.json()) as Stats;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+  const { data: calendarData } = useStreakCalendar(year, month0 + 1);
+  const { data: stats } = useStreakStats();
 
-  const markToday = useMutation({
-    mutationFn: async (): Promise<void> => {
-      const res = await fetch(`/api/streak/complete`, { method: "POST" });
-      if (!res.ok) throw new Error("Failed to complete today");
-    },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["streak", "calendar"] });
-      const previous = queryClient.getQueriesData<CalendarResponse>({ queryKey: ["streak", "calendar"] });
-      previous.forEach(([key, value]) => {
-        const dates = new Set(value?.dates ?? []);
-        dates.add(todayKey);
-        queryClient.setQueryData(key as unknown as [string, string, Record<string, unknown>], { dates: Array.from(dates) });
-      });
-      const prevStats = queryClient.getQueryData<Stats>(["streak", "stats"]);
-      if (prevStats) {
-        queryClient.setQueryData<Stats>(["streak", "stats"], {
-          current: prevStats.current + 1,
-          longest: Math.max(prevStats.longest, prevStats.current + 1),
-        });
-      }
-      return { previous, prevStats } as const;
-    },
-    onError: (_err, _vars, ctx) => {
-      ctx?.previous.forEach(([key, value]) => {
-        queryClient.setQueryData(key as unknown as [string, string, Record<string, unknown>], value);
-      });
-      if (ctx?.prevStats) queryClient.setQueryData(["streak", "stats"], ctx.prevStats);
-    },
-    onSettled: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["streak", "calendar"] }),
-        queryClient.invalidateQueries({ queryKey: ["streak", "stats"] }),
-      ]);
-    },
-  });
+  const markToday = useMarkStreakComplete();
 
   return (
     <div className="space-y-4">
@@ -109,7 +58,7 @@ export default function CompletionCalendar(): React.ReactElement {
               date.getMonth() + 1
             ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
             const isFuture = key > todayKey;
-            const isDone = new Set(calendarData?.dates ?? []).has(key);
+            const isDone = calendarData?.completedDays?.includes(date.getDate()) ?? false;
             if (isFuture)
               return <span className="text-muted-foreground"></span>;
             if (isDone)
@@ -130,15 +79,20 @@ export default function CompletionCalendar(): React.ReactElement {
 
       <div className="flex items-center gap-4">
         <div>
-          Current streak: <span className="font-medium">{stats?.current ?? 0}</span>
+          Current streak: <span className="font-medium">{stats?.currentStreak ?? 0}</span>
         </div>
         <div>
-          Longest streak: <span className="font-medium">{stats?.longest ?? 0}</span>
+          Longest streak: <span className="font-medium">{stats?.longestStreak ?? 0}</span>
         </div>
       </div>
 
-      {!new Set(calendarData?.dates ?? []).has(todayKey) && (
-        <Button onClick={() => markToday.mutate()}>Mark today as done</Button>
+      {!calendarData?.completedDays?.includes(parseInt(todayKey.split('-')[2])) && (
+        <Button 
+          onClick={() => markToday.mutate({})}
+          disabled={markToday.isPending}
+        >
+          {markToday.isPending ? "Marking..." : "Mark today as done"}
+        </Button>
       )}
     </div>
   );

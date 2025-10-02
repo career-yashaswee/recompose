@@ -22,6 +22,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     | "UNSOLVED"
     | undefined;
   const favoriteOnly = searchParams.get("favoriteOnly") === "true";
+  const tags = searchParams.get("tags")?.split(",").filter(Boolean) || [];
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get("pageSize") || "10", 10)));
   const sortKey = (searchParams.get("sortKey") || "updatedAt") as SortKey;
@@ -37,6 +38,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   if (favoriteOnly) {
     where["favorites"] = { some: { userId: session.user.id } };
+  }
+
+  if (tags.length > 0) {
+    where["tags"] = { hasSome: tags };
   }
 
   const [total, rows] = await Promise.all([
@@ -80,6 +85,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     title: r.title,
     description: r.description,
     difficulty: r.difficulty,
+    tags: r.tags || [],
     createdAt: r.createdAt,
     updatedAt: r.updatedAt,
     isFavorite: r.favorites.length > 0,

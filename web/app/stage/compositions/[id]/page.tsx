@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type React from "react";
 import CompositionStatusControl from "@/components/common/stage/composition-status-control";
+import TagChip from "@/components/ui/tag-chip";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -125,6 +126,7 @@ export default async function Page(props: PageProps): Promise<React.ReactElement
       id: true,
       title: true,
       description: true,
+      tags: true,
       // When `content` is added to the schema, include it here and prefer it over description.
     },
   });
@@ -139,7 +141,16 @@ export default async function Page(props: PageProps): Promise<React.ReactElement
   return (
     <div className="mx-auto w-full max-w-4xl">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">{composition.title}</h1>
+        <div className="flex-1">
+          <h1 className="text-3xl font-semibold tracking-tight">{composition.title}</h1>
+          {composition.tags && composition.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {composition.tags.map((tag) => (
+                <TagChip key={tag} tag={tag} size="md" variant="default" />
+              ))}
+            </div>
+          )}
+        </div>
         <CompositionStatusControl compositionId={composition.id} compositionTitle={composition.title} />
       </div>
       <article className="prose prose-neutral dark:prose-invert max-w-none">

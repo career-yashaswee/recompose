@@ -4,6 +4,7 @@ import * as React from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useKanbanTasks, useUpdateKanbanTask } from "@/hooks/api";
 
 type KanbanStatus = "sourced" | "in_progress" | "interview";
 
@@ -60,29 +61,10 @@ function useSearchFilter(items: Task[]): {
 }
 
 export function KanbanBoard() {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-
-  // Fetch tasks from API
-  React.useEffect(() => {
-    const fetchTasks = async (): Promise<void> => {
-      try {
-        const response = await fetch("/api/kanban");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tasks");
-        }
-        const result = await response.json();
-        setTasks(result.data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch tasks");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, []);
+  const { data: kanbanData, isLoading: loading, error } = useKanbanTasks();
+  const updateTask = useUpdateKanbanTask();
+  
+  const tasks = kanbanData?.data || [];
 
   const { query, setQuery, filtered } = useSearchFilter(tasks);
 
@@ -95,7 +77,7 @@ export function KanbanBoard() {
   );
 
   const onDropToColumn = React.useCallback(
-    async (e: React.DragEvent<HTMLDivElement>, status: KanbanStatus) => {
+    (e: React.DragEvent<HTMLDivElement>, status: KanbanStatus) => {
       e.preventDefault();
       const id = e.dataTransfer.getData("text/plain");
       if (!id) return;
@@ -103,42 +85,14 @@ export function KanbanBoard() {
       const task = tasks.find((t) => t.id === id);
       if (!task || task.status === status) return;
 
-      // Optimistic update
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.id === id ? { ...t, status, updatedAt: new Date().toISOString() } : t
-        )
-      );
-
-      try {
-        const response = await fetch("/api/kanban", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            taskId: id,
-            status,
-            order: 0, // Will be handled by the system
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update task");
-        }
-
-        const result = await response.json();
-        // Update with server response
-        setTasks((prev) =>
-          prev.map((t) => (t.id === id ? result.task : t))
-        );
-      } catch (err) {
-        // Revert optimistic update on error
-        setTasks((prev) =>
-          prev.map((t) => (t.id === id ? task : t))
-        );
-        setError(err instanceof Error ? err.message : "Failed to update task");
-      }
+      // Update task status using mutation
+      updateTask.mutate({
+        taskId: id,
+        status,
+        order: 0, // Will be handled by the system
+      });
     },
-    [tasks]
+    [tasks, updateTask]
   );
 
   const allowDrop = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -162,7 +116,7 @@ export function KanbanBoard() {
   if (error) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-destructive">Error: {error}</div>
+        <div className="text-destructive">Error: {error.message}</div>
       </div>
     );
   }

@@ -6,34 +6,36 @@ import { useNetworkState } from "@uidotdev/usehooks";
 
 export default function NetworkWatcher(): React.ReactElement | null {
   const network = useNetworkState();
-  const firstRenderRef = useRef<boolean>(true);
+  const previousOnlineState = useRef<boolean | null>(null);
+  const isInitialized = useRef<boolean>(false);
 
   useEffect(() => {
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-      if (network.online === false) {
-        toast.error("You are offline", {
-          description:
-            "Some features may not work until connection is restored.",
-          duration: 5000,
-        });
-      }
+    // Skip the first render to avoid showing toast on page load
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      previousOnlineState.current = network.online;
       return;
     }
 
-    if (network.online === true) {
-      const details = buildOnlineDetails(network);
-      toast.success("Back online", {
-        description: details,
-        duration: 3500,
-      });
-    } else if (network.online === false) {
-      toast.error("You are offline", {
-        description: "We will retry actions when the network returns.",
-        duration: 5000,
-      });
+    // Only show toast if the online state actually changed
+    if (previousOnlineState.current !== null && previousOnlineState.current !== network.online) {
+      if (network.online === true) {
+        const details = buildOnlineDetails(network);
+        toast.success("Back online", {
+          description: details,
+          duration: 3500,
+        });
+      } else if (network.online === false) {
+        toast.error("You are offline", {
+          description: "Some features may not work until connection is restored.",
+          duration: 5000,
+        });
+      }
     }
-  }, [network]);
+
+    // Update the previous state
+    previousOnlineState.current = network.online;
+  }, [network.online]);
 
   return null;
 }

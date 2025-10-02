@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useCompositions, useToggleCompositionFavorite } from "@/hooks/api";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,14 +14,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { Card, CardContent, CardHeader } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
+import TagChip from "@/components/ui/tag-chip";
 import { Star, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type CompositionRow = {
   id: string;
   title: string;
   description?: string | null;
   difficulty: "EASY" | "MEDIUM" | "HARD";
+  tags?: string[];
   createdAt: string;
   updatedAt: string;
   isFavorite: boolean;
@@ -29,12 +32,6 @@ type CompositionRow = {
   likes: number;
 };
 
-type ApiResponse = {
-  total: number;
-  page: number;
-  pageSize: number;
-  data: CompositionRow[];
-};
 
 // Provided globally via Providers
 
@@ -64,6 +61,7 @@ function TableInner(): React.ReactElement {
   const [favoriteOnly, setFavoriteOnly] = React.useState<boolean>(false);
   const [difficulty, setDifficulty] = React.useState<string>("");
   const [status, setStatus] = React.useState<string>("");
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "updatedAt", desc: true },
   ]);
@@ -72,44 +70,18 @@ function TableInner(): React.ReactElement {
 
   const sort = sorting[0];
 
-  const { data, isLoading, refetch } = useQuery<ApiResponse>({
-    queryKey: [
-      "compositions",
-      { q, favoriteOnly, difficulty, status, pageIndex, pageSize, sort },
-    ],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (q) params.set("q", q);
-      if (favoriteOnly) params.set("favoriteOnly", "true");
-      if (difficulty) params.set("difficulty", difficulty);
-      if (status) params.set("status", status);
-      params.set("page", String(pageIndex + 1));
-      params.set("pageSize", String(pageSize));
-      if (sort) {
-        params.set("sortKey", sort.id);
-        params.set("sortOrder", sort.desc ? "desc" : "asc");
-      }
-      const res = await fetch(`/api/compositions?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load");
-      return (await res.json()) as ApiResponse;
-    },
+  const { data, isLoading } = useCompositions({
+    q,
+    favoriteOnly,
+    difficulty,
+    status,
+    tags: selectedTags,
+    pageIndex,
+    pageSize,
+    sort,
   });
 
-  const toggleFavorite = useMutation({
-    mutationFn: async (payload: {
-      compositionId: string;
-      favorite: boolean;
-    }) => {
-      const res = await fetch(`/api/compositions/favorite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("Failed to favorite");
-      return res.json();
-    },
-    onSuccess: () => refetch(),
-  });
+  const toggleFavorite = useToggleCompositionFavorite();
 
   const columns = React.useMemo<ColumnDef<CompositionRow>[]>(
     () => [
@@ -119,13 +91,30 @@ function TableInner(): React.ReactElement {
         cell: ({ row }) => (
           <div className="flex items-start gap-3">
             <div className="size-9 rounded-full bg-slate-200" />
-            <div>
+            <div className="flex-1">
               <div className="font-medium text-slate-900 dark:text-slate-100">
                 {row.original.title}
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-slate-500 mb-2">
                 {row.original.description}
               </div>
+              {row.original.tags && row.original.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {row.original.tags.map((tag) => (
+                    <TagChip
+                      key={tag}
+                      tag={tag}
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        if (!selectedTags.includes(tag)) {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ),
@@ -161,9 +150,30 @@ function TableInner(): React.ReactElement {
             }`}
             onClick={(e) => {
               e.stopPropagation();
+              const newFavoriteState = !row.original.isFavorite;
               toggleFavorite.mutate({
                 compositionId: row.original.id,
-                favorite: !row.original.isFavorite,
+                favorite: newFavoriteState,
+              }, {
+                onSuccess: () => {
+                  if (newFavoriteState) {
+                    toast.success("Added to favorites", {
+                      description: `"${row.original.title}" has been added to your favorites`,
+                      duration: 3000,
+                    });
+                  } else {
+                    toast.info("Removed from favorites", {
+                      description: `"${row.original.title}" has been removed from your favorites`,
+                      duration: 3000,
+                    });
+                  }
+                },
+                onError: () => {
+                  toast.error("Failed to update favorite", {
+                    description: "Please try again later.",
+                    duration: 3000,
+                  });
+                },
               });
             }}
           >
@@ -181,7 +191,7 @@ function TableInner(): React.ReactElement {
           new Date(getValue<string>()).toLocaleDateString(),
       },
     ],
-    [toggleFavorite]
+    [toggleFavorite, selectedTags, setSelectedTags]
   );
 
   const table = useReactTable({
@@ -253,10 +263,37 @@ function TableInner(): React.ReactElement {
           />{" "}
           Favorites
         </label>
-        <Button onClick={() => refetch()} variant="secondary">
+        <Button onClick={() => window.location.reload()} variant="secondary">
           Search
         </Button>
       </div>
+
+      {/* Selected Tags Filter */}
+      {selectedTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-slate-600 dark:text-slate-400">Filtered by tags:</span>
+          {selectedTags.map((tag) => (
+            <TagChip
+              key={tag}
+              tag={tag}
+              size="sm"
+              variant="default"
+              removable
+              onRemove={() => {
+                setSelectedTags(selectedTags.filter((t) => t !== tag));
+              }}
+            />
+          ))}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedTags([])}
+            className="text-xs"
+          >
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {/* Scroll container with sticky header and sticky pagination */}
       <div className="relative flex-1 min-h-0 rounded-md border overflow-hidden">
