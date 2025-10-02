@@ -4,6 +4,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Body = { compositionId: string; status: "SOLVED" | "ATTEMPTING" | "UNSOLVED" };
 
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session?.user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const compositionId = searchParams.get("compositionId");
+  if (!compositionId)
+    return NextResponse.json({ error: "compositionId required" }, { status: 400 });
+
+  try {
+    const row = await prisma.compositionProgress.findUnique({
+      where: { userId_compositionId: { userId: session.user.id, compositionId } },
+      select: { status: true },
+    });
+    return NextResponse.json({ status: row?.status ?? null });
+  } catch (error) {
+    console.error("progress get error", error);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session?.user)

@@ -1,9 +1,10 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type React from "react";
+import CompositionStatusControl from "@/components/common/stage/composition-status-control";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -115,7 +116,8 @@ function inlineMarkdown(text: string, escapeHtml: (s: string) => string): string
 }
 
 export default async function Page(props: PageProps): Promise<React.ReactElement> {
-  const id: string = props.params.id;
+  const params = await props.params;
+  const id: string = params.id;
 
   const composition = await prisma.composition.findUnique({
     where: { id },
@@ -136,7 +138,10 @@ export default async function Page(props: PageProps): Promise<React.ReactElement
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <h1 className="mb-6 text-3xl font-semibold tracking-tight">{composition.title}</h1>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">{composition.title}</h1>
+        <CompositionStatusControl compositionId={composition.id} />
+      </div>
       <article className="prose prose-neutral dark:prose-invert max-w-none">
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </article>

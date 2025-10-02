@@ -28,6 +28,7 @@ model User {
   CompositionCompletion CompositionCompletion[]
   CompositionProgress   CompositionProgress[]
   CompositionFavorite   CompositionFavorite[]
+  CompositionReaction   CompositionReaction[]
 
   @@map("user")
 }
@@ -89,6 +90,7 @@ model Composition {
   completions CompositionCompletion[]
   progresses  CompositionProgress[]
   favorites   CompositionFavorite[]
+  reactions   CompositionReaction[]
 
   @@map("composition")
 }
@@ -139,6 +141,23 @@ model CompositionFavorite {
   @@map("composition_favorite")
 }
 
+/// Track user reactions (like/dislike) for compositions
+model CompositionReaction {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  compositionId String
+  composition   Composition  @relation(fields: [compositionId], references: [id], onDelete: Cascade)
+  value         ReactionType
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([userId, compositionId])
+  @@index([compositionId, value])
+  @@index([userId])
+  @@map("composition_reaction")
+}
+
 enum Difficulty {
   EASY
   MEDIUM
@@ -149,4 +168,9 @@ enum ProgressStatus {
   SOLVED
   ATTEMPTING
   UNSOLVED
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
 }

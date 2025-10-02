@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { Card, CardContent, CardHeader } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
+import { Star, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type CompositionRow = {
@@ -26,6 +26,7 @@ type CompositionRow = {
   updatedAt: string;
   isFavorite: boolean;
   status: "SOLVED" | "ATTEMPTING" | "UNSOLVED" | null;
+  likes: number;
 };
 
 type ApiResponse = {
@@ -138,6 +139,16 @@ function TableInner(): React.ReactElement {
         accessorKey: "status",
         header: () => <span>Status</span>,
         cell: ({ row }) => statusBadge(row.original.status),
+      },
+      {
+        id: "likes",
+        header: () => <span>Likes</span>,
+        cell: ({ row }) => (
+          <div className="inline-flex items-center gap-1 text-slate-700 dark:text-slate-300">
+            <ThumbsUp className="size-4" />
+            <span className="text-xs">{row.original.likes}</span>
+          </div>
+        ),
       },
       {
         id: "favorite",
