@@ -16,6 +16,8 @@ import {
 interface NotificationContextType {
   notifications: NotificationData[];
   unreadCount: number;
+  isConnected: boolean;
+  connectionStatus: 'connected' | 'disconnected' | 'connecting' | 'error';
   addNotification: (notification: NotificationData) => void;
   markAsRead: (notificationId: string) => void;
   markAllAsRead: () => void;
@@ -43,6 +45,9 @@ interface NotificationProviderProps {
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState<
+    'connected' | 'disconnected' | 'connecting' | 'error'
+  >('disconnected');
 
   // Initialize with some mock notifications for demo
   // Fetch notifications from server on mount and initialize WebSocket
@@ -51,12 +56,27 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
     // Initialize WebSocket connection with delay to ensure auth is ready
     setTimeout(() => {
+      setConnectionStatus('connecting');
       notificationSocket.connect();
     }, 1000);
   }, []);
 
   // Socket event handlers
   useEffect(() => {
+    const unsubscribeConnected = notificationSocket.on(
+      'connected',
+      () => {
+        setConnectionStatus('connected');
+      }
+    );
+
+    const unsubscribeDisconnected = notificationSocket.on(
+      'disconnected',
+      () => {
+        setConnectionStatus('disconnected');
+      }
+    );
+
     const unsubscribeNotification = notificationSocket.on(
       'notification',
       (notification: unknown) => {
@@ -96,6 +116,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     );
 
     return () => {
+      unsubscribeConnected();
+      unsubscribeDisconnected();
       unsubscribeNotification();
       unsubscribeMarkRead();
       unsubscribeMarkAllRead();
@@ -104,6 +126,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   }, []);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
+  const isConnected = connectionStatus === 'connected';
 
   const addNotification = (notification: NotificationData) => {
     setNotifications(prev => [notification, ...prev]);
@@ -183,6 +206,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const value: NotificationContextType = {
     notifications,
     unreadCount,
+    isConnected,
+    connectionStatus,
     addNotification,
     markAsRead,
     markAllAsRead,

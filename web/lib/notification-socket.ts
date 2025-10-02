@@ -42,16 +42,28 @@ class NotificationSocket {
 
       if (!session?.data?.user?.id) {
         this.isConnecting = false;
+        console.warn('No user session found, skipping WebSocket connection');
         return;
       }
 
       const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001';
       const token = session.data.user.id;
+
+      // Check if WebSocket server is available before attempting connection
+      if (!this.isWebSocketServerAvailable()) {
+        console.warn(
+          'WebSocket server not available, notifications will work in offline mode'
+        );
+        this.isConnecting = false;
+        return;
+      }
+
       this.socket = new WebSocket(`${wsUrl}/notifications?token=${token}`);
 
       this.socket.onopen = () => {
         this.reconnectAttempts = 0;
         this.isConnecting = false;
+        console.log('WebSocket connected successfully');
         this.emit('connected', {});
       };
 
@@ -67,23 +79,47 @@ class NotificationSocket {
       this.socket.onclose = event => {
         this.isConnecting = false;
         this.socket = null;
+        this.emit('disconnected', { code: event.code, reason: event.reason });
+
+        if (event.code === 1006) {
+          console.warn('WebSocket connection lost unexpectedly');
+        } else {
+          console.log(
+            `WebSocket closed with code ${event.code}: ${event.reason}`
+          );
+        }
 
         if (
           !event.wasClean &&
           this.reconnectAttempts < this.maxReconnectAttempts
         ) {
+          console.log(
+            `Attempting to reconnect... (${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`
+          );
           this.scheduleReconnect();
+        } else if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+          console.warn(
+            'Max reconnection attempts reached. Notifications will work in offline mode.'
+          );
         }
       };
 
-      this.socket.onerror = error => {
-        console.error('WebSocket error:', error);
+      this.socket.onerror = () => {
+        console.warn(
+          'WebSocket connection error - server may not be running. Notifications will work in offline mode.'
+        );
         this.isConnecting = false;
       };
     } catch (error) {
       console.error('Error connecting to notification socket:', error);
       this.isConnecting = false;
     }
+  }
+
+  private isWebSocketServerAvailable(): boolean {
+    // In a real implementation, you might want to ping the server
+    // For now, we'll assume it's available and let the connection fail gracefully
+    return true;
   }
 
   private scheduleReconnect(): void {

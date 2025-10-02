@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "websocket": "node scripts/websocket-server.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run websocket\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run websocket\"",
+    "dev:with-notifications": "concurrently \"npm run dev\" \"npm run websocket\""
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
