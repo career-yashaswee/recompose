@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
-import { useNetworkState } from "@uidotdev/usehooks";
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import { useNetworkState } from '@uidotdev/usehooks';
 
 export default function NetworkWatcher(): React.ReactElement | null {
   const network = useNetworkState();
@@ -18,16 +18,20 @@ export default function NetworkWatcher(): React.ReactElement | null {
     }
 
     // Only show toast if the online state actually changed
-    if (previousOnlineState.current !== null && previousOnlineState.current !== network.online) {
+    if (
+      previousOnlineState.current !== null &&
+      previousOnlineState.current !== network.online
+    ) {
       if (network.online === true) {
         const details = buildOnlineDetails(network);
-        toast.success("Back online", {
+        toast.success('Back online', {
           description: details,
           duration: 3500,
         });
       } else if (network.online === false) {
-        toast.error("You are offline", {
-          description: "Some features may not work until connection is restored.",
+        toast.error('You are offline', {
+          description:
+            'Some features may not work until connection is restored.',
           duration: 5000,
         });
       }
@@ -44,13 +48,13 @@ function buildOnlineDetails(
   network: ReturnType<typeof useNetworkState>
 ): string {
   const parts: string[] = [];
-  if (typeof network.effectiveType === "string")
+  if (typeof network.effectiveType === 'string')
     parts.push(`Type: ${network.effectiveType}`);
-  if (typeof network.downlink === "number")
+  if (typeof network.downlink === 'number')
     parts.push(`Downlink: ${network.downlink} Mbps`);
-  if (typeof network.rtt === "number") parts.push(`RTT: ${network.rtt} ms`);
-  if (typeof network.saveData === "boolean" && network.saveData)
-    parts.push("Data Saver: On");
-  if (typeof network.type === "string") parts.push(`Conn: ${network.type}`);
-  return parts.length ? parts.join(" • ") : "Connection restored";
+  if (typeof network.rtt === 'number') parts.push(`RTT: ${network.rtt} ms`);
+  if (typeof network.saveData === 'boolean' && network.saveData)
+    parts.push('Data Saver: On');
+  if (typeof network.type === 'string') parts.push(`Conn: ${network.type}`);
+  return parts.length ? parts.join(' • ') : 'Connection restored';
 }

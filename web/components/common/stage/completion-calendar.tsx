@@ -1,12 +1,15 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import Calendar from "@/components/ui/calendar";
-import { todayDateKeyIST } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import { useStreakCalendar, useStreakStats, useMarkStreakComplete } from "@/hooks/api";
-
+import { useMemo, useState } from 'react';
+import Calendar from '@/components/ui/calendar';
+import { todayDateKeyIST } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Check } from 'lucide-react';
+import {
+  useStreakCalendar,
+  useStreakStats,
+  useMarkStreakComplete,
+} from '@/hooks/api';
 
 function getMonthKey(date: Date): { year: number; month0: number } {
   return { year: date.getFullYear(), month0: date.getMonth() };
@@ -42,7 +45,7 @@ export default function CompletionCalendar(): React.ReactElement {
   const markToday = useMarkStreakComplete();
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       <Calendar
         month={cursor}
         onMonthChange={setCursor}
@@ -54,42 +57,47 @@ export default function CompletionCalendar(): React.ReactElement {
             if (date.getMonth() !== displayMonth.getMonth()) return <span />;
             const key = `${date.getFullYear()}-${String(
               date.getMonth() + 1
-            ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            ).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             const isFuture = key > todayKey;
-            const isDone = calendarData?.completedDays?.includes(date.getDate()) ?? false;
+            const isDone =
+              calendarData?.completedDays?.includes(date.getDate()) ?? false;
             if (isFuture)
-              return <span className="text-muted-foreground"></span>;
+              return <span className='text-muted-foreground'></span>;
             if (isDone)
               return (
-                <span className="text-blue-500 text-xl">
-                  <Check className="size-4" />
+                <span className='text-blue-500 text-xl'>
+                  <Check className='size-4' />
                 </span>
               );
             return (
-              <span className="relative text-sm">
+              <span className='relative text-sm'>
                 {date.getDate()}
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500" />
+                <span className='absolute -bottom-1 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-red-500' />
               </span>
             );
           },
         }}
       />
 
-      <div className="flex items-center gap-4">
+      <div className='flex items-center gap-4'>
         <div>
-          Current streak: <span className="font-medium">{stats?.currentStreak ?? 0}</span>
+          Current streak:{' '}
+          <span className='font-medium'>{stats?.currentStreak ?? 0}</span>
         </div>
         <div>
-          Longest streak: <span className="font-medium">{stats?.longestStreak ?? 0}</span>
+          Longest streak:{' '}
+          <span className='font-medium'>{stats?.longestStreak ?? 0}</span>
         </div>
       </div>
 
-      {!calendarData?.completedDays?.includes(parseInt(todayKey.split('-')[2])) && (
-        <Button 
+      {!calendarData?.completedDays?.includes(
+        parseInt(todayKey.split('-')[2])
+      ) && (
+        <Button
           onClick={() => markToday.mutate({})}
           disabled={markToday.isPending}
         >
-          {markToday.isPending ? "Marking..." : "Mark today as done"}
+          {markToday.isPending ? 'Marking...' : 'Mark today as done'}
         </Button>
       )}
     </div>

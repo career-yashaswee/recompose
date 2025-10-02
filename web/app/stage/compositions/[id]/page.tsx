@@ -1,8 +1,8 @@
-import prisma from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import type React from "react";
-import CompositionStatusControl from "@/components/common/stage/composition-status-control";
-import TagChip from "@/components/ui/tag-chip";
+import prisma from '@/lib/prisma';
+import { notFound } from 'next/navigation';
+import type React from 'react';
+import CompositionStatusControl from '@/components/common/stage/composition-status-control';
+import TagChip from '@/components/ui/tag-chip';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -15,13 +15,13 @@ interface PageProps {
 function renderMarkdownToHtml(markdown: string): string {
   const escapeHtml = (input: string): string =>
     input
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#039;');
 
-  const lines: string[] = markdown.replace(/\r\n?/g, "\n").split("\n");
+  const lines: string[] = markdown.replace(/\r\n?/g, '\n').split('\n');
   const htmlParts: string[] = [];
   let inCodeBlock = false;
   let codeBlockBuffer: string[] = [];
@@ -30,7 +30,7 @@ function renderMarkdownToHtml(markdown: string): string {
 
   const flushList = (): void => {
     if (inList && listBuffer.length > 0) {
-      htmlParts.push(`<ul>${listBuffer.join("")}</ul>`);
+      htmlParts.push(`<ul>${listBuffer.join('')}</ul>`);
       listBuffer = [];
       inList = false;
     }
@@ -40,14 +40,14 @@ function renderMarkdownToHtml(markdown: string): string {
     const line = rawLine;
 
     // Fenced code blocks ```
-    if (line.trim().startsWith("```") && !inCodeBlock) {
+    if (line.trim().startsWith('```') && !inCodeBlock) {
       flushList();
       inCodeBlock = true;
       codeBlockBuffer = [];
       continue;
     }
-    if (line.trim().startsWith("```") && inCodeBlock) {
-      const code = escapeHtml(codeBlockBuffer.join("\n"));
+    if (line.trim().startsWith('```') && inCodeBlock) {
+      const code = escapeHtml(codeBlockBuffer.join('\n'));
       htmlParts.push(`<pre><code>${code}</code></pre>`);
       inCodeBlock = false;
       codeBlockBuffer = [];
@@ -60,11 +60,11 @@ function renderMarkdownToHtml(markdown: string): string {
 
     // Lists (-, *, +)
     if (/^\s*[-*+]\s+/.test(line)) {
-      const item = line.replace(/^\s*[-*+]\s+/, "");
+      const item = line.replace(/^\s*[-*+]\s+/, '');
       inList = true;
       listBuffer.push(`<li>${inlineMarkdown(item, escapeHtml)}</li>`);
       continue;
-    } else if (inList && line.trim() === "") {
+    } else if (inList && line.trim() === '') {
       flushList();
       continue;
     } else if (inList && !/^\s*[-*+]\s+/.test(line)) {
@@ -76,47 +76,66 @@ function renderMarkdownToHtml(markdown: string): string {
     if (headingMatch) {
       const level = headingMatch[1].length;
       const content = headingMatch[2];
-      htmlParts.push(`<h${level}>${inlineMarkdown(content, escapeHtml)}</h${level}>`);
+      htmlParts.push(
+        `<h${level}>${inlineMarkdown(content, escapeHtml)}</h${level}>`
+      );
       continue;
     }
 
     // Blockquote
     if (/^>\s?/.test(line)) {
-      const content = line.replace(/^>\s?/, "");
-      htmlParts.push(`<blockquote>${inlineMarkdown(content, escapeHtml)}</blockquote>`);
+      const content = line.replace(/^>\s?/, '');
+      htmlParts.push(
+        `<blockquote>${inlineMarkdown(content, escapeHtml)}</blockquote>`
+      );
       continue;
     }
 
     // Paragraph or blank
-    if (line.trim() === "") {
-      htmlParts.push("");
+    if (line.trim() === '') {
+      htmlParts.push('');
     } else {
       htmlParts.push(`<p>${inlineMarkdown(line, escapeHtml)}</p>`);
     }
   }
 
   flushList();
-  return htmlParts.filter(Boolean).join("\n");
+  return htmlParts.filter(Boolean).join('\n');
 }
 
-function inlineMarkdown(text: string, escapeHtml: (s: string) => string): string {
+function inlineMarkdown(
+  text: string,
+  escapeHtml: (s: string) => string
+): string {
   let out = escapeHtml(text);
   // Bold **text** or __text__
-  out = out.replace(/(\*\*|__)(.*?)\1/g, "<strong>$2</strong>");
+  out = out.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
   // Italic *text* or _text_
-  out = out.replace(/(\*|_)([^*_]+?)\1/g, "<em>$2</em>");
+  out = out.replace(/(\*|_)([^*_]+?)\1/g, '<em>$2</em>');
   // Inline code `code`
-  out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
   // Links [text](url)
-  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+\"([^\"]*)\")?\)/g, (_m: string, t: string, href: string, title?: string) => {
-    const safeHref = href.startsWith("/") || href.startsWith("#") || /^https?:\/\//.test(href) ? href : "#";
-    const safeTitle = title ? ` title=\"${title.replace(/\"/g, "&quot;")}\"` : "";
-    return `<a href=\"${safeHref}\" rel=\"noopener noreferrer\" target=\"_blank\"${safeTitle}>${t}</a>`;
-  });
+  out = out.replace(
+    /\[([^\]]+)\]\(([^)\s]+)(?:\s+\"([^\"]*)\")?\)/g,
+    (_m: string, t: string, href: string, title?: string) => {
+      const safeHref =
+        href.startsWith('/') ||
+        href.startsWith('#') ||
+        /^https?:\/\//.test(href)
+          ? href
+          : '#';
+      const safeTitle = title
+        ? ` title=\"${title.replace(/\"/g, '&quot;')}\"`
+        : '';
+      return `<a href=\"${safeHref}\" rel=\"noopener noreferrer\" target=\"_blank\"${safeTitle}>${t}</a>`;
+    }
+  );
   return out;
 }
 
-export default async function Page(props: PageProps): Promise<React.ReactElement> {
+export default async function Page(
+  props: PageProps
+): Promise<React.ReactElement> {
   const params = await props.params;
   const id: string = params.id;
 
@@ -135,29 +154,32 @@ export default async function Page(props: PageProps): Promise<React.ReactElement
     notFound();
   }
 
-  const markdownSource: string = composition.description ?? "";
+  const markdownSource: string = composition.description ?? '';
   const html: string = renderMarkdownToHtml(markdownSource);
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex-1">
-          <h1 className="text-3xl font-semibold tracking-tight">{composition.title}</h1>
+    <div className='mx-auto w-full max-w-4xl'>
+      <div className='mb-6 flex items-center justify-between gap-4'>
+        <div className='flex-1'>
+          <h1 className='text-3xl font-semibold tracking-tight'>
+            {composition.title}
+          </h1>
           {composition.tags && composition.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {composition.tags.map((tag) => (
-                <TagChip key={tag} tag={tag} size="md" variant="default" />
+            <div className='mt-3 flex flex-wrap gap-2'>
+              {composition.tags.map(tag => (
+                <TagChip key={tag} tag={tag} size='md' variant='default' />
               ))}
             </div>
           )}
         </div>
-        <CompositionStatusControl compositionId={composition.id} compositionTitle={composition.title} />
+        <CompositionStatusControl
+          compositionId={composition.id}
+          compositionTitle={composition.title}
+        />
       </div>
-      <article className="prose prose-neutral dark:prose-invert max-w-none">
+      <article className='prose prose-neutral dark:prose-invert max-w-none'>
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </article>
     </div>
   );
 }
-
-

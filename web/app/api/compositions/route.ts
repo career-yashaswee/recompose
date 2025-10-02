@@ -1,47 +1,51 @@
-import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
-type SortKey = "title" | "difficulty" | "createdAt" | "updatedAt" | "revenue";
-type SortOrder = "asc" | "desc";
+type SortKey = 'title' | 'difficulty' | 'createdAt' | 'updatedAt' | 'revenue';
+type SortOrder = 'asc' | 'desc';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || undefined;
-  const difficulty = (searchParams.get("difficulty") || undefined) as
-    | "EASY"
-    | "MEDIUM"
-    | "HARD"
+  const q = searchParams.get('q') || undefined;
+  const difficulty = (searchParams.get('difficulty') || undefined) as
+    | 'EASY'
+    | 'MEDIUM'
+    | 'HARD'
     | undefined;
-  const status = (searchParams.get("status") || undefined) as
-    | "SOLVED"
-    | "ATTEMPTING"
-    | "UNSOLVED"
+  const status = (searchParams.get('status') || undefined) as
+    | 'SOLVED'
+    | 'ATTEMPTING'
+    | 'UNSOLVED'
     | undefined;
-  const favoriteOnly = searchParams.get("favoriteOnly") === "true";
-  const tags = searchParams.get("tags")?.split(",").filter(Boolean) || [];
-  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-  const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get("pageSize") || "10", 10)));
-  const sortKey = (searchParams.get("sortKey") || "updatedAt") as SortKey;
-  const sortOrder = (searchParams.get("sortOrder") || "desc") as SortOrder;
+  const favoriteOnly = searchParams.get('favoriteOnly') === 'true';
+  const tags = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+  const pageSize = Math.min(
+    50,
+    Math.max(1, parseInt(searchParams.get('pageSize') || '10', 10))
+  );
+  const sortKey = (searchParams.get('sortKey') || 'updatedAt') as SortKey;
+  const sortOrder = (searchParams.get('sortOrder') || 'desc') as SortOrder;
 
   const where: Record<string, unknown> = {};
-  if (q) where["title"] = { contains: q, mode: "insensitive" };
-  if (difficulty) where["difficulty"] = difficulty;
+  if (q) where['title'] = { contains: q, mode: 'insensitive' };
+  if (difficulty) where['difficulty'] = difficulty;
 
   if (status) {
-    where["progresses"] = { some: { userId: session.user.id, status } };
+    where['progresses'] = { some: { userId: session.user.id, status } };
   }
 
   if (favoriteOnly) {
-    where["favorites"] = { some: { userId: session.user.id } };
+    where['favorites'] = { some: { userId: session.user.id } };
   }
 
   if (tags.length > 0) {
-    where["tags"] = { hasSome: tags };
+    where['tags'] = { hasSome: tags };
   }
 
   const [total, rows] = await Promise.all([
@@ -52,22 +56,31 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: {
-        progresses: { where: { userId: session.user.id }, select: { status: true } },
+        progresses: {
+          where: { userId: session.user.id },
+          select: { status: true },
+        },
         favorites: { where: { userId: session.user.id }, select: { id: true } },
       },
     }),
   ]);
 
-  const ids = rows.map((r) => r.id);
+  const ids = rows.map(r => r.id);
   // Aggregate likes per composition
   const [likeGroups, userReactions] = await Promise.all([
     ids.length
       ? prisma.compositionReaction.groupBy({
-          by: ["compositionId", "value"],
-          where: { compositionId: { in: ids }, value: "LIKE" },
+          by: ['compositionId', 'value'],
+          where: { compositionId: { in: ids }, value: 'LIKE' },
           _count: { _all: true },
         })
-      : Promise.resolve([] as { compositionId: string; value: string; _count: { _all: number } }[]),
+      : Promise.resolve(
+          [] as {
+            compositionId: string;
+            value: string;
+            _count: { _all: number };
+          }[]
+        ),
     ids.length
       ? prisma.compositionReaction.findMany({
           where: { compositionId: { in: ids }, userId: session.user.id },
@@ -77,10 +90,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   ]);
   const likesMap: Record<string, number> = {};
   for (const g of likeGroups) likesMap[g.compositionId] = g._count._all;
-  const userReactionMap: Record<string, "LIKE" | "DISLIKE"> = {};
-  for (const ur of userReactions) userReactionMap[ur.compositionId] = ur.value as "LIKE" | "DISLIKE";
+  const userReactionMap: Record<string, 'LIKE' | 'DISLIKE'> = {};
+  for (const ur of userReactions)
+    userReactionMap[ur.compositionId] = ur.value as 'LIKE' | 'DISLIKE';
 
-  const data = rows.map((r) => ({
+  const data = rows.map(r => ({
     id: r.id,
     title: r.title,
     description: r.description,
@@ -96,5 +110,3 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({ total, page, pageSize, data });
 }
-
-

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Types
 export interface CalendarResponse {
@@ -32,31 +32,39 @@ export interface MarkStreakCompleteResponse {
 
 // Query Keys
 export const streakKeys = {
-  all: ["streak"] as const,
-  calendar: (year: number, month: number) => [...streakKeys.all, "calendar", { year, month }] as const,
-  stats: () => [...streakKeys.all, "stats"] as const,
+  all: ['streak'] as const,
+  calendar: (year: number, month: number) =>
+    [...streakKeys.all, 'calendar', { year, month }] as const,
+  stats: () => [...streakKeys.all, 'stats'] as const,
 };
 
 // API Functions
-const fetchStreakCalendar = async (year: number, month: number): Promise<CalendarResponse> => {
-  const response = await fetch(`/api/streak/calendar?year=${year}&month=${month}`);
-  if (!response.ok) throw new Error("Failed to fetch streak calendar");
+const fetchStreakCalendar = async (
+  year: number,
+  month: number
+): Promise<CalendarResponse> => {
+  const response = await fetch(
+    `/api/streak/calendar?year=${year}&month=${month}`
+  );
+  if (!response.ok) throw new Error('Failed to fetch streak calendar');
   return response.json();
 };
 
 const fetchStreakStats = async (): Promise<StreakStats> => {
-  const response = await fetch("/api/streak/stats");
-  if (!response.ok) throw new Error("Failed to fetch streak stats");
+  const response = await fetch('/api/streak/stats');
+  if (!response.ok) throw new Error('Failed to fetch streak stats');
   return response.json();
 };
 
-const markStreakComplete = async (data: MarkStreakCompleteRequest): Promise<MarkStreakCompleteResponse> => {
-  const response = await fetch("/api/streak/complete", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+const markStreakComplete = async (
+  data: MarkStreakCompleteRequest
+): Promise<MarkStreakCompleteResponse> => {
+  const response = await fetch('/api/streak/complete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error("Failed to mark streak complete");
+  if (!response.ok) throw new Error('Failed to mark streak complete');
   return response.json();
 };
 
@@ -90,23 +98,32 @@ export const useMarkStreakComplete = () => {
       const day = targetDate.getDate();
 
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: streakKeys.calendar(year, month) });
+      await queryClient.cancelQueries({
+        queryKey: streakKeys.calendar(year, month),
+      });
       await queryClient.cancelQueries({ queryKey: streakKeys.stats() });
 
       // Snapshot previous values
       const previousCalendar = queryClient.getQueryData<CalendarResponse>(
         streakKeys.calendar(year, month)
       );
-      const previousStats = queryClient.getQueryData<StreakStats>(streakKeys.stats());
+      const previousStats = queryClient.getQueryData<StreakStats>(
+        streakKeys.stats()
+      );
 
       // Optimistically update calendar
       if (previousCalendar) {
         const updatedCalendar = {
           ...previousCalendar,
-          completedDays: [...previousCalendar.completedDays, day].sort((a, b) => a - b),
+          completedDays: [...previousCalendar.completedDays, day].sort(
+            (a, b) => a - b
+          ),
           missedDays: previousCalendar.missedDays.filter(d => d !== day),
         };
-        queryClient.setQueryData(streakKeys.calendar(year, month), updatedCalendar);
+        queryClient.setQueryData(
+          streakKeys.calendar(year, month),
+          updatedCalendar
+        );
       }
 
       // Optimistically update stats
@@ -114,7 +131,10 @@ export const useMarkStreakComplete = () => {
         const updatedStats = {
           ...previousStats,
           currentStreak: previousStats.currentStreak + 1,
-          longestStreak: Math.max(previousStats.longestStreak, previousStats.currentStreak + 1),
+          longestStreak: Math.max(
+            previousStats.longestStreak,
+            previousStats.currentStreak + 1
+          ),
           totalCompleted: previousStats.totalCompleted + 1,
         };
         queryClient.setQueryData(streakKeys.stats(), updatedStats);
@@ -140,7 +160,9 @@ export const useMarkStreakComplete = () => {
       const month = targetDate.getMonth() + 1;
 
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: streakKeys.calendar(year, month) });
+      queryClient.invalidateQueries({
+        queryKey: streakKeys.calendar(year, month),
+      });
       queryClient.invalidateQueries({ queryKey: streakKeys.stats() });
     },
   });

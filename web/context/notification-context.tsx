@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -6,12 +6,12 @@ import {
   useEffect,
   useState,
   ReactNode,
-} from "react";
+} from 'react';
 import {
   notificationSocket,
   NotificationData,
   NotificationTypes,
-} from "@/lib/notification-socket";
+} from '@/lib/notification-socket';
 
 interface NotificationContextType {
   notifications: NotificationData[];
@@ -48,7 +48,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   // Fetch notifications from server on mount and initialize WebSocket
   useEffect(() => {
     fetchNotifications();
-    
+
     // Initialize WebSocket connection with delay to ensure auth is ready
     setTimeout(() => {
       notificationSocket.connect();
@@ -58,35 +58,39 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   // Socket event handlers
   useEffect(() => {
     const unsubscribeNotification = notificationSocket.on(
-      "notification",
+      'notification',
       (notification: unknown) => {
-        setNotifications((prev) => [notification as NotificationData, ...prev]);
+        setNotifications(prev => [notification as NotificationData, ...prev]);
       }
     );
 
     const unsubscribeMarkRead = notificationSocket.on(
-      "mark_read",
+      'mark_read',
       (data: unknown) => {
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.id === (data as { notificationId: string }).notificationId ? { ...n, isRead: true } : n
+        setNotifications(prev =>
+          prev.map(n =>
+            n.id === (data as { notificationId: string }).notificationId
+              ? { ...n, isRead: true }
+              : n
           )
         );
       }
     );
 
     const unsubscribeMarkAllRead = notificationSocket.on(
-      "mark_all_read",
+      'mark_all_read',
       () => {
-        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       }
     );
 
     const unsubscribeDelete = notificationSocket.on(
-      "delete",
+      'delete',
       (data: unknown) => {
-        setNotifications((prev) =>
-          prev.filter((n) => n.id !== (data as { notificationId: string }).notificationId)
+        setNotifications(prev =>
+          prev.filter(
+            n => n.id !== (data as { notificationId: string }).notificationId
+          )
         );
       }
     );
@@ -99,26 +103,26 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     };
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const addNotification = (notification: NotificationData) => {
-    setNotifications((prev) => [notification, ...prev]);
+    setNotifications(prev => [notification, ...prev]);
   };
 
   const markAsRead = (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
+    setNotifications(prev =>
+      prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n))
     );
     notificationSocket.markNotificationAsRead(notificationId);
   };
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     notificationSocket.markAllNotificationsAsRead();
   };
 
   const deleteNotification = (notificationId: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
     notificationSocket.deleteNotification(notificationId);
   };
 
@@ -128,18 +132,18 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch("/api/notifications");
+      const response = await fetch('/api/notifications');
       if (!response.ok) {
-        throw new Error("Failed to fetch notifications");
+        throw new Error('Failed to fetch notifications');
       }
-      
+
       const data = await response.json();
-      
+
       if (data.notifications) {
         setNotifications(data.notifications);
       }
     } catch (error) {
-      console.error("Failed to fetch notifications:", error);
+      console.error('Failed to fetch notifications:', error);
     }
   };
 
@@ -157,7 +161,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       compositionTitle,
       compositionId
     );
-    
+
     addNotification(notification);
   };
 
@@ -203,7 +207,7 @@ export function useNotifications(): NotificationContextType {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     throw new Error(
-      "useNotifications must be used within a NotificationProvider"
+      'useNotifications must be used within a NotificationProvider'
     );
   }
   return context;

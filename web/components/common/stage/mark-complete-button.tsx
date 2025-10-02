@@ -1,9 +1,9 @@
-"use client";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import { toast } from "sonner";
-import { useUpdateCompositionProgress } from "@/hooks/api";
+'use client';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Check } from 'lucide-react';
+import { toast } from 'sonner';
+import { useUpdateCompositionProgress } from '@/hooks/api';
 
 interface MarkCompleteButtonProps {
   compositionId: string;
@@ -20,20 +20,20 @@ export default function MarkCompleteButton(
     updateProgress.mutate(
       {
         compositionId: props.compositionId,
-        status: "SOLVED",
+        status: 'SOLVED',
       },
       {
         onSuccess: () => {
-          const title = props.compositionTitle || "Composition";
-          toast.success("Composition Completed!", {
+          const title = props.compositionTitle || 'Composition';
+          toast.success('Composition Completed!', {
             description: `You've successfully completed "${title}". Great job!`,
             duration: 4000,
           });
           if (props.onCompleted) props.onCompleted();
         },
         onError: () => {
-          toast.error("Failed to mark as complete", {
-            description: "Please try again later.",
+          toast.error('Failed to mark as complete', {
+            description: 'Please try again later.',
             duration: 3000,
           });
         },
@@ -42,19 +42,16 @@ export default function MarkCompleteButton(
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <Button 
-        onClick={handleClick} 
-        disabled={updateProgress.isPending}
-      >
-        <Check className="size-4" />
-        {updateProgress.isPending ? "Marking..." : "Mark this as Complete"}
+    <div className='flex items-center gap-3'>
+      <Button onClick={handleClick} disabled={updateProgress.isPending}>
+        <Check className='size-4' />
+        {updateProgress.isPending ? 'Marking...' : 'Mark this as Complete'}
       </Button>
       {updateProgress.isError && (
-        <span className="text-sm text-red-500">Failed. Please try again.</span>
+        <span className='text-sm text-red-500'>Failed. Please try again.</span>
       )}
       {updateProgress.isSuccess && (
-        <span className="text-sm text-green-500">Marked as complete.</span>
+        <span className='text-sm text-green-500'>Marked as complete.</span>
       )}
     </div>
   );

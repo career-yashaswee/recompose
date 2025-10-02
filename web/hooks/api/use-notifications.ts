@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Types
 export interface NotificationData {
@@ -31,10 +31,11 @@ export interface MarkAllNotificationsReadResponse {
 
 // Query Keys
 export const notificationKeys = {
-  all: ["notifications"] as const,
-  lists: () => [...notificationKeys.all, "list"] as const,
-  list: (filters: Record<string, unknown>) => [...notificationKeys.lists(), filters] as const,
-  unreadCount: () => [...notificationKeys.all, "unreadCount"] as const,
+  all: ['notifications'] as const,
+  lists: () => [...notificationKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) =>
+    [...notificationKeys.lists(), filters] as const,
+  unreadCount: () => [...notificationKeys.all, 'unreadCount'] as const,
 };
 
 // API Functions
@@ -45,40 +46,47 @@ const fetchNotifications = async (filters?: {
   offset?: number;
 }): Promise<NotificationsResponse> => {
   const params = new URLSearchParams();
-  if (filters?.category) params.set("category", filters.category);
-  if (filters?.isRead !== undefined) params.set("isRead", String(filters.isRead));
-  if (filters?.limit) params.set("limit", String(filters.limit));
-  if (filters?.offset) params.set("offset", String(filters.offset));
+  if (filters?.category) params.set('category', filters.category);
+  if (filters?.isRead !== undefined)
+    params.set('isRead', String(filters.isRead));
+  if (filters?.limit) params.set('limit', String(filters.limit));
+  if (filters?.offset) params.set('offset', String(filters.offset));
 
   const response = await fetch(`/api/notifications?${params.toString()}`);
-  if (!response.ok) throw new Error("Failed to fetch notifications");
+  if (!response.ok) throw new Error('Failed to fetch notifications');
   return response.json();
 };
 
-const markNotificationAsRead = async (notificationId: string): Promise<{ success: boolean }> => {
+const markNotificationAsRead = async (
+  notificationId: string
+): Promise<{ success: boolean }> => {
   const response = await fetch(`/api/notifications/${notificationId}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ isRead: true }),
   });
-  if (!response.ok) throw new Error("Failed to mark notification as read");
+  if (!response.ok) throw new Error('Failed to mark notification as read');
   return response.json();
 };
 
-const markAllNotificationsAsRead = async (): Promise<MarkAllNotificationsReadResponse> => {
-  const response = await fetch("/api/notifications/mark-all-read", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-  if (!response.ok) throw new Error("Failed to mark all notifications as read");
-  return response.json();
-};
+const markAllNotificationsAsRead =
+  async (): Promise<MarkAllNotificationsReadResponse> => {
+    const response = await fetch('/api/notifications/mark-all-read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok)
+      throw new Error('Failed to mark all notifications as read');
+    return response.json();
+  };
 
-const deleteNotification = async (notificationId: string): Promise<{ success: boolean }> => {
+const deleteNotification = async (
+  notificationId: string
+): Promise<{ success: boolean }> => {
   const response = await fetch(`/api/notifications/${notificationId}`, {
-    method: "DELETE",
+    method: 'DELETE',
   });
-  if (!response.ok) throw new Error("Failed to delete notification");
+  if (!response.ok) throw new Error('Failed to delete notification');
   return response.json();
 };
 
@@ -100,7 +108,10 @@ export const useNotifications = (filters?: {
 export const useUnreadNotificationCount = () => {
   return useQuery({
     queryKey: notificationKeys.unreadCount(),
-    queryFn: () => fetchNotifications({ isRead: false, limit: 1 }).then(res => ({ count: res.unreadCount })),
+    queryFn: () =>
+      fetchNotifications({ isRead: false, limit: 1 }).then(res => ({
+        count: res.unreadCount,
+      })),
     staleTime: 1000 * 30, // 30 seconds
     refetchInterval: 1000 * 30, // Refetch every 30 seconds
   });
@@ -117,16 +128,18 @@ export const useMarkNotificationAsRead = () => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
       // Get all notification queries
-      const previousQueries = queryClient.getQueriesData<NotificationsResponse>({
-        queryKey: notificationKeys.lists(),
-      });
+      const previousQueries = queryClient.getQueriesData<NotificationsResponse>(
+        {
+          queryKey: notificationKeys.lists(),
+        }
+      );
 
       // Optimistically update all notification lists
       previousQueries.forEach(([queryKey, data]) => {
         if (data) {
           const updatedData = {
             ...data,
-            notifications: data.notifications.map((notification) =>
+            notifications: data.notifications.map(notification =>
               notification.id === notificationId
                 ? { ...notification, isRead: true }
                 : notification
@@ -138,9 +151,12 @@ export const useMarkNotificationAsRead = () => {
       });
 
       // Update unread count
-      queryClient.setQueryData(notificationKeys.unreadCount(), (old: unknown) => ({
-        count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
-      }));
+      queryClient.setQueryData(
+        notificationKeys.unreadCount(),
+        (old: unknown) => ({
+          count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
+        })
+      );
 
       return { previousQueries, notificationId };
     },
@@ -155,7 +171,9 @@ export const useMarkNotificationAsRead = () => {
     onSettled: () => {
       // Invalidate all notification queries
       queryClient.invalidateQueries({ queryKey: notificationKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.unreadCount(),
+      });
     },
   });
 };
@@ -170,16 +188,18 @@ export const useMarkAllNotificationsAsRead = () => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
       // Get all notification queries
-      const previousQueries = queryClient.getQueriesData<NotificationsResponse>({
-        queryKey: notificationKeys.lists(),
-      });
+      const previousQueries = queryClient.getQueriesData<NotificationsResponse>(
+        {
+          queryKey: notificationKeys.lists(),
+        }
+      );
 
       // Optimistically update all notification lists
       previousQueries.forEach(([queryKey, data]) => {
         if (data) {
           const updatedData = {
             ...data,
-            notifications: data.notifications.map((notification) => ({
+            notifications: data.notifications.map(notification => ({
               ...notification,
               isRead: true,
             })),
@@ -205,7 +225,9 @@ export const useMarkAllNotificationsAsRead = () => {
     onSettled: () => {
       // Invalidate all notification queries
       queryClient.invalidateQueries({ queryKey: notificationKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.unreadCount(),
+      });
     },
   });
 };
@@ -220,32 +242,47 @@ export const useDeleteNotification = () => {
       await queryClient.cancelQueries({ queryKey: notificationKeys.lists() });
 
       // Get all notification queries
-      const previousQueries = queryClient.getQueriesData<NotificationsResponse>({
-        queryKey: notificationKeys.lists(),
-      });
+      const previousQueries = queryClient.getQueriesData<NotificationsResponse>(
+        {
+          queryKey: notificationKeys.lists(),
+        }
+      );
 
       // Optimistically update all notification lists
       previousQueries.forEach(([queryKey, data]) => {
         if (data) {
-          const notification = data.notifications.find(n => n.id === notificationId);
+          const notification = data.notifications.find(
+            n => n.id === notificationId
+          );
           const wasUnread = notification && !notification.isRead;
-          
+
           const updatedData = {
             ...data,
-            notifications: data.notifications.filter((n) => n.id !== notificationId),
-            unreadCount: wasUnread ? Math.max(0, data.unreadCount - 1) : data.unreadCount,
+            notifications: data.notifications.filter(
+              n => n.id !== notificationId
+            ),
+            unreadCount: wasUnread
+              ? Math.max(0, data.unreadCount - 1)
+              : data.unreadCount,
           };
           queryClient.setQueryData(queryKey, updatedData);
         }
       });
 
       // Update unread count if the deleted notification was unread
-      const allNotifications = queryClient.getQueryData<NotificationsResponse>(notificationKeys.list({}));
-      const deletedNotification = allNotifications?.notifications.find(n => n.id === notificationId);
+      const allNotifications = queryClient.getQueryData<NotificationsResponse>(
+        notificationKeys.list({})
+      );
+      const deletedNotification = allNotifications?.notifications.find(
+        n => n.id === notificationId
+      );
       if (deletedNotification && !deletedNotification.isRead) {
-        queryClient.setQueryData(notificationKeys.unreadCount(), (old: unknown) => ({
-          count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
-        }));
+        queryClient.setQueryData(
+          notificationKeys.unreadCount(),
+          (old: unknown) => ({
+            count: Math.max(0, ((old as { count?: number })?.count || 0) - 1),
+          })
+        );
       }
 
       return { previousQueries, notificationId };
@@ -261,7 +298,9 @@ export const useDeleteNotification = () => {
     onSettled: () => {
       // Invalidate all notification queries
       queryClient.invalidateQueries({ queryKey: notificationKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() });
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.unreadCount(),
+      });
     },
   });
 };

@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
-import { MenuIcon, Music4, Wallet } from "lucide-react";
+import { MenuIcon, Music4, Wallet } from 'lucide-react';
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import Link from "next/link";
-import Image from "next/image";
-import { LanguageSwitcher } from "@/components/ui/language-switcher";
-import { useTranslation } from "react-i18next";
-import ModeToggle from "@/components/ui/mode-toggle";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/sheet';
+import Link from 'next/link';
+import Image from 'next/image';
+import { LanguageSwitcher } from '@/components/ui/language-switcher';
+import { useTranslation } from 'react-i18next';
+import ModeToggle from '@/components/ui/mode-toggle';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const { t } = useTranslation();
@@ -38,64 +38,64 @@ const Navbar = () => {
   const handleLogout = async (): Promise<void> => {
     try {
       await authClient.signOut();
-      router.replace("/log-in");
+      router.replace('/log-in');
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
     }
   };
   const features = [
     {
-      title: "Dashboard",
-      description: "Overview of your activity",
-      href: "#",
+      title: 'Dashboard',
+      description: 'Overview of your activity',
+      href: '#',
     },
     {
-      title: "Analytics",
-      description: "Track your performance",
-      href: "#",
+      title: 'Analytics',
+      description: 'Track your performance',
+      href: '#',
     },
     {
-      title: "Settings",
-      description: "Configure your preferences",
-      href: "#",
+      title: 'Settings',
+      description: 'Configure your preferences',
+      href: '#',
     },
     {
-      title: "Integrations",
-      description: "Connect with other tools",
-      href: "#",
+      title: 'Integrations',
+      description: 'Connect with other tools',
+      href: '#',
     },
     {
-      title: "Storage",
-      description: "Manage your files",
-      href: "#",
+      title: 'Storage',
+      description: 'Manage your files',
+      href: '#',
     },
     {
-      title: "Support",
-      description: "Get help when needed",
-      href: "#",
+      title: 'Support',
+      description: 'Get help when needed',
+      href: '#',
     },
   ];
 
   return (
-    <section className="py-4">
-      <div className="container">
-        <nav className="flex items-center justify-between">
+    <section className='py-4'>
+      <div className='container'>
+        <nav className='flex items-center justify-between'>
           <a
             href={process.env.NEXT_PUBLIC_APP_URL}
-            className="flex items-center gap-2"
+            className='flex items-center gap-2'
           >
             <Image
-              src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+              src='https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg'
               width={32}
               height={32}
-              className="max-h-8"
-              alt="Shadcn UI Navbar"
+              className='max-h-8'
+              alt='Shadcn UI Navbar'
             />
-            <span className="text-lg font-semibold tracking-tighter">
+            <span className='text-lg font-semibold tracking-tighter'>
               Recompose
             </span>
           </a>
-          <NavigationMenu className="hidden lg:block">
+          <NavigationMenu className='hidden lg:block'>
             <NavigationMenuList>
               {/* <NavigationMenuItem>
                 <NavigationMenuTrigger>Features</NavigationMenuTrigger>
@@ -122,10 +122,10 @@ const Navbar = () => {
               </NavigationMenuItem> */}
               <NavigationMenuItem>
                 <NavigationMenuLink
-                  href="/pricing"
+                  href='/pricing'
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Wallet className="h-4 w-4" />
+                  <Wallet className='h-4 w-4' />
                   Pricing
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -147,28 +147,28 @@ const Navbar = () => {
               </NavigationMenuItem> */}
             </NavigationMenuList>
           </NavigationMenu>
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className='hidden items-center gap-2 lg:flex'>
             {session?.user ? (
               <>
-                <Link href="/stage">
+                <Link href='/stage'>
                   <Button>
                     Back to Stage
-                    <Music4 className="h-4 w-4" />
+                    <Music4 className='h-4 w-4' />
                   </Button>
                 </Link>
-                <Button variant="outline" onClick={handleLogout}>
+                <Button variant='outline' onClick={handleLogout}>
                   Log out
                 </Button>
               </>
             ) : (
               <>
-                <Link href="/log-in">
-                  <Button variant="outline">{t("navbar.login")}</Button>
+                <Link href='/log-in'>
+                  <Button variant='outline'>{t('navbar.login')}</Button>
                 </Link>
-                <Link href="/sign-up">
+                <Link href='/sign-up'>
                   <Button>
-                    {t("navbar.start")}
-                    <Music4 className="h-4 w-4" />
+                    {t('navbar.start')}
+                    <Music4 className='h-4 w-4' />
                   </Button>
                 </Link>
               </>
@@ -177,50 +177,50 @@ const Navbar = () => {
             <ModeToggle />
           </div>
           <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="icon">
-                <MenuIcon className="h-4 w-4" />
+            <SheetTrigger asChild className='lg:hidden'>
+              <Button variant='outline' size='icon'>
+                <MenuIcon className='h-4 w-4' />
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="max-h-screen overflow-auto">
+            <SheetContent side='top' className='max-h-screen overflow-auto'>
               <SheetHeader>
                 <SheetTitle>
                   <a
-                    href="https://www.shadcnblocks.com"
-                    className="flex items-center gap-2"
+                    href='https://www.shadcnblocks.com'
+                    className='flex items-center gap-2'
                   >
                     <Image
-                      src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
+                      src='https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg'
                       width={32}
                       height={32}
-                      className="max-h-8"
-                      alt="Shadcn UI Navbar"
+                      className='max-h-8'
+                      alt='Shadcn UI Navbar'
                     />
-                    <span className="text-lg font-semibold tracking-tighter">
+                    <span className='text-lg font-semibold tracking-tighter'>
                       Recompose
                     </span>
                   </a>
                 </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col p-4">
-                <Accordion type="single" collapsible className="mt-4 mb-2">
-                  <AccordionItem value="solutions" className="border-none">
-                    <AccordionTrigger className="text-base hover:no-underline">
+              <div className='flex flex-col p-4'>
+                <Accordion type='single' collapsible className='mt-4 mb-2'>
+                  <AccordionItem value='solutions' className='border-none'>
+                    <AccordionTrigger className='text-base hover:no-underline'>
                       Features
                     </AccordionTrigger>
                     <AccordionContent>
-                      <div className="grid md:grid-cols-2">
+                      <div className='grid md:grid-cols-2'>
                         {features.map((feature, index) => (
                           <a
                             href={feature.href}
                             key={index}
-                            className="rounded-md p-3 transition-colors hover:bg-muted/70"
+                            className='rounded-md p-3 transition-colors hover:bg-muted/70'
                           >
                             <div key={feature.title}>
-                              <p className="mb-1 font-semibold text-foreground">
+                              <p className='mb-1 font-semibold text-foreground'>
                                 {feature.title}
                               </p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className='text-sm text-muted-foreground'>
                                 {feature.description}
                               </p>
                             </div>
@@ -230,40 +230,40 @@ const Navbar = () => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-                <div className="flex flex-col gap-6">
+                <div className='flex flex-col gap-6'>
                   {/* <a href="#" className="font-medium">
                     Templates
                   </a>
                   <a href="#" className="font-medium">
                     Blog
                   </a> */}
-                  <a href="/pricing" className="font-medium">
+                  <a href='/pricing' className='font-medium'>
                     Pricing
-                    <Wallet className="h-4 w-4" />
+                    <Wallet className='h-4 w-4' />
                   </a>
                 </div>
-                <div className="mt-6 flex flex-col gap-4">
+                <div className='mt-6 flex flex-col gap-4'>
                   {session?.user ? (
                     <>
-                      <Link href="/stage">
+                      <Link href='/stage'>
                         <Button>
                           Back to Stage
-                          <Music4 className="h-4 w-4" />
+                          <Music4 className='h-4 w-4' />
                         </Button>
                       </Link>
-                      <Button variant="outline" onClick={handleLogout}>
+                      <Button variant='outline' onClick={handleLogout}>
                         Log out
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Link href="/log-in">
-                        <Button variant="outline">Log in</Button>
+                      <Link href='/log-in'>
+                        <Button variant='outline'>Log in</Button>
                       </Link>
-                      <Link href="/sign-up">
+                      <Link href='/sign-up'>
                         <Button>
                           Start Composing
-                          <Music4 className="h-4 w-4" />
+                          <Music4 className='h-4 w-4' />
                         </Button>
                       </Link>
                     </>

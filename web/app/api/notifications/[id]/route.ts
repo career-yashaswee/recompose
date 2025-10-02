@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { NotificationService } from "@/lib/notification-service";
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { NotificationService } from '@/lib/notification-service';
 
 export async function GET(
   request: NextRequest,
@@ -12,21 +12,26 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
       const resolvedParams = await params;
-      const result = await NotificationService.getUserNotifications(session.user.id, {
-        limit: 1,
-        offset: 0,
-      });
+      const result = await NotificationService.getUserNotifications(
+        session.user.id,
+        {
+          limit: 1,
+          offset: 0,
+        }
+      );
 
-      const notification = result.notifications.find(n => n.id === resolvedParams.id);
+      const notification = result.notifications.find(
+        n => n.id === resolvedParams.id
+      );
 
       if (!notification) {
         return NextResponse.json(
-          { error: "Notification not found" },
+          { error: 'Notification not found' },
           { status: 404 }
         );
       }
@@ -34,14 +39,14 @@ export async function GET(
       return NextResponse.json(notification);
     } catch {
       return NextResponse.json(
-        { error: "Notification not found" },
+        { error: 'Notification not found' },
         { status: 404 }
       );
     }
   } catch (error) {
-    console.error("Error fetching notification:", error);
+    console.error('Error fetching notification:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -57,7 +62,7 @@ export async function PATCH(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -72,14 +77,14 @@ export async function PATCH(
       return NextResponse.json(updatedNotification);
     } else {
       return NextResponse.json(
-        { error: "Only marking as read is supported" },
+        { error: 'Only marking as read is supported' },
         { status: 400 }
       );
     }
   } catch (error) {
-    console.error("Error updating notification:", error);
+    console.error('Error updating notification:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -95,7 +100,7 @@ export async function DELETE(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const resolvedParams = await params;
@@ -106,9 +111,9 @@ export async function DELETE(
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error deleting notification:", error);
+    console.error('Error deleting notification:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

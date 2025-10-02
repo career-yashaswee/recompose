@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from '@/lib/auth-client';
 
 export interface NotificationData {
   id: string;
-  type: "info" | "success" | "warning" | "error";
+  type: 'info' | 'success' | 'warning' | 'error';
   title: string;
   message: string;
   timestamp: string;
   isRead: boolean;
-  category: "system" | "user" | "composition";
+  category: 'system' | 'user' | 'composition';
   metadata?: Record<string, unknown>;
 }
 
 export interface NotificationSocketEvent {
-  type: "notification" | "mark_read" | "mark_all_read" | "delete";
+  type: 'notification' | 'mark_read' | 'mark_all_read' | 'delete';
   data: NotificationData | { notificationId: string } | { userId: string };
 }
 
@@ -45,26 +45,26 @@ class NotificationSocket {
         return;
       }
 
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001';
       const token = session.data.user.id;
       this.socket = new WebSocket(`${wsUrl}/notifications?token=${token}`);
 
       this.socket.onopen = () => {
         this.reconnectAttempts = 0;
         this.isConnecting = false;
-        this.emit("connected", {});
+        this.emit('connected', {});
       };
 
-      this.socket.onmessage = (event) => {
+      this.socket.onmessage = event => {
         try {
           const message: NotificationSocketEvent = JSON.parse(event.data);
           this.handleMessage(message);
         } catch (error) {
-          console.error("Error parsing socket message:", error);
+          console.error('Error parsing socket message:', error);
         }
       };
 
-      this.socket.onclose = (event) => {
+      this.socket.onclose = event => {
         this.isConnecting = false;
         this.socket = null;
 
@@ -76,12 +76,12 @@ class NotificationSocket {
         }
       };
 
-      this.socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+      this.socket.onerror = error => {
+        console.error('WebSocket error:', error);
         this.isConnecting = false;
       };
     } catch (error) {
-      console.error("Error connecting to notification socket:", error);
+      console.error('Error connecting to notification socket:', error);
       this.isConnecting = false;
     }
   }
@@ -97,20 +97,20 @@ class NotificationSocket {
 
   private handleMessage(message: NotificationSocketEvent): void {
     switch (message.type) {
-      case "notification":
-        this.emit("notification", message.data as NotificationData);
+      case 'notification':
+        this.emit('notification', message.data as NotificationData);
         break;
-      case "mark_read":
-        this.emit("mark_read", message.data);
+      case 'mark_read':
+        this.emit('mark_read', message.data);
         break;
-      case "mark_all_read":
-        this.emit("mark_all_read", message.data);
+      case 'mark_all_read':
+        this.emit('mark_all_read', message.data);
         break;
-      case "delete":
-        this.emit("delete", message.data);
+      case 'delete':
+        this.emit('delete', message.data);
         break;
       default:
-        console.warn("Unknown socket message type:", message.type);
+        console.warn('Unknown socket message type:', message.type);
     }
   }
 
@@ -129,7 +129,7 @@ class NotificationSocket {
   public emit(event: string, data: unknown): void {
     const eventListeners = this.listeners.get(event);
     if (eventListeners) {
-      eventListeners.forEach((callback) => {
+      eventListeners.forEach(callback => {
         try {
           callback(data);
         } catch (error) {
@@ -143,13 +143,13 @@ class NotificationSocket {
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify({ type: event, data }));
     } else {
-      console.warn("Socket not connected, cannot send message:", event, data);
+      console.warn('Socket not connected, cannot send message:', event, data);
     }
   }
 
   public disconnect(): void {
     if (this.socket) {
-      this.socket.close(1000, "Client disconnect");
+      this.socket.close(1000, 'Client disconnect');
       this.socket = null;
     }
   }
@@ -160,15 +160,15 @@ class NotificationSocket {
 
   // Helper methods for common operations
   public markNotificationAsRead(notificationId: string): void {
-    this.send("mark_read", { notificationId });
+    this.send('mark_read', { notificationId });
   }
 
   public markAllNotificationsAsRead(): void {
-    this.send("mark_all_read", {});
+    this.send('mark_all_read', {});
   }
 
   public deleteNotification(notificationId: string): void {
-    this.send("delete", { notificationId });
+    this.send('delete', { notificationId });
   }
 }
 
@@ -177,10 +177,10 @@ export const notificationSocket = new NotificationSocket();
 
 // Helper function to create notification data
 export const createNotification = (
-  type: NotificationData["type"],
+  type: NotificationData['type'],
   title: string,
   message: string,
-  category: NotificationData["category"],
+  category: NotificationData['category'],
   metadata?: Record<string, unknown>
 ): NotificationData => {
   return {
@@ -199,39 +199,39 @@ export const createNotification = (
 export const NotificationTypes = {
   USER_LOGIN: (userName: string) =>
     createNotification(
-      "success",
-      "Welcome Back!",
+      'success',
+      'Welcome Back!',
       `You logged in successfully. Ready to continue your writing journey?`,
-      "system",
+      'system',
       { userName, loginTime: new Date().toISOString() }
     ),
 
   COMPOSITION_COMPLETED: (compositionTitle: string, compositionId: string) =>
     createNotification(
-      "success",
-      "Composition Completed",
+      'success',
+      'Composition Completed',
       `You successfully completed '${compositionTitle}' composition.`,
-      "composition",
+      'composition',
       { compositionId, compositionTitle }
     ),
 
   STREAK_MILESTONE: (streakDays: number) =>
     createNotification(
-      "success",
-      "Streak Milestone",
+      'success',
+      'Streak Milestone',
       `Congratulations! You've maintained a ${streakDays}-day writing streak.`,
-      "user",
+      'user',
       { streakDays }
     ),
 
   STREAK_REMINDER: () =>
     createNotification(
-      "warning",
-      "Streak Reminder",
+      'warning',
+      'Streak Reminder',
       "Don't forget to complete today's writing practice to maintain your streak.",
-      "system"
+      'system'
     ),
 
   SYSTEM_UPDATE: (updateMessage: string) =>
-    createNotification("info", "System Update", updateMessage, "system"),
+    createNotification('info', 'System Update', updateMessage, 'system'),
 } as const;

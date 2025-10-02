@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Types
 export interface Composition {
   id: string;
   title: string;
   description: string;
-  difficulty: "EASY" | "MEDIUM" | "HARD";
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
   tags: string[];
   createdAt: string;
   updatedAt: string;
   isFavorite: boolean;
-  status: "SOLVED" | "ATTEMPTING" | "UNSOLVED" | null;
+  status: 'SOLVED' | 'ATTEMPTING' | 'UNSOLVED' | null;
   likes: number;
-  userReaction: "LIKE" | "DISLIKE" | null;
+  userReaction: 'LIKE' | 'DISLIKE' | null;
 }
 
 export interface CompositionsResponse {
@@ -32,62 +32,75 @@ export interface CompositionStats {
 }
 
 export interface CompositionProgress {
-  status: "SOLVED" | "ATTEMPTING" | "UNSOLVED" | null;
+  status: 'SOLVED' | 'ATTEMPTING' | 'UNSOLVED' | null;
 }
 
 export interface CompositionReaction {
   likes: number;
   dislikes: number;
-  userReaction: "LIKE" | "DISLIKE" | null;
+  userReaction: 'LIKE' | 'DISLIKE' | null;
 }
 
 // Query Keys
 export const compositionKeys = {
-  all: ["compositions"] as const,
-  lists: () => [...compositionKeys.all, "list"] as const,
-  list: (filters: Record<string, unknown>) => [...compositionKeys.lists(), filters] as const,
-  details: () => [...compositionKeys.all, "detail"] as const,
+  all: ['compositions'] as const,
+  lists: () => [...compositionKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) =>
+    [...compositionKeys.lists(), filters] as const,
+  details: () => [...compositionKeys.all, 'detail'] as const,
   detail: (id: string) => [...compositionKeys.details(), id] as const,
-  stats: () => [...compositionKeys.all, "stats"] as const,
-  progress: (id: string) => [...compositionKeys.all, "progress", id] as const,
-  reaction: (id: string) => [...compositionKeys.all, "reaction", id] as const,
+  stats: () => [...compositionKeys.all, 'stats'] as const,
+  progress: (id: string) => [...compositionKeys.all, 'progress', id] as const,
+  reaction: (id: string) => [...compositionKeys.all, 'reaction', id] as const,
 };
 
 // API Functions
-const fetchCompositions = async (params: URLSearchParams): Promise<CompositionsResponse> => {
+const fetchCompositions = async (
+  params: URLSearchParams
+): Promise<CompositionsResponse> => {
   const response = await fetch(`/api/compositions?${params.toString()}`);
-  if (!response.ok) throw new Error("Failed to fetch compositions");
+  if (!response.ok) throw new Error('Failed to fetch compositions');
   return response.json();
 };
 
 const fetchCompositionStats = async (): Promise<CompositionStats> => {
-  const response = await fetch("/api/compositions/stats", { cache: "no-store" });
-  if (!response.ok) throw new Error("Failed to fetch composition stats");
+  const response = await fetch('/api/compositions/stats', {
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('Failed to fetch composition stats');
   return response.json();
 };
 
-const fetchCompositionProgress = async (compositionId: string): Promise<CompositionProgress> => {
-  const response = await fetch(`/api/compositions/progress?compositionId=${compositionId}`);
-  if (!response.ok) throw new Error("Failed to fetch composition progress");
+const fetchCompositionProgress = async (
+  compositionId: string
+): Promise<CompositionProgress> => {
+  const response = await fetch(
+    `/api/compositions/progress?compositionId=${compositionId}`
+  );
+  if (!response.ok) throw new Error('Failed to fetch composition progress');
   return response.json();
 };
 
-const fetchCompositionReaction = async (compositionId: string): Promise<CompositionReaction> => {
-  const response = await fetch(`/api/compositions/reaction?compositionId=${compositionId}`);
-  if (!response.ok) throw new Error("Failed to fetch composition reaction");
+const fetchCompositionReaction = async (
+  compositionId: string
+): Promise<CompositionReaction> => {
+  const response = await fetch(
+    `/api/compositions/reaction?compositionId=${compositionId}`
+  );
+  if (!response.ok) throw new Error('Failed to fetch composition reaction');
   return response.json();
 };
 
 const updateCompositionProgress = async (data: {
   compositionId: string;
-  status: "SOLVED" | "ATTEMPTING" | "UNSOLVED";
+  status: 'SOLVED' | 'ATTEMPTING' | 'UNSOLVED';
 }): Promise<{ success: boolean }> => {
-  const response = await fetch("/api/compositions/progress", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const response = await fetch('/api/compositions/progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error("Failed to update composition progress");
+  if (!response.ok) throw new Error('Failed to update composition progress');
   return response.json();
 };
 
@@ -95,25 +108,25 @@ const toggleCompositionFavorite = async (data: {
   compositionId: string;
   favorite: boolean;
 }): Promise<{ success: boolean }> => {
-  const response = await fetch("/api/compositions/favorite", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const response = await fetch('/api/compositions/favorite', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error("Failed to toggle favorite");
+  if (!response.ok) throw new Error('Failed to toggle favorite');
   return response.json();
 };
 
 const updateCompositionReaction = async (data: {
   compositionId: string;
-  value: "LIKE" | "DISLIKE" | null;
+  value: 'LIKE' | 'DISLIKE' | null;
 }): Promise<{ ok: boolean; likes: number; dislikes: number }> => {
-  const response = await fetch("/api/compositions/reaction", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const response = await fetch('/api/compositions/reaction', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error("Failed to update reaction");
+  if (!response.ok) throw new Error('Failed to update reaction');
   return response.json();
 };
 
@@ -132,16 +145,17 @@ export const useCompositions = (filters: {
     queryKey: compositionKeys.list(filters),
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filters.q) params.set("q", filters.q);
-      if (filters.favoriteOnly) params.set("favoriteOnly", "true");
-      if (filters.difficulty) params.set("difficulty", filters.difficulty);
-      if (filters.status) params.set("status", filters.status);
-      if (filters.tags && filters.tags.length > 0) params.set("tags", filters.tags.join(","));
-      params.set("page", String((filters.pageIndex || 0) + 1));
-      params.set("pageSize", String(filters.pageSize || 10));
+      if (filters.q) params.set('q', filters.q);
+      if (filters.favoriteOnly) params.set('favoriteOnly', 'true');
+      if (filters.difficulty) params.set('difficulty', filters.difficulty);
+      if (filters.status) params.set('status', filters.status);
+      if (filters.tags && filters.tags.length > 0)
+        params.set('tags', filters.tags.join(','));
+      params.set('page', String((filters.pageIndex || 0) + 1));
+      params.set('pageSize', String(filters.pageSize || 10));
       if (filters.sort) {
-        params.set("sortKey", filters.sort.id);
-        params.set("sortOrder", filters.sort.desc ? "desc" : "asc");
+        params.set('sortKey', filters.sort.id);
+        params.set('sortOrder', filters.sort.desc ? 'desc' : 'asc');
       }
       return fetchCompositions(params);
     },
@@ -181,7 +195,9 @@ export const useUpdateCompositionProgress = () => {
     mutationFn: updateCompositionProgress,
     onMutate: async ({ compositionId, status }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: compositionKeys.progress(compositionId) });
+      await queryClient.cancelQueries({
+        queryKey: compositionKeys.progress(compositionId),
+      });
 
       // Snapshot previous value
       const previousProgress = queryClient.getQueryData<CompositionProgress>(
@@ -208,7 +224,9 @@ export const useUpdateCompositionProgress = () => {
     },
     onSettled: (data, error, variables) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: compositionKeys.progress(variables.compositionId) });
+      queryClient.invalidateQueries({
+        queryKey: compositionKeys.progress(variables.compositionId),
+      });
       queryClient.invalidateQueries({ queryKey: compositionKeys.stats() });
       queryClient.invalidateQueries({ queryKey: compositionKeys.lists() });
     },
@@ -234,8 +252,10 @@ export const useToggleCompositionFavorite = () => {
         if (data) {
           const updatedData = {
             ...data,
-            data: data.data.map((comp) =>
-              comp.id === compositionId ? { ...comp, isFavorite: favorite } : comp
+            data: data.data.map(comp =>
+              comp.id === compositionId
+                ? { ...comp, isFavorite: favorite }
+                : comp
             ),
           };
           queryClient.setQueryData(queryKey, updatedData);
@@ -266,7 +286,9 @@ export const useUpdateCompositionReaction = () => {
     mutationFn: updateCompositionReaction,
     onMutate: async ({ compositionId, value }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: compositionKeys.reaction(compositionId) });
+      await queryClient.cancelQueries({
+        queryKey: compositionKeys.reaction(compositionId),
+      });
 
       // Snapshot previous value
       const previousReaction = queryClient.getQueryData<CompositionReaction>(
@@ -281,24 +303,24 @@ export const useUpdateCompositionReaction = () => {
         let newUserReaction = value;
 
         // Handle like toggle
-        if (value === "LIKE") {
-          if (currentUserReaction === "LIKE") {
+        if (value === 'LIKE') {
+          if (currentUserReaction === 'LIKE') {
             newLikes = Math.max(0, newLikes - 1);
             newUserReaction = null;
           } else {
-            if (currentUserReaction === "DISLIKE") {
+            if (currentUserReaction === 'DISLIKE') {
               newDislikes = Math.max(0, newDislikes - 1);
             }
             newLikes += 1;
           }
         }
         // Handle dislike toggle
-        else if (value === "DISLIKE") {
-          if (currentUserReaction === "DISLIKE") {
+        else if (value === 'DISLIKE') {
+          if (currentUserReaction === 'DISLIKE') {
             newDislikes = Math.max(0, newDislikes - 1);
             newUserReaction = null;
           } else {
-            if (currentUserReaction === "LIKE") {
+            if (currentUserReaction === 'LIKE') {
               newLikes = Math.max(0, newLikes - 1);
             }
             newDislikes += 1;
@@ -306,9 +328,9 @@ export const useUpdateCompositionReaction = () => {
         }
         // Handle removal
         else if (value === null) {
-          if (currentUserReaction === "LIKE") {
+          if (currentUserReaction === 'LIKE') {
             newLikes = Math.max(0, newLikes - 1);
-          } else if (currentUserReaction === "DISLIKE") {
+          } else if (currentUserReaction === 'DISLIKE') {
             newDislikes = Math.max(0, newDislikes - 1);
           }
         }
@@ -337,7 +359,9 @@ export const useUpdateCompositionReaction = () => {
     },
     onSettled: (data, error, variables) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: compositionKeys.reaction(variables.compositionId) });
+      queryClient.invalidateQueries({
+        queryKey: compositionKeys.reaction(variables.compositionId),
+      });
       queryClient.invalidateQueries({ queryKey: compositionKeys.lists() });
     },
   });

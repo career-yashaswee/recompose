@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -187,28 +187,28 @@
 
   @keyframes progress {
     from {
-      width: "0%";
+      width: '0%';
     }
     to {
-      width: "100%";
+      width: '100%';
     }
   }
 
   @keyframes infiniteSlider {
     0% {
-      transform: "translateX(0)";
+      transform: 'translateX(0)';
     }
     100% {
-      transform: "translateX(calc(-250px * 5))";
+      transform: 'translateX(calc(-250px * 5))';
     }
   }
 
   @keyframes infiniteSliderReverse {
     0% {
-      transform: "translateX(calc(-250px * 5))";
+      transform: 'translateX(calc(-250px * 5))';
     }
     100% {
-      transform: "translateX(0)";
+      transform: 'translateX(0)';
     }
   }
 
@@ -349,10 +349,10 @@
 
   @keyframes shadow-ping {
     0% {
-      boxshadow: 0 0 0 0px theme("colors.neutral.100");
+      boxshadow: 0 0 0 0px theme('colors.neutral.100');
     }
     50% {
-      boxshadow: 0 0 0 12px theme("colors.neutral.300");
+      boxshadow: 0 0 0 12px theme('colors.neutral.300');
     }
     100% {
       boxshadow: 0 0 0 12px transparent;
@@ -447,7 +447,7 @@
   button {
     cursor: pointer;
   }
-  [class*="border"] {
+  [class*='border'] {
     @apply border-border;
   }
   p {

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Types
 export interface KanbanTask {
   id: string;
   title: string;
   description: string;
-  status: "sourced" | "in_progress" | "interview";
+  status: 'sourced' | 'in_progress' | 'interview';
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -19,7 +19,7 @@ export interface KanbanResponse {
 
 export interface UpdateTaskRequest {
   taskId: string;
-  status: "sourced" | "in_progress" | "interview";
+  status: 'sourced' | 'in_progress' | 'interview';
   order?: number;
 }
 
@@ -30,24 +30,26 @@ export interface UpdateTaskResponse {
 
 // Query Keys
 export const kanbanKeys = {
-  all: ["kanban"] as const,
-  tasks: () => [...kanbanKeys.all, "tasks"] as const,
+  all: ['kanban'] as const,
+  tasks: () => [...kanbanKeys.all, 'tasks'] as const,
 };
 
 // API Functions
 const fetchKanbanTasks = async (): Promise<KanbanResponse> => {
-  const response = await fetch("/api/kanban");
-  if (!response.ok) throw new Error("Failed to fetch kanban tasks");
+  const response = await fetch('/api/kanban');
+  if (!response.ok) throw new Error('Failed to fetch kanban tasks');
   return response.json();
 };
 
-const updateKanbanTask = async (data: UpdateTaskRequest): Promise<UpdateTaskResponse> => {
-  const response = await fetch("/api/kanban", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+const updateKanbanTask = async (
+  data: UpdateTaskRequest
+): Promise<UpdateTaskResponse> => {
+  const response = await fetch('/api/kanban', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error("Failed to update kanban task");
+  if (!response.ok) throw new Error('Failed to update kanban task');
   return response.json();
 };
 
@@ -71,13 +73,15 @@ export const useUpdateKanbanTask = () => {
       await queryClient.cancelQueries({ queryKey: kanbanKeys.tasks() });
 
       // Snapshot previous value
-      const previousTasks = queryClient.getQueryData<KanbanResponse>(kanbanKeys.tasks());
+      const previousTasks = queryClient.getQueryData<KanbanResponse>(
+        kanbanKeys.tasks()
+      );
 
       // Optimistically update
       if (previousTasks) {
         const updatedTasks = {
           ...previousTasks,
-          data: previousTasks.data.map((task) =>
+          data: previousTasks.data.map(task =>
             task.id === taskId
               ? {
                   ...task,
