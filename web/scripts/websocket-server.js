@@ -2,7 +2,7 @@
 
 import { WebSocketServer } from "ws";
 import http from "http";
-import { PrismaClient } from "../app/generated/prisma/index.js";
+import { PrismaClient } from "../app/generated/prisma";
 
 const prisma = new PrismaClient();
 
