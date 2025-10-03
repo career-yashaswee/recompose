@@ -23,30 +23,36 @@ import { Premium } from './common/premium';
 const data = {
   navMain: [
     {
+      title: 'Stage',
+      url: '/stage',
+      icon: Command,
+      isActive: true,
+    },
+    {
       title: 'Learn',
       url: '#',
       icon: SquareTerminal,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: 'Compositions',
-          url: 'compositions',
+          url: '/compositions',
         },
         {
           title: 'Kanban',
-          url: 'kanban',
+          url: '/kanban',
         },
       ],
     },
     {
       title: 'Badges',
-      url: 'badges',
+      url: '/badges',
       icon: Trophy,
       isActive: false,
     },
     {
       title: 'Leaderboard',
-      url: 'leaderboard',
+      url: '/leaderboard',
       icon: BarChart3,
       isActive: false,
     },
@@ -67,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild>
-              <a href='#'>
+              <a href='/stage'>
                 <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
                   <Command className='size-4' />
                 </div>

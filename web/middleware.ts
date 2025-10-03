@@ -8,11 +8,13 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (
     pathname === '/' ||
     pathname.startsWith('/(auth)') ||
+    pathname.startsWith('/(public)') ||
     pathname.startsWith('/log-in') ||
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/forget-password') ||
     pathname.startsWith('/reset-password') ||
-    pathname.startsWith('/verify-email')
+    pathname.startsWith('/verify-email') ||
+    pathname.startsWith('/pricing')
   ) {
     return NextResponse.next();
   }

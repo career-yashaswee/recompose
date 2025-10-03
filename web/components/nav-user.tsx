@@ -89,16 +89,16 @@ export function NavUser({ user }: { user: UserDisplayData }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push('/stage/account')}>
+              <DropdownMenuItem onClick={() => router.push('/stage')}>
                 <BadgeCheck />
-                Account
+                Stage
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => router.push('/stage/notifications')}
+                onClick={() => router.push('/notifications')}
               >
                 <Bell />
                 Notifications

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import CompletionCalendar from '@/components/common/stage/completion-calendar';
 import CompositionDifficultyWidget from '@/components/common/stage/composition-difficulty-widget';
 import CompositionHeatmap from '@/components/common/stage/composition-heatmap';

@@ -1,6 +1,17 @@
 import { Pointer, TruckElectric, Wrench, Github } from 'lucide-react';
 import { ContainerTextFlip } from '@/components/aceternity/container-text-flip';
-export default function Home() {
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+
+export default async function Home() {
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
+
+  // If user is authenticated, redirect to stage
+  if (session?.user) {
+    redirect('/stage');
+  }
   return (
     <>
       <section className='h-full w-screen overflow-hidden'>

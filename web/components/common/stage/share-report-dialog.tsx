@@ -12,7 +12,7 @@ export function ShareDialog(props: ShareDialogProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
-  const compositionUrl = `${window.location.origin}/stage/compositions/${props.compositionId}`;
+  const compositionUrl = `${window.location.origin}/compositions/${props.compositionId}`;
   const shareText = `Check out this composition: ${props.compositionTitle}`;
 
   const handleCopyUrl = async (): Promise<void> => {

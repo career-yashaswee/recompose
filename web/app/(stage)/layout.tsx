@@ -10,7 +10,11 @@ import { authClient } from '@/lib/auth-client';
 import { TimeTrackingProvider } from '@/components/providers/time-tracking-provider';
 import { useEffect } from 'react';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { notifyUserLogin } = useNotifications();
 
   useEffect(() => {

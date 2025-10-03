@@ -89,7 +89,7 @@ export function BadgeNotification({ className }: BadgeNotificationProps) {
                 onClick={() => {
                   setShowNotification(false);
                   // Navigate to badges page
-                  window.location.href = '/stage/badges';
+                  window.location.href = '/badges';
                 }}
               >
                 View Badges

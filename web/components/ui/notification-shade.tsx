@@ -157,7 +157,7 @@ export function NotificationShade({
         notification.metadata?.compositionId
       ) {
         router.push(
-          `/stage/compositions/${notification.metadata.compositionId}`
+          `/compositions/${notification.metadata.compositionId}`
         );
       }
     }
@@ -360,7 +360,7 @@ export function NotificationShade({
             <Button
               variant='outline'
               size='sm'
-              onClick={() => router.push('/stage/notifications')}
+              onClick={() => router.push('/notifications')}
             >
               View all notifications
             </Button>
