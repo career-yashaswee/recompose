@@ -48,7 +48,7 @@ export function useLeaderboard(options: UseLeaderboardOptions = {}) {
       }
 
       const response = await fetch(`/api/leaderboard?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard data');
       }
@@ -70,13 +70,15 @@ export function useLeaderboardTopThree(options: UseLeaderboardOptions = {}) {
 
   return {
     ...rest,
-    data: data ? {
-      topThree: data.leaderboard.slice(0, 3),
-      remaining: data.leaderboard.slice(3),
-      currentUserRank: data.currentUserRank,
-      motivationalData: data.motivationalData,
-      timeFilter: data.timeFilter,
-    } : undefined,
+    data: data
+      ? {
+          topThree: data.leaderboard.slice(0, 3),
+          remaining: data.leaderboard.slice(3),
+          currentUserRank: data.currentUserRank,
+          motivationalData: data.motivationalData,
+          timeFilter: data.timeFilter,
+        }
+      : undefined,
   };
 }
 
@@ -88,10 +90,12 @@ export function useLeaderboardTable(options: UseLeaderboardOptions = {}) {
 
   return {
     ...rest,
-    data: data ? {
-      tableData: data.leaderboard.slice(3),
-      currentUserRank: data.currentUserRank,
-      timeFilter: data.timeFilter,
-    } : undefined,
+    data: data
+      ? {
+          tableData: data.leaderboard.slice(3),
+          currentUserRank: data.currentUserRank,
+          timeFilter: data.timeFilter,
+        }
+      : undefined,
   };
 }

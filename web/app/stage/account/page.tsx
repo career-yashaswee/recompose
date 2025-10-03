@@ -4,7 +4,7 @@ import {
   UserProfile,
   LearningActivity,
   Performance,
-  EnrolledCourses,
+  RecentCompositions,
   ProfileDisplay,
 } from '@/components/@account';
 
@@ -26,8 +26,8 @@ export default function AccountPage(): React.ReactElement {
           {/* Performance Card */}
           <Performance />
 
-          {/* Enrolled Courses Card */}
-          <EnrolledCourses />
+          {/* Recent Compositions Card */}
+          <RecentCompositions />
         </div>
       </div>
     </div>

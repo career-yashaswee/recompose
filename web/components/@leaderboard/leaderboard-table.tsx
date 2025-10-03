@@ -18,36 +18,40 @@ interface LeaderboardTableProps {
 
 const columnHelper = createColumnHelper<LeaderboardUser>();
 
-export function LeaderboardTable({ data, currentUserRank }: LeaderboardTableProps) {
+export function LeaderboardTable({
+  data,
+  currentUserRank,
+}: LeaderboardTableProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
   const columns: ColumnDef<LeaderboardUser>[] = [
     columnHelper.accessor('rank', {
       header: 'Rank',
-      cell: (info) => (
-        <div className="font-semibold text-gray-900">
-          {info.getValue()}
-        </div>
+      cell: info => (
+        <div className='font-semibold text-gray-900'>{info.getValue()}</div>
       ),
     }),
     columnHelper.accessor('name', {
       header: 'User',
-      cell: (info) => {
+      cell: info => {
         const rowUser = info.row.original;
         const isCurrentUser = rowUser.id === user?.id;
-        
+
         return (
-          <div className="flex items-center space-x-3">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={rowUser.image || ''} alt={rowUser.name || 'User'} />
+          <div className='flex items-center space-x-3'>
+            <Avatar className='w-8 h-8'>
+              <AvatarImage
+                src={rowUser.image || ''}
+                alt={rowUser.name || 'User'}
+              />
               <AvatarFallback>
                 {rowUser.name?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-medium text-gray-900">
-                {isCurrentUser ? 'You' : (rowUser.name || 'Anonymous User')}
+              <div className='font-medium text-gray-900'>
+                {isCurrentUser ? 'You' : rowUser.name || 'Anonymous User'}
               </div>
             </div>
           </div>
@@ -56,35 +60,35 @@ export function LeaderboardTable({ data, currentUserRank }: LeaderboardTableProp
     }),
     columnHelper.accessor('compositionsCompleted', {
       header: 'Compositions Completed',
-      cell: (info) => (
-        <div className="flex items-center text-gray-600">
-          <Circle className="w-4 h-4 mr-2" />
+      cell: info => (
+        <div className='flex items-center text-gray-600'>
+          <Circle className='w-4 h-4 mr-2' />
           {info.getValue()}
         </div>
       ),
     }),
     columnHelper.accessor('currentStreak', {
       header: 'Streak',
-      cell: (info) => (
-        <div className="flex items-center text-gray-600">
-          <Flame className="w-4 h-4 mr-2 text-orange-500" />
+      cell: info => (
+        <div className='flex items-center text-gray-600'>
+          <Flame className='w-4 h-4 mr-2 text-orange-500' />
           {info.getValue()} days
         </div>
       ),
     }),
     columnHelper.accessor('badges', {
       header: 'Badges',
-      cell: (info) => {
+      cell: info => {
         const badges = info.getValue();
         return (
-          <div className="flex flex-wrap gap-1">
-            {badges.slice(0, 2).map((badge) => (
-              <Badge key={badge.id} variant="secondary" className="text-xs">
+          <div className='flex flex-wrap gap-1'>
+            {badges.slice(0, 2).map(badge => (
+              <Badge key={badge.id} variant='secondary' className='text-xs'>
                 {badge.name}
               </Badge>
             ))}
             {badges.length > 2 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant='outline' className='text-xs'>
                 +{badges.length - 2}
               </Badge>
             )}
@@ -94,9 +98,9 @@ export function LeaderboardTable({ data, currentUserRank }: LeaderboardTableProp
     }),
     columnHelper.accessor('totalPoints', {
       header: 'Points',
-      cell: (info) => (
-        <div className="flex items-center font-semibold text-gray-900">
-          <Star className="w-4 h-4 mr-1 text-yellow-500" />
+      cell: info => (
+        <div className='flex items-center font-semibold text-gray-900'>
+          <Star className='w-4 h-4 mr-1 text-yellow-500' />
           {info.getValue().toLocaleString()}
         </div>
       ),
@@ -110,16 +114,16 @@ export function LeaderboardTable({ data, currentUserRank }: LeaderboardTableProp
   });
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            {table.getHeaderGroups().map((headerGroup) => (
+    <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
+      <div className='overflow-x-auto'>
+        <table className='w-full'>
+          <thead className='bg-gray-50 border-b border-gray-200'>
+            {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
                   >
                     {header.isPlaceholder
                       ? null
@@ -132,18 +136,18 @@ export function LeaderboardTable({ data, currentUserRank }: LeaderboardTableProp
               </tr>
             ))}
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {table.getRowModel().rows.map((row) => {
+          <tbody className='bg-white divide-y divide-gray-200'>
+            {table.getRowModel().rows.map(row => {
               const isCurrentUser = row.original.id === user?.id;
               return (
                 <tr
                   key={row.id}
                   className={`hover:bg-gray-50 ${isCurrentUser ? 'bg-blue-50' : ''}`}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <td
                       key={cell.id}
-                      className="px-6 py-4 whitespace-nowrap text-sm"
+                      className='px-6 py-4 whitespace-nowrap text-sm'
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

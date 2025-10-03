@@ -47,6 +47,8 @@ model User {
   kanbanTasks          KanbanTask[]
   points               UserPoint[]
   userBadges           UserBadge[]
+  userSessions         UserSession[]
+  dailyTimeTracking    DailyTimeTracking[]
 
   @@map("user")
 }
@@ -324,4 +326,42 @@ enum BadgeCategory {
   ENGAGEMENT
   STREAK
   ACHIEVEMENT
+}
+
+/// User session tracking for time spent on platform
+model UserSession {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId   String      @unique // Unique session identifier
+  startTime   DateTime    @default(now())
+  lastActive  DateTime    @default(now()) @updatedAt
+  endTime     DateTime?   // When session ended (null if active)
+  totalTime   Int         @default(0) // Total time in seconds
+  isActive    Boolean     @default(true)
+  userAgent   String?
+  ipAddress   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId, isActive])
+  @@index([userId, createdAt])
+  @@index([sessionId])
+  @@map("user_session")
+}
+
+/// Daily time aggregation for efficient querying
+model DailyTimeTracking {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime    // Date in Asia/Kolkata timezone (YYYY-MM-DD)
+  totalSeconds Int        @default(0) // Total time spent in seconds
+  sessionCount Int        @default(0) // Number of sessions
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_time_tracking")
 }

@@ -7,6 +7,7 @@ import { BreadcrumbsProvider } from '@/hooks/use-breadcrumbs';
 import { useNotifications } from '@/context/notification-context';
 import { BadgeNotification } from '@/components/badges';
 import { authClient } from '@/lib/auth-client';
+import { TimeTrackingProvider } from '@/components/providers/time-tracking-provider';
 import { useEffect } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -38,14 +39,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className='[--header-height:calc(--spacing(14))]'>
       <SidebarProvider className='flex flex-col'>
         <BreadcrumbsProvider>
-          <SiteHeader />
-          <div className='flex flex-1'>
-            <AppSidebar />
-            <SidebarInset>
-              <div className='flex flex-1 flex-col gap-4 p-4'>{children}</div>
-              <BadgeNotification />
-            </SidebarInset>
-          </div>
+          <TimeTrackingProvider>
+            <SiteHeader />
+            <div className='flex flex-1'>
+              <AppSidebar />
+              <SidebarInset>
+                <div className='flex flex-1 flex-col gap-4 p-4'>{children}</div>
+                <BadgeNotification />
+              </SidebarInset>
+            </div>
+          </TimeTrackingProvider>
         </BreadcrumbsProvider>
       </SidebarProvider>
     </div>

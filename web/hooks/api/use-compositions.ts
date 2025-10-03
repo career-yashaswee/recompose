@@ -326,6 +326,41 @@ export const useCompositionHeatmap = () => {
   });
 };
 
+// Recent Compositions Hook
+export interface RecentComposition {
+  id: string;
+  title: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  status: 'SOLVED' | 'ATTEMPTING';
+  completedAt: string;
+  tags: string[];
+}
+
+export interface RecentCompositionsResponse {
+  data: RecentComposition[];
+}
+
+const fetchRecentCompositions =
+  async (): Promise<RecentCompositionsResponse> => {
+    const response = await fetch('/api/compositions/recent');
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required');
+      }
+      throw new Error('Failed to fetch recent compositions');
+    }
+    return response.json();
+  };
+
+export const useRecentCompositions = () => {
+  return useQuery({
+    queryKey: ['recent-compositions'],
+    queryFn: fetchRecentCompositions,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useToggleCompositionFavorite = () => {
   const queryClient = useQueryClient();
 

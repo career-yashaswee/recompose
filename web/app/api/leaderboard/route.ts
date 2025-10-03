@@ -34,7 +34,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 
     const { searchParams } = new URL(req.url);
-    const timeFilter = (searchParams.get('time') as LeaderboardTimeFilter) || 'all';
+    const timeFilter =
+      (searchParams.get('time') as LeaderboardTimeFilter) || 'all';
 
     // Calculate date range based on filter
     let startDate: Date | null = null;
@@ -57,10 +58,15 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const leaderboardData = await getLeaderboardData(startDate);
 
     // Get current user's position
-    const currentUserRank = leaderboardData.findIndex(user => user.id === session.user.id) + 1;
+    const currentUserRank =
+      leaderboardData.findIndex(user => user.id === session.user.id) + 1;
 
     // Get motivational message data
-    const motivationalData = await getMotivationalData(session.user.id, leaderboardData, currentUserRank);
+    const motivationalData = await getMotivationalData(
+      session.user.id,
+      leaderboardData,
+      currentUserRank
+    );
 
     return NextResponse.json({
       leaderboard: leaderboardData,
@@ -77,7 +83,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-async function getLeaderboardData(startDate: Date | null): Promise<LeaderboardUser[]> {
+async function getLeaderboardData(
+  startDate: Date | null
+): Promise<LeaderboardUser[]> {
   // Build points filter
   const pointsFilter = startDate
     ? {
@@ -132,10 +140,10 @@ async function getLeaderboardData(startDate: Date | null): Promise<LeaderboardUs
 
   // Calculate current streak for each user
   const usersWithStreak = await Promise.all(
-    users.map(async (user) => {
+    users.map(async user => {
       // Calculate current streak
       const streak = await calculateCurrentStreak(user.id);
-      
+
       return {
         ...user,
         currentStreak: streak,
@@ -145,10 +153,13 @@ async function getLeaderboardData(startDate: Date | null): Promise<LeaderboardUs
 
   // Calculate total points and compositions completed
   const leaderboardData = usersWithStreak
-    .map((user) => {
-      const totalPoints = user.points.reduce((sum, point) => sum + point.points, 0);
+    .map(user => {
+      const totalPoints = user.points.reduce(
+        (sum, point) => sum + point.points,
+        0
+      );
       const compositionsCompleted = user.CompositionProgress.length;
-      
+
       return {
         id: user.id,
         name: user.name,
@@ -189,15 +200,17 @@ async function calculateCurrentStreak(userId: string): Promise<number> {
   let streak = 0;
   const today = new Date();
   const todayKey = formatDateKey(today);
-  
+
   // Check if user completed today
   let currentDate = new Date(today);
   let hasCompletedToday = completions.some(c => c.dateKey === todayKey);
-  
+
   if (!hasCompletedToday) {
     // If no completion today, check yesterday
     currentDate.setDate(currentDate.getDate() - 1);
-    hasCompletedToday = completions.some(c => c.dateKey === formatDateKey(currentDate));
+    hasCompletedToday = completions.some(
+      c => c.dateKey === formatDateKey(currentDate)
+    );
     if (!hasCompletedToday) return 0;
   }
 
@@ -206,7 +219,7 @@ async function calculateCurrentStreak(userId: string): Promise<number> {
     const expectedDate = new Date(currentDate);
     expectedDate.setDate(expectedDate.getDate() - i);
     const expectedDateKey = formatDateKey(expectedDate);
-    
+
     if (completions[i].dateKey === expectedDateKey) {
       streak++;
     } else {
@@ -227,18 +240,20 @@ async function getMotivationalData(
   currentUserRank: number
 ) {
   const currentUser = leaderboardData.find(user => user.id === userId);
-  
+
   if (!currentUser) {
     return {
-      message: "Start completing compositions to join the leaderboard!",
+      message: 'Start completing compositions to join the leaderboard!',
       pointsToNext: 0,
       showMotivation: false,
     };
   }
 
   // Find the user above current user
-  const userAbove = leaderboardData.find(user => user.rank === currentUserRank - 1);
-  
+  const userAbove = leaderboardData.find(
+    user => user.rank === currentUserRank - 1
+  );
+
   if (!userAbove) {
     // User is #1
     return {
@@ -249,7 +264,7 @@ async function getMotivationalData(
   }
 
   const pointsToNext = userAbove.totalPoints - currentUser.totalPoints;
-  
+
   if (pointsToNext <= 10) {
     return {
       message: `Just ${pointsToNext} points away from rank #${currentUserRank - 1}!`,

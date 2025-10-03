@@ -14,12 +14,12 @@ export function TimeFilter({ currentFilter, onFilterChange }: TimeFilterProps) {
   ];
 
   return (
-    <div className="flex space-x-2 mb-6">
-      {filters.map((filter) => (
+    <div className='flex space-x-2 mb-6'>
+      {filters.map(filter => (
         <Button
           key={filter.key}
           variant={currentFilter === filter.key ? 'default' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => onFilterChange(filter.key)}
           className={
             currentFilter === filter.key
