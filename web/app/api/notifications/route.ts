@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { NotificationService } from '@/lib/notification-service';
-import { NotificationType, NotificationCategory } from '@/app/generated/prisma';
+import { NotificationType, NotificationCategory } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { NotificationType, NotificationCategory } from '@/app/generated/prisma';
+import { NotificationType, NotificationCategory } from '@prisma/client';
 
 export interface CreateNotificationData {
   userId: string;
