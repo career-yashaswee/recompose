@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useTransition } from 'react';
-import { Check, Globe } from 'lucide-react';
+import { Check, Languages } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +47,7 @@ export function LanguageSwitcher(): React.ReactElement {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' disabled={isPending}>
-          <Globe className='h-4 w-4' />
+          <Languages className='h-4 w-4' />
           {options.find(o => o.code === current)?.label ?? 'Language'}
         </Button>
       </DropdownMenuTrigger>

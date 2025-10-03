@@ -26,7 +26,7 @@ export async function sendEmailVerification({
   verificationUrl,
 }: EmailVerificationParams): Promise<void> {
   console.log('sendEmailVerification called with:', { to, otpCode, userName });
-  
+
   if (!process.env.RESEND_API_KEY) {
     console.error('RESEND_API_KEY is not configured');
     throw new Error('RESEND_API_KEY is not configured');
@@ -43,13 +43,13 @@ export async function sendEmailVerification({
     subject: 'Verify your email - Recompose',
   });
 
-      const { data, error } = await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL,
-        to,
-        subject: 'Verify your email - Recompose',
-        html: generateEmailVerificationHTML(otpCode, userName, verificationUrl),
-        text: generateEmailVerificationText(otpCode, userName, verificationUrl),
-      });
+  const { data, error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL,
+    to,
+    subject: 'Verify your email - Recompose',
+    html: generateEmailVerificationHTML(otpCode, userName, verificationUrl),
+    text: generateEmailVerificationText(otpCode, userName, verificationUrl),
+  });
 
   if (error) {
     console.error('Failed to send email verification:', error);
@@ -92,7 +92,11 @@ export async function sendPasswordResetEmail({
 /**
  * Generates HTML content for email verification
  */
-function generateEmailVerificationHTML(otpCode: string, userName: string, verificationUrl?: string): string {
+function generateEmailVerificationHTML(
+  otpCode: string,
+  userName: string,
+  verificationUrl?: string
+): string {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -206,7 +210,9 @@ function generateEmailVerificationHTML(otpCode: string, userName: string, verifi
           
           <p>Welcome to Recompose! To complete your account setup, please verify your email address:</p>
           
-          ${verificationUrl ? `
+          ${
+            verificationUrl
+              ? `
           <div class="button-container">
             <a href="${verificationUrl}" class="button">Verify Email Address</a>
           </div>
@@ -224,7 +230,8 @@ function generateEmailVerificationHTML(otpCode: string, userName: string, verifi
               <li>Complete your account setup</li>
             </ol>
           </div>
-          ` : `
+          `
+              : `
           <div class="otp-container">
             <div class="otp-label">Your verification code is:</div>
             <div class="otp-code">${otpCode}</div>
@@ -239,7 +246,8 @@ function generateEmailVerificationHTML(otpCode: string, userName: string, verifi
               <li>Click "Verify Email" to complete setup</li>
             </ol>
           </div>
-          `}
+          `
+          }
           
           <div class="warning">
             <strong>Security Notice:</strong> This code will expire in 10 minutes for security reasons. If you didn&apos;t create an account with Recompose, please ignore this email.
@@ -263,7 +271,11 @@ function generateEmailVerificationHTML(otpCode: string, userName: string, verifi
 /**
  * Generates plain text content for email verification
  */
-function generateEmailVerificationText(otpCode: string, userName: string, verificationUrl?: string): string {
+function generateEmailVerificationText(
+  otpCode: string,
+  userName: string,
+  verificationUrl?: string
+): string {
   return `
 Verify Your Email - Recompose
 
@@ -271,7 +283,9 @@ Hi ${userName},
 
     Welcome to Recompose! To complete your account setup, please verify your email address:
 
-    ${verificationUrl ? `
+    ${
+      verificationUrl
+        ? `
     Click this link to verify your email: ${verificationUrl}
 
     Or use this verification code: ${otpCode}
@@ -280,7 +294,8 @@ Hi ${userName},
     1. Click the verification link above (recommended)
     2. Or copy the 6-digit code and enter it in the verification form
     3. Complete your account setup
-    ` : `
+    `
+        : `
     Your verification code: ${otpCode}
 
     Next steps:
@@ -288,7 +303,8 @@ Hi ${userName},
     2. Go back to your browser
     3. Enter the code in the verification form
     4. Click "Verify Email" to complete setup
-    `}
+    `
+    }
 
 This code will expire in 10 minutes for security reasons.
 

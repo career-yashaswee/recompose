@@ -1,6 +1,6 @@
 'use client';
 
-import { Flame, Trophy } from 'lucide-react';
+import { Coins, Flame } from 'lucide-react';
 import { usePoints } from '@/hooks/api';
 
 export function PointsStreakDisplay() {
@@ -8,18 +8,14 @@ export function PointsStreakDisplay() {
 
   if (isLoading) {
     return (
-      <div className='flex items-center gap-3'>
+      <div className='flex items-center gap-2'>
         <div className='flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md'>
           <Flame className='h-4 w-4 text-orange-500' />
-          <span className='text-sm text-slate-600 dark:text-slate-400'>
-            ...
-          </span>
+          <span className='text-sm text-slate-600 dark:text-slate-400'>-</span>
         </div>
         <div className='flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md'>
-          <Trophy className='h-4 w-4 text-yellow-500' />
-          <span className='text-sm text-slate-600 dark:text-slate-400'>
-            ...
-          </span>
+          <Coins className='h-4 w-4 text-yellow-500' />
+          <span className='text-sm text-slate-600 dark:text-slate-400'>-</span>
         </div>
       </div>
     );
@@ -41,7 +37,7 @@ export function PointsStreakDisplay() {
 
       {/* Total Points */}
       <div className='flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-md'>
-        <Trophy className='h-4 w-4 text-yellow-500' />
+        <Coins className='h-4 w-4 text-yellow-500' />
         <span className='text-sm font-medium text-yellow-700 dark:text-yellow-300'>
           {data.totalPoints.toLocaleString()}
         </span>

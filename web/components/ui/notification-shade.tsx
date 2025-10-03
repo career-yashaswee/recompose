@@ -156,9 +156,7 @@ export function NotificationShade({
         notification.category === 'composition' &&
         notification.metadata?.compositionId
       ) {
-        router.push(
-          `/compositions/${notification.metadata.compositionId}`
-        );
+        router.push(`/compositions/${notification.metadata.compositionId}`);
       }
     }
   };
@@ -182,13 +180,15 @@ export function NotificationShade({
         <div className='bg-background border rounded-lg shadow-lg'>
           {/* Header */}
           <div className='flex items-center justify-between p-4 border-b'>
-            <h3 className='text-lg font-semibold'>Notifications</h3>
+            <h3 className='text-lg font-semibold'>Notifications Shade</h3>
             <div className='flex items-center gap-2'>
-              <Button variant='ghost' size='icon' className='h-8 w-8'>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => fetchNotifications()}
+              >
                 <RefreshCw className='h-4 w-4' />
-              </Button>
-              <Button variant='ghost' size='icon' className='h-8 w-8'>
-                <Settings className='h-4 w-4' />
               </Button>
             </div>
           </div>
@@ -349,14 +349,7 @@ export function NotificationShade({
               <Check className='h-4 w-4 mr-1' />
               Mark all as read
             </Button>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => fetchNotifications()}
-            >
-              <RefreshCw className='h-4 w-4 mr-2' />
-              Refresh
-            </Button>
+
             <Button
               variant='outline'
               size='sm'

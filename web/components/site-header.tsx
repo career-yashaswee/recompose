@@ -58,7 +58,8 @@ export function SiteHeader() {
             })}
           </BreadcrumbList>
         </Breadcrumb>
-        <SearchForm className='w-full sm:ml-auto sm:w-auto' />
+        {/* <SearchForm className='w-full sm:ml-auto sm:w-auto' /> */}
+        <div className='w-full sm:ml-auto sm:w-auto' />
         <PointsStreakDisplay />
         <NotificationShade />
         <LanguageSwitcher />

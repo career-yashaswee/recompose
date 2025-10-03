@@ -1,7 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Command, SquareTerminal, Trophy, BarChart3 } from 'lucide-react';
+import {
+  Command,
+  FileJson2,
+  SquareStar,
+  SquareKanban,
+  LayoutDashboard,
+  ChartNoAxesColumn,
+  User,
+  Bell,
+} from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
@@ -25,35 +34,43 @@ const data = {
     {
       title: 'Stage',
       url: '/stage',
-      icon: Command,
+      icon: LayoutDashboard,
       isActive: true,
     },
     {
-      title: 'Learn',
-      url: '#',
-      icon: SquareTerminal,
+      title: 'Compositions',
+      url: '/compositions',
+      icon: FileJson2,
       isActive: false,
-      items: [
-        {
-          title: 'Compositions',
-          url: '/compositions',
-        },
-        {
-          title: 'Kanban',
-          url: '/kanban',
-        },
-      ],
+    },
+    {
+      title: 'Kanban',
+      url: '/kanban',
+      icon: SquareKanban,
+      isActive: false,
     },
     {
       title: 'Badges',
       url: '/badges',
-      icon: Trophy,
+      icon: SquareStar,
       isActive: false,
     },
     {
       title: 'Leaderboard',
       url: '/leaderboard',
-      icon: BarChart3,
+      icon: ChartNoAxesColumn,
+      isActive: false,
+    },
+    {
+      title: 'Account',
+      url: '/account',
+      icon: User,
+      isActive: false,
+    },
+    {
+      title: 'Notifications',
+      url: '/notifications',
+      icon: Bell,
       isActive: false,
     },
   ],
@@ -79,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>Recompose</span>
-                  <span className='truncate text-xs'>Stage</span>
+                  <span className='truncate text-xs'>by Yashaswee Kesharwani</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -88,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
         <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
