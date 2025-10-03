@@ -3,6 +3,7 @@
 import React from 'react';
 import { useCompositionHeatmap } from '@/hooks/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface HeatmapProps {
   className?: string;
@@ -20,10 +21,50 @@ export default function CompositionHeatmap({
     return (
       <Card className={className}>
         <CardHeader>
-          <CardTitle>Composition Activity</CardTitle>
+          <div className='flex items-center justify-between'>
+            <CardTitle>
+              <div className='flex items-baseline gap-2'>
+                <Skeleton className='h-10 w-16' />
+                <Skeleton className='h-4 w-48' />
+              </div>
+            </CardTitle>
+            <div className='flex items-center gap-4'>
+              <Skeleton className='h-4 w-32' />
+              <Skeleton className='h-4 w-24' />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className='text-sm text-slate-500'>Loading heatmap...</div>
+          <div className='space-y-3'>
+            {/* Skeleton Heatmap Grid */}
+            <div className='flex gap-1 overflow-x-auto pb-2'>
+              {Array.from({ length: 53 }).map((_, weekIndex) => (
+                <div key={weekIndex} className='flex flex-col gap-1'>
+                  {Array.from({ length: 7 }).map((_, dayIndex) => (
+                    <Skeleton key={dayIndex} className='w-3 h-3 rounded-sm' />
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Skeleton Legend */}
+            <div className='flex items-center justify-between'>
+              <Skeleton className='h-3 w-8' />
+              <div className='flex gap-1'>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className='w-3 h-3 rounded-sm' />
+                ))}
+              </div>
+              <Skeleton className='h-3 w-8' />
+            </div>
+
+            {/* Skeleton Month Labels */}
+            <div className='flex gap-1'>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <Skeleton key={i} className='h-3 w-6' />
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -116,7 +157,14 @@ export default function CompositionHeatmap({
       <CardHeader>
         <div className='flex items-center justify-between'>
           <CardTitle>
-            {data.totalCompletions} submissions in the past one year
+            <div className='flex items-baseline gap-2'>
+              <p className='text-4xl font-bold text-gray-900'>
+                {data.totalCompletions}
+              </p>
+              <p className='text-sm text-gray-500'>
+                submissions in the past one year
+              </p>
+            </div>
           </CardTitle>
           <div className='flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400'>
             <span>Total active days: {data.activeDays}</span>

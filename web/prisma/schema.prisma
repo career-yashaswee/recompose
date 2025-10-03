@@ -146,6 +146,7 @@ model Composition {
   progresses  CompositionProgress[]
   favorites   CompositionFavorite[]
   reactions   CompositionReaction[]
+  dailyCompositions DailyComposition[]
 
   @@index([difficulty])
   @@index([isActive])
@@ -170,6 +171,22 @@ model CompositionCompletion {
   @@index([compositionId])
   @@index([completedAt])
   @@map("composition_completions")
+}
+
+/// Daily composition assignments - one composition per day (LeetCode style)
+model DailyComposition {
+  id            String      @id @default(cuid())
+  compositionId String      @db.VarChar(255)
+  composition   Composition @relation(fields: [compositionId], references: [id], onDelete: Cascade)
+  /// YYYY-MM-DD string for the day in Asia/Kolkata timezone
+  dateKey       String      @unique @db.VarChar(10)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
+
+  @@index([dateKey])
+  @@index([compositionId])
+  @@map("daily_compositions")
 }
 
 /// Track per-user progress on compositions (Solved/Attempting/Unsolved)

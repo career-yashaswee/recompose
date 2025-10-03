@@ -30,7 +30,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className='container mx-auto px-4 py-8'>
+    <div className='container p-2'>
       <div className='mb-8'>
         <h1 className='text-3xl font-bold text-gray-900 mb-4'>Leaderboard</h1>
 

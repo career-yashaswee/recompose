@@ -97,7 +97,7 @@ export default function ReactionControl(
         aria-label='Like'
         onClick={handleLike}
         disabled={updateReaction.isPending}
-        className={`inline-flex items-center gap-1 px-2 py-1 rounded border ${
+        className={`inline-flex items-center gap-1 px-4 py-2 rounded border ${
           isLiked
             ? 'text-emerald-600 border-emerald-300 bg-emerald-50'
             : 'text-slate-600 border-slate-200'
@@ -110,7 +110,7 @@ export default function ReactionControl(
         aria-label='Dislike'
         onClick={handleDislike}
         disabled={updateReaction.isPending}
-        className={`inline-flex items-center gap-1 px-2 py-1 rounded border ${
+        className={`inline-flex items-center gap-1 px-4 py-2 rounded border ${
           isDisliked
             ? 'text-rose-600 border-rose-300 bg-rose-50'
             : 'text-slate-600 border-slate-200'

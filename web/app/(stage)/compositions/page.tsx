@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 // import { Card, CardContent, CardHeader } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import TagChip from '@/components/ui/tag-chip';
-import { Star, ThumbsUp, Shuffle } from 'lucide-react';
+import { Star, ThumbsUp, Shuffle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -63,7 +63,7 @@ function TableInner(): React.ReactElement {
   const [status, setStatus] = React.useState<string>('');
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'updatedAt', desc: true },
+    { id: 'title', desc: false },
   ]);
   const [pageIndex, setPageIndex] = React.useState<number>(0);
   const [pageSize] = React.useState<number>(10);
@@ -86,7 +86,7 @@ function TableInner(): React.ReactElement {
     tags: selectedTags,
     pageIndex,
     pageSize,
-    sort,
+    sort: sort ? { id: sort.id, desc: sort.desc } : undefined,
   });
 
   const toggleFavorite = useToggleCompositionFavorite();
@@ -108,17 +108,37 @@ function TableInner(): React.ReactElement {
       duration: 2000,
     });
 
-    router.push(`/stage/compositions/${randomComposition.id}`);
+    router.push(`/compositions/${randomComposition.id}`);
   };
 
   const columns = React.useMemo<ColumnDef<CompositionRow>[]>(
     () => [
       {
         accessorKey: 'title',
-        header: () => <span>Product</span>,
+        header: ({ column }) => (
+          <div className='flex items-center gap-2'>
+            <span>Composition</span>
+            {column.getCanSort() && (
+              <button
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
+              >
+                {column.getIsSorted() === 'asc' ? (
+                  <ArrowUp className='size-3' />
+                ) : column.getIsSorted() === 'desc' ? (
+                  <ArrowDown className='size-3' />
+                ) : (
+                  <ArrowUpDown className='size-3' />
+                )}
+              </button>
+            )}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='flex items-start gap-3'>
-            <div className='size-9 rounded-full bg-slate-200' />
+            <div className='size-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm'>
+              {row.original.title.charAt(0).toUpperCase()}
+            </div>
             <div className='flex-1'>
               <div className='font-medium text-slate-900 dark:text-slate-100'>
                 {row.original.title}
@@ -149,32 +169,93 @@ function TableInner(): React.ReactElement {
       },
       {
         accessorKey: 'difficulty',
-        header: () => <span>Difficulty</span>,
+        header: ({ column }) => (
+          <div className='flex items-center gap-2'>
+            <span>Difficulty</span>
+            {column.getCanSort() && (
+              <button
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
+              >
+                {column.getIsSorted() === 'asc' ? (
+                  <ArrowUp className='size-3' />
+                ) : column.getIsSorted() === 'desc' ? (
+                  <ArrowDown className='size-3' />
+                ) : (
+                  <ArrowUpDown className='size-3' />
+                )}
+              </button>
+            )}
+          </div>
+        ),
         cell: ({ row }) => difficultyBadge(row.original.difficulty),
       },
       {
         accessorKey: 'status',
-        header: () => <span>Status</span>,
+        header: ({ column }) => (
+          <div className='flex items-center gap-2'>
+            <span>Status</span>
+            {column.getCanSort() && (
+              <button
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
+              >
+                {column.getIsSorted() === 'asc' ? (
+                  <ArrowUp className='size-3' />
+                ) : column.getIsSorted() === 'desc' ? (
+                  <ArrowDown className='size-3' />
+                ) : (
+                  <ArrowUpDown className='size-3' />
+                )}
+              </button>
+            )}
+          </div>
+        ),
         cell: ({ row }) => statusBadge(row.original.status),
       },
       {
         id: 'likes',
-        header: () => <span>Likes</span>,
+        accessorKey: 'likes',
+        header: ({ column }) => (
+          <div className='flex items-center gap-2'>
+            <ThumbsUp className='size-4' />
+            <span>Likes</span>
+            {column.getCanSort() && (
+              <button
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
+              >
+                {column.getIsSorted() === 'asc' ? (
+                  <ArrowUp className='size-3' />
+                ) : column.getIsSorted() === 'desc' ? (
+                  <ArrowDown className='size-3' />
+                ) : (
+                  <ArrowUpDown className='size-3' />
+                )}
+              </button>
+            )}
+          </div>
+        ),
         cell: ({ row }) => (
           <div className='inline-flex items-center gap-1 text-slate-700 dark:text-slate-300'>
             <ThumbsUp className='size-4' />
-            <span className='text-xs'>{row.original.likes}</span>
+            <span className='text-sm font-medium'>{row.original.likes}</span>
           </div>
         ),
       },
       {
         id: 'favorite',
-        header: () => <span>Status</span>,
+        header: () => (
+          <div className='flex items-center gap-2'>
+            <Star className='size-4' />
+            <span>Favorite</span>
+          </div>
+        ),
         cell: ({ row }) => (
           <button
             aria-label='toggle favorite'
-            className={`p-2 rounded-full ${
-              row.original.isFavorite ? 'text-amber-500' : 'text-slate-400'
+            className={`p-2 rounded-full transition-colors ${
+              row.original.isFavorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-400 hover:text-slate-600'
             }`}
             onClick={e => {
               e.stopPropagation();
@@ -215,12 +296,6 @@ function TableInner(): React.ReactElement {
           </button>
         ),
       },
-      {
-        accessorKey: 'updatedAt',
-        header: () => <span>Updated</span>,
-        cell: ({ getValue }) =>
-          new Date(getValue<string>()).toLocaleDateString(),
-      },
     ],
     [toggleFavorite, selectedTags, setSelectedTags]
   );
@@ -243,199 +318,189 @@ function TableInner(): React.ReactElement {
   }, [pageIndex, pageSize, table]);
 
   return (
-    <div className='space-y-6 flex flex-col min-h-0'>
-      {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="text-sm text-slate-500">Total Product</CardHeader>
-          <CardContent className="text-2xl font-semibold">201</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="text-sm text-slate-500">Product Revenue</CardHeader>
-          <CardContent className="text-2xl font-semibold">$20,432</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="text-sm text-slate-500">Product Sold</CardHeader>
-          <CardContent className="text-2xl font-semibold">3,899</CardContent>
-        </Card>
-      </div> */}
-
-      <div className='flex flex-wrap items-center gap-3'>
-        <Button
-          onClick={handlePickRandom}
-          disabled={isLoading || !data?.data || data.data.length === 0}
-          className='bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0'
-        >
-          <Shuffle className='size-4 mr-2' />
-          Pick One
-        </Button>
-        <div className='relative'>
-          <Input
-            placeholder='Search compositions...'
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            className='w-56'
-          />
-          {q !== debouncedQ && q.length > 0 && (
-            <div className='absolute right-2 top-1/2 transform -translate-y-1/2'>
-              <div className='w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
-            </div>
-          )}
+    <div className='h-screen flex flex-col'>
+      {/* Fixed Header */}
+      <div className='flex-shrink-0 space-y-4 p-6 pb-4'>
+        <div className='flex flex-wrap items-center gap-3'>
+          <Button
+            onClick={handlePickRandom}
+            disabled={isLoading || !data?.data || data.data.length === 0}
+            className='bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0'
+          >
+            <Shuffle className='size-4 mr-2' />
+            Pick One
+          </Button>
+          <div className='relative'>
+            <Input
+              placeholder='Search compositions...'
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              className='w-56'
+            />
+            {q !== debouncedQ && q.length > 0 && (
+              <div className='absolute right-2 top-1/2 transform -translate-y-1/2'>
+                <div className='w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
+              </div>
+            )}
+          </div>
+          <select
+            className='border rounded px-3 py-2 bg-white dark:bg-gray-800'
+            value={difficulty}
+            onChange={e => setDifficulty(e.target.value)}
+          >
+            <option value=''>All Difficulty</option>
+            <option value='EASY'>Easy</option>
+            <option value='MEDIUM'>Medium</option>
+            <option value='HARD'>Hard</option>
+          </select>
+          <select
+            className='border rounded px-3 py-2 bg-white dark:bg-gray-800'
+            value={status}
+            onChange={e => setStatus(e.target.value)}
+          >
+            <option value=''>All Status</option>
+            <option value='SOLVED'>Solved</option>
+            <option value='ATTEMPTING'>Attempting</option>
+            <option value='UNSOLVED'>Unsolved</option>
+          </select>
+          <label className='inline-flex items-center gap-2 text-sm'>
+            <input
+              type='checkbox'
+              checked={favoriteOnly}
+              onChange={e => setFavoriteOnly(e.target.checked)}
+              className='rounded'
+            />
+            Favorites
+          </label>
         </div>
-        <select
-          className='border rounded px-2 py-2'
-          value={difficulty}
-          onChange={e => setDifficulty(e.target.value)}
-        >
-          <option value=''>All Difficulty</option>
-          <option value='EASY'>Easy</option>
-          <option value='MEDIUM'>Medium</option>
-          <option value='HARD'>Hard</option>
-        </select>
-        <select
-          className='border rounded px-2 py-2'
-          value={status}
-          onChange={e => setStatus(e.target.value)}
-        >
-          <option value=''>All Status</option>
-          <option value='SOLVED'>Solved</option>
-          <option value='ATTEMPTING'>Attempting</option>
-          <option value='UNSOLVED'>Unsolved</option>
-        </select>
-        <label className='inline-flex items-center gap-2 text-sm'>
-          <input
-            type='checkbox'
-            checked={favoriteOnly}
-            onChange={e => setFavoriteOnly(e.target.checked)}
-          />{' '}
-          Favorites
-        </label>
+
+        {/* Selected Tags Filter */}
+        {selectedTags.length > 0 && (
+          <div className='flex flex-wrap items-center gap-2'>
+            <span className='text-sm text-slate-600 dark:text-slate-400'>
+              Filtered by tags:
+            </span>
+            {selectedTags.map(tag => (
+              <TagChip
+                key={tag}
+                tag={tag}
+                size='sm'
+                variant='default'
+                removable
+                onRemove={() => {
+                  setSelectedTags(selectedTags.filter(t => t !== tag));
+                }}
+              />
+            ))}
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => setSelectedTags([])}
+              className='text-xs'
+            >
+              Clear all
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Selected Tags Filter */}
-      {selectedTags.length > 0 && (
-        <div className='flex flex-wrap items-center gap-2'>
-          <span className='text-sm text-slate-600 dark:text-slate-400'>
-            Filtered by tags:
-          </span>
-          {selectedTags.map(tag => (
-            <TagChip
-              key={tag}
-              tag={tag}
-              size='sm'
-              variant='default'
-              removable
-              onRemove={() => {
-                setSelectedTags(selectedTags.filter(t => t !== tag));
-              }}
-            />
-          ))}
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => setSelectedTags([])}
-            className='text-xs'
-          >
-            Clear all
-          </Button>
-        </div>
-      )}
-
-      {/* Scroll container with sticky header and sticky pagination */}
-      <div className='relative flex-1 min-h-0 rounded-md border overflow-hidden'>
-        <div className='h-full overflow-auto'>
-          <table className='w-full text-sm'>
-            <thead className='sticky top-0 z-10 bg-slate-50 dark:bg-slate-900/30'>
-              {table.getHeaderGroups().map(hg => (
-                <tr key={hg.id}>
-                  {hg.headers.map(header => (
-                    <th
-                      key={header.id}
-                      className='px-4 py-3 text-left font-medium text-slate-600'
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          className={
-                            header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : ''
-                          }
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(
+      {/* Scrollable Table Container */}
+      <div className='flex-1 overflow-hidden px-6 pb-6'>
+        <div className='h-full rounded-md border bg-white dark:bg-gray-900 overflow-hidden'>
+          <div className='h-full overflow-auto'>
+            <table className='w-full text-sm'>
+              <thead className='sticky top-0 z-10 bg-slate-50 dark:bg-slate-900/95 backdrop-blur border-b'>
+                {table.getHeaderGroups().map(hg => (
+                  <tr key={hg.id}>
+                    {hg.headers.map(header => (
+                      <th
+                        key={header.id}
+                        className='px-4 py-3 text-left font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/95'
+                      >
+                        {header.isPlaceholder ? null : (
+                          flexRender(
                             header.column.columnDef.header,
                             header.getContext()
-                          )}
-                        </div>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td className='px-4 py-6' colSpan={columns.length}>
-                    Loading...
-                  </td>
-                </tr>
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map(row => (
-                  <tr
-                    key={row.id}
-                    className='border-t cursor-pointer hover:bg-slate-50 focus:bg-slate-50 dark:hover:bg-slate-900/30 dark:focus:bg-slate-900/30 outline-none'
-                    role='button'
-                    tabIndex={0}
-                    onClick={() =>
-                      router.push(`/stage/compositions/${row.original.id}`)
-                    }
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        router.push(`/stage/compositions/${row.original.id}`);
-                      }
-                    }}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className='px-4 py-3'>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                          )
                         )}
-                      </td>
+                      </th>
                     ))}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className='px-4 py-6' colSpan={columns.length}>
-                    No results
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-          {/* Sticky pagination bar at the bottom of the scroll area */}
-          <div className='sticky bottom-0 z-10 bg-white/80 dark:bg-slate-950/70 backdrop-blur border-t'>
+                ))}
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td className='px-4 py-8 text-center' colSpan={columns.length}>
+                      <div className='flex items-center justify-center gap-2'>
+                        <div className='w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
+                        Loading compositions...
+                      </div>
+                    </td>
+                  </tr>
+                ) : table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map(row => (
+                    <tr
+                      key={row.id}
+                      className='border-b cursor-pointer hover:bg-slate-50 focus:bg-slate-50 dark:hover:bg-slate-900/30 dark:focus:bg-slate-900/30 outline-none transition-colors'
+                      role='button'
+                      tabIndex={0}
+                      onClick={() =>
+                        router.push(`/compositions/${row.original.id}`)
+                      }
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/compositions/${row.original.id}`);
+                        }
+                      }}
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <td key={cell.id} className='px-4 py-3'>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className='px-4 py-8 text-center' colSpan={columns.length}>
+                      <div className='text-slate-500 dark:text-slate-400'>
+                        No compositions found
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Fixed Pagination Footer */}
+          <div className='sticky bottom-0 z-10 bg-white dark:bg-gray-900 border-t'>
             <div className='flex items-center justify-between gap-3 px-4 py-3'>
-              <div className='text-sm text-slate-500'>
+              <div className='text-sm text-slate-500 dark:text-slate-400'>
                 Showing {data ? (data.page - 1) * data.pageSize + 1 : 0}-
                 {data ? Math.min(data.page * data.pageSize, data.total) : 0} of{' '}
-                {data?.total ?? 0}
+                {data?.total ?? 0} compositions
               </div>
               <div className='flex items-center gap-2'>
                 <Button
-                  variant='secondary'
+                  variant='outline'
+                  size='sm'
                   onClick={() => setPageIndex(p => Math.max(0, p - 1))}
                   disabled={pageIndex === 0}
                 >
                   Previous
                 </Button>
-                <div className='px-3 py-2 border rounded'>
-                  {(pageIndex + 1).toString()}
+                <div className='px-3 py-1 border rounded text-sm font-medium'>
+                  {pageIndex + 1}
                 </div>
                 <Button
-                  variant='secondary'
+                  variant='outline'
+                  size='sm'
                   onClick={() => setPageIndex(p => p + 1)}
                   disabled={
                     !!data &&

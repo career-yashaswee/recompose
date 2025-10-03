@@ -1,6 +1,13 @@
 'use client';
 
-import { Bell, Check, MoreHorizontal, Search, Settings } from 'lucide-react';
+import {
+  Bell,
+  Check,
+  MoreHorizontal,
+  Search,
+  Settings,
+  RefreshCw,
+} from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -15,17 +22,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { useNotifications } from '@/context/notification-context';
+import {
+  useNotifications as useNotificationsQuery,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+  useDeleteNotification,
+  type NotificationData as APINotificationData,
+} from '@/hooks/api/use-notifications';
+import { type NotificationData as ContextNotificationData } from '@/lib/notification-socket';
 
-interface Notification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  timestamp: string;
-  isRead: boolean;
-  category: 'system' | 'user' | 'composition';
-  metadata?: Record<string, unknown>;
-}
+// Unified notification type that handles both API and context notifications
+type UnifiedNotification = APINotificationData | ContextNotificationData;
 
 interface NotificationSettings {
   emailNotifications: boolean;
@@ -34,65 +42,7 @@ interface NotificationSettings {
   compositionNotifications: boolean;
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'success',
-    title: 'Composition Completed',
-    message: "You successfully completed 'Daily Writing Practice' composition.",
-    timestamp: '2h ago',
-    isRead: false,
-    category: 'composition',
-    metadata: {
-      compositionId: 'comp-123',
-      compositionTitle: 'Daily Writing Practice',
-    },
-  },
-  {
-    id: '2',
-    type: 'info',
-    title: 'Welcome Back!',
-    message:
-      'You logged in successfully. Ready to continue your writing journey?',
-    timestamp: '4h ago',
-    isRead: true,
-    category: 'system',
-    metadata: { loginTime: '2024-01-15T10:30:00Z' },
-  },
-  {
-    id: '3',
-    type: 'success',
-    title: 'Streak Milestone',
-    message: "Congratulations! You've maintained a 7-day writing streak.",
-    timestamp: '1d ago',
-    isRead: true,
-    category: 'user',
-    metadata: { streakDays: 7 },
-  },
-  {
-    id: '4',
-    type: 'warning',
-    title: 'Reminder',
-    message:
-      "Don't forget to complete today's writing practice to maintain your streak.",
-    timestamp: '2d ago',
-    isRead: true,
-    category: 'system',
-  },
-  {
-    id: '5',
-    type: 'info',
-    title: 'New Feature Available',
-    message: 'Check out the new difficulty levels for compositions.',
-    timestamp: '3d ago',
-    isRead: true,
-    category: 'system',
-  },
-];
-
 export default function NotificationsPage() {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<
     'all' | 'unread' | 'system' | 'composition'
@@ -104,7 +54,41 @@ export default function NotificationsPage() {
     compositionNotifications: true,
   });
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  // Use notification context for real-time updates
+  const {
+    notifications: contextNotifications,
+    unreadCount: contextUnreadCount,
+    markAsRead: contextMarkAsRead,
+    markAllAsRead: contextMarkAllAsRead,
+    deleteNotification: contextDeleteNotification,
+    fetchNotifications,
+  } = useNotifications();
+
+  // Use API hooks for data fetching with filters
+  const {
+    data: notificationsData,
+    isLoading,
+    error,
+    refetch,
+  } = useNotificationsQuery({
+    category:
+      activeTab === 'system'
+        ? 'system'
+        : activeTab === 'composition'
+          ? 'composition'
+          : undefined,
+    isRead: activeTab === 'unread' ? false : undefined,
+  });
+
+  // Mutation hooks
+  const markAsReadMutation = useMarkNotificationAsRead();
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
+  const deleteNotificationMutation = useDeleteNotification();
+
+  // Use context notifications as fallback if API data is not available
+  const notifications =
+    notificationsData?.notifications || contextNotifications;
+  const unreadCount = notificationsData?.unreadCount || contextUnreadCount;
   const systemCount = notifications.filter(n => n.category === 'system').length;
   const compositionCount = notifications.filter(
     n => n.category === 'composition'
@@ -124,21 +108,42 @@ export default function NotificationsPage() {
     return true;
   });
 
-  const handleMarkAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n))
-    );
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await markAsReadMutation.mutateAsync(notificationId);
+      // Also update context for real-time updates
+      contextMarkAsRead(notificationId);
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsReadMutation.mutateAsync();
+      // Also update context for real-time updates
+      contextMarkAllAsRead();
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
   };
 
-  const handleDeleteNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+  const handleDeleteNotification = async (notificationId: string) => {
+    try {
+      await deleteNotificationMutation.mutateAsync(notificationId);
+      // Also update context for real-time updates
+      contextDeleteNotification(notificationId);
+    } catch (error) {
+      console.error('Failed to delete notification:', error);
+    }
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const handleRefresh = () => {
+    refetch();
+    fetchNotifications();
+  };
+
+  const getNotificationIcon = (type: UnifiedNotification['type']) => {
     switch (type) {
       case 'success':
         return <Check className='h-4 w-4 text-green-600' />;
@@ -163,7 +168,7 @@ export default function NotificationsPage() {
     }
   };
 
-  const getCategoryColor = (category: Notification['category']) => {
+  const getCategoryColor = (category: UnifiedNotification['category']) => {
     switch (category) {
       case 'system':
         return 'bg-blue-100 text-blue-800';
@@ -177,23 +182,40 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className='container mx-auto p-6 max-w-4xl'>
+    <div className='container p-2'>
       <div className='flex items-center justify-between mb-6'>
         <div>
           <h1 className='text-3xl font-bold'>Notifications</h1>
           <p className='text-muted-foreground'>
-            Stay updated with your writing progress and system updates
+            Stay updated with your composition progress and system updates
           </p>
         </div>
         <div className='flex items-center gap-2'>
-          <Button variant='outline' size='sm'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={handleRefresh}
+            disabled={isLoading}
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+            />
+            Refresh
+          </Button>
+          {/* <Button variant='outline' size='sm'>
             <Settings className='h-4 w-4 mr-2' />
             Settings
-          </Button>
+          </Button> */}
           {unreadCount > 0 && (
-            <Button onClick={handleMarkAllAsRead} size='sm'>
+            <Button
+              onClick={handleMarkAllAsRead}
+              size='sm'
+              disabled={markAllAsReadMutation.isPending}
+            >
               <Check className='h-4 w-4 mr-2' />
-              Mark all as read
+              {markAllAsReadMutation.isPending
+                ? 'Marking...'
+                : 'Mark all as read'}
             </Button>
           )}
         </div>
@@ -303,8 +325,26 @@ export default function NotificationsPage() {
                 </div>
 
                 <div className='mt-6'>
+                  {error && (
+                    <div className='mb-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
+                      <p className='text-red-800 text-sm'>
+                        Failed to load notifications. Please try refreshing.
+                      </p>
+                    </div>
+                  )}
+
                   <div className='space-y-4'>
-                    {filteredNotifications.length === 0 ? (
+                    {isLoading ? (
+                      <div className='text-center py-12'>
+                        <RefreshCw className='h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50 animate-spin' />
+                        <h3 className='text-lg font-medium mb-2'>
+                          Loading notifications...
+                        </h3>
+                        <p className='text-muted-foreground'>
+                          Please wait while we fetch your notifications.
+                        </p>
+                      </div>
+                    ) : filteredNotifications.length === 0 ? (
                       <div className='text-center py-12'>
                         <Bell className='h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50' />
                         <h3 className='text-lg font-medium mb-2'>
@@ -348,7 +388,13 @@ export default function NotificationsPage() {
                                     {notification.message}
                                   </p>
                                   <div className='flex items-center gap-4 text-xs text-muted-foreground'>
-                                    <span>{notification.timestamp}</span>
+                                    <span>
+                                      {'createdAt' in notification
+                                        ? new Date(
+                                            notification.createdAt
+                                          ).toLocaleString()
+                                        : notification.timestamp || 'Unknown'}
+                                    </span>
                                     {!notification.isRead && (
                                       <span className='text-primary font-medium'>
                                         Unread
@@ -365,8 +411,11 @@ export default function NotificationsPage() {
                                         handleMarkAsRead(notification.id)
                                       }
                                       className='h-8 px-2 text-xs'
+                                      disabled={markAsReadMutation.isPending}
                                     >
-                                      Mark as read
+                                      {markAsReadMutation.isPending
+                                        ? 'Marking...'
+                                        : 'Mark as read'}
                                     </Button>
                                   )}
                                   <Button
@@ -376,6 +425,9 @@ export default function NotificationsPage() {
                                       handleDeleteNotification(notification.id)
                                     }
                                     className='h-8 w-8'
+                                    disabled={
+                                      deleteNotificationMutation.isPending
+                                    }
                                   >
                                     <MoreHorizontal className='h-4 w-4' />
                                   </Button>

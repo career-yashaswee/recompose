@@ -49,18 +49,18 @@ export default function BadgesPage() {
   const categories = ['all', ...Object.keys(badgesByCategory)];
   const tiers = ['all', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
 
-  const handleShareProgress = () => {
-    // TODO: Implement sharing functionality
-    console.log('Share badge progress');
-  };
+  // const handleShareProgress = () => {
+  //   // TODO: Implement sharing functionality
+  //   console.log('Share badge progress');
+  // };
 
-  const handleDownloadAll = () => {
-    // TODO: Implement download all earned badges
-    console.log('Download all earned badges');
-  };
+  // const handleDownloadAll = () => {
+  //   // TODO: Implement download all earned badges
+  //   console.log('Download all earned badges');
+  // };
 
   return (
-    <div className='container mx-auto px-4 py-8 space-y-8'>
+    <div className='container mx-auto p-4 space-y-8'>
       {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
@@ -70,14 +70,14 @@ export default function BadgesPage() {
           </p>
         </div>
         <div className='flex items-center space-x-2'>
-          <Button variant='outline' size='sm' onClick={handleShareProgress}>
+          {/* <Button variant='outline' size='sm' onClick={handleShareProgress}>
             <Share2 className='h-4 w-4 mr-2' />
             Share Progress
           </Button>
           <Button variant='outline' size='sm' onClick={handleDownloadAll}>
             <Download className='h-4 w-4 mr-2' />
             Download All
-          </Button>
+          </Button> */}
         </div>
       </div>
 

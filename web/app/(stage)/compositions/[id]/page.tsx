@@ -158,7 +158,7 @@ export default async function Page(
   const html: string = renderMarkdownToHtml(markdownSource);
 
   return (
-    <div className='mx-auto w-full max-w-4xl'>
+    <div className='p-2'>
       <div className='mb-6 flex items-center justify-between gap-4'>
         <div className='flex-1'>
           <h1 className='text-3xl font-semibold tracking-tight'>

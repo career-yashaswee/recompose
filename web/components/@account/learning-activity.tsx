@@ -1,10 +1,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal } from 'lucide-react';
 import { useTimeTracking } from '@/hooks/use-time-tracking';
 import { useEffect, useState } from 'react';
+import { Skeleton } from '../ui/skeleton';
 
 interface LearningData {
   day: string;
@@ -74,17 +73,21 @@ export function LearningActivity({
   }, [getDailyTimeData]);
 
   const maxHours = Math.max(...learningData.map(d => d.hours), 1); // Minimum 1 to avoid division by zero
+  console.log('Learning data:', learningData);
+  console.log('Max hours:', maxHours);
 
   return (
     <Card className={className}>
       <CardHeader>
         <div className='flex items-center justify-between'>
           <div>
-            <CardTitle>Learning Activity</CardTitle>
-            <p className='text-2xl font-bold text-gray-900 mt-2'>
-              {isLoading
-                ? 'Loading...'
-                : `${Math.floor(totalHours)} hours ${Math.round((totalHours % 1) * 60)} minutes`}
+            <CardTitle className='font-normal'>Learning Activity</CardTitle>
+            <p className='text-4xl font-bold text-gray-900 mt-2'>
+              {isLoading ? (
+                <Skeleton className='w-40 h-8' />
+              ) : (
+                `${Math.floor(totalHours)} hour ${Math.round((totalHours % 1) * 60)} minutes`
+              )}
             </p>
           </div>
           <div className='flex items-center gap-2'>
@@ -101,27 +104,39 @@ export function LearningActivity({
         {/* Bar Chart */}
         <div className='mb-6'>
           <div className='flex items-end justify-between h-32 gap-2'>
-            {learningData.map((data, index) => (
-              <div key={index} className='flex flex-col items-center flex-1'>
-                <div className='flex flex-col justify-end h-full w-full'>
-                  <div
-                    className={`bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transition-all duration-300 ${
-                      isLoading ? 'animate-pulse' : ''
-                    }`}
-                    style={{
-                      height: `${Math.max((data.hours / maxHours) * 100, 2)}%`,
-                    }}
-                    title={`${data.hours.toFixed(1)} hours (${data.sessionCount} sessions)`}
-                  />
+            {learningData.map((data, index) => {
+              const heightPercentage = (data.hours / maxHours) * 100;
+              const finalHeight = Math.max(
+                heightPercentage,
+                data.hours > 0 ? 16 : 2
+              );
+              console.log(
+                `${data.day}: ${data.hours}h, height: ${finalHeight}%`
+              );
+
+              return (
+                <div key={index} className='flex flex-col items-center flex-1'>
+                  <div className='flex flex-col justify-end h-full w-full'>
+                    <div
+                      className={`bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transition-all duration-300 ${
+                        isLoading ? 'animate-pulse' : ''
+                      }`}
+                      style={{
+                        height: `${finalHeight}%`,
+                        minHeight: data.hours > 0 ? '8px' : '2px',
+                      }}
+                      title={`${data.hours.toFixed(1)} hours (${data.sessionCount} sessions)`}
+                    />
+                  </div>
+                  <span className='text-xs text-gray-600 mt-2'>{data.day}</span>
+                  {!isLoading && (
+                    <span className='text-xs text-gray-400 mt-1'>
+                      {data.hours > 0 ? `${data.hours.toFixed(1)}h` : '0h'}
+                    </span>
+                  )}
                 </div>
-                <span className='text-xs text-gray-600 mt-2'>{data.day}</span>
-                {!isLoading && (
-                  <span className='text-xs text-gray-400 mt-1'>
-                    {data.hours > 0 ? `${data.hours.toFixed(1)}h` : '0h'}
-                  </span>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className='flex justify-between text-xs text-gray-500 mt-2'>
             <span>0h</span>
