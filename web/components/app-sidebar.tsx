@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
 import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -96,7 +95,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
                   <span className='truncate font-medium'>Recompose</span>
-                  <span className='truncate text-xs'>by Yashaswee Kesharwani</span>
+                  <span className='truncate text-xs'>
+                    by Yashaswee Kesharwani
+                  </span>
                 </div>
               </a>
             </SidebarMenuButton>

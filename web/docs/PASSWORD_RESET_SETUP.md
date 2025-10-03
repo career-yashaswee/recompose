@@ -5,6 +5,7 @@ This document describes the implementation of the password reset functionality u
 ## Overview
 
 The password reset flow has been implemented using:
+
 - **Better Auth** for authentication and password reset logic
 - **Resend** for sending password reset emails
 - **React** components for the frontend UI
@@ -14,6 +15,7 @@ The password reset flow has been implemented using:
 ### 1. Install Dependencies
 
 The Resend package has been installed:
+
 ```bash
 npm install resend --legacy-peer-deps
 ```
@@ -42,6 +44,7 @@ BETTER_AUTH_SECRET="your-secret-key-here"
 ### 4. Domain Verification
 
 For production, you need to:
+
 1. Add your domain to Resend
 2. Add the required DNS records
 3. Verify the domain
@@ -52,6 +55,7 @@ For production, you need to:
 ### Email Service (`lib/email-service.ts`)
 
 The email service provides:
+
 - HTML email templates for password reset
 - Plain text fallback
 - Error handling and validation
@@ -60,6 +64,7 @@ The email service provides:
 ### Auth Configuration (`lib/auth.ts`)
 
 Better Auth is configured to:
+
 - Use the Resend email service for password reset emails
 - Handle password reset tokens and validation
 - Integrate with the existing Prisma database
@@ -67,12 +72,14 @@ Better Auth is configured to:
 ### Frontend Components
 
 #### Forget Password Page (`app/(auth)/forget-password/page.tsx`)
+
 - Email input with validation
 - Success state with instructions
 - Error handling and retry functionality
 - Responsive design with dark mode support
 
 #### Reset Password Page (`app/(auth)/reset-password/page.tsx`)
+
 - Password and confirm password inputs
 - Password strength validation
 - Success state with redirect
@@ -81,6 +88,7 @@ Better Auth is configured to:
 ## Features
 
 ### Email Template
+
 - Professional HTML design
 - Responsive layout
 - Dark mode support
@@ -89,6 +97,7 @@ Better Auth is configured to:
 - Plain text fallback
 
 ### Password Validation
+
 - Minimum 8 characters
 - Uppercase letter required
 - Lowercase letter required
@@ -96,6 +105,7 @@ Better Auth is configured to:
 - Real-time validation feedback
 
 ### User Experience
+
 - Loading states with spinners
 - Clear error messages
 - Success confirmations
@@ -104,6 +114,7 @@ Better Auth is configured to:
 - Responsive design
 
 ### Security
+
 - Token-based reset links
 - 1-hour expiration
 - Secure password requirements
@@ -112,6 +123,7 @@ Better Auth is configured to:
 ## Testing
 
 ### Local Development
+
 1. Set up environment variables
 2. Start the development server
 3. Navigate to `/forget-password`
@@ -120,6 +132,7 @@ Better Auth is configured to:
 6. Follow the link to reset your password
 
 ### Production Testing
+
 1. Deploy with proper environment variables
 2. Test with real email addresses
 3. Verify email delivery
@@ -147,6 +160,7 @@ Better Auth is configured to:
 ### Debug Mode
 
 Enable debug logging by adding to your environment:
+
 ```env
 DEBUG=better-auth:*
 ```
@@ -161,6 +175,7 @@ DEBUG=better-auth:*
 ## Future Enhancements
 
 Potential improvements:
+
 1. Email templates with React Email
 2. Rate limiting for reset requests
 3. Audit logging for password resets
@@ -171,6 +186,7 @@ Potential improvements:
 ## Support
 
 For issues with:
+
 - **Resend**: Check [Resend documentation](https://resend.com/docs)
 - **Better Auth**: Check [Better Auth documentation](https://www.better-auth.com)
 - **Implementation**: Check this codebase and documentation

@@ -13,7 +13,9 @@ async function seedDailyCompositions() {
     });
 
     if (compositions.length === 0) {
-      console.log('No compositions found. Please create some compositions first.');
+      console.log(
+        'No compositions found. Please create some compositions first.'
+      );
       return;
     }
 
@@ -26,12 +28,13 @@ async function seedDailyCompositions() {
     for (let i = 0; i < 30; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      
+
       const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-      
+
       // Select a random composition for each day
-      const randomComposition = compositions[Math.floor(Math.random() * compositions.length)];
-      
+      const randomComposition =
+        compositions[Math.floor(Math.random() * compositions.length)];
+
       dailyCompositions.push({
         dateKey,
         compositionId: randomComposition.id,
@@ -60,9 +63,10 @@ async function seedDailyCompositions() {
 
     console.log('\nFirst 5 daily compositions:');
     examples.forEach(dc => {
-      console.log(`${dc.dateKey}: ${dc.composition.title} (${dc.composition.difficulty})`);
+      console.log(
+        `${dc.dateKey}: ${dc.composition.title} (${dc.composition.difficulty})`
+      );
     });
-
   } catch (error) {
     console.error('Error seeding daily compositions:', error);
   } finally {

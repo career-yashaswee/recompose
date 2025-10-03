@@ -5,6 +5,7 @@ This document describes the implementation of email verification functionality u
 ## Overview
 
 The email verification flow has been implemented using:
+
 - **Better Auth** for authentication and email verification logic
 - **Resend** for sending verification emails with OTP codes
 - **React** components for the frontend UI
@@ -15,6 +16,7 @@ The email verification flow has been implemented using:
 ### 1. Email Verification Service (`lib/email-service.ts`)
 
 Added `sendEmailVerification` function that:
+
 - Sends professional HTML emails with 6-digit OTP codes
 - Includes plain text fallback
 - Provides clear instructions for users
@@ -23,6 +25,7 @@ Added `sendEmailVerification` function that:
 ### 2. Better Auth Configuration (`lib/auth.ts`)
 
 Updated configuration to:
+
 - Disable auto sign-in (`autoSignIn: false`)
 - Send verification emails with OTP codes
 - Generate 6-digit OTP from verification tokens
@@ -31,6 +34,7 @@ Updated configuration to:
 ### 3. Email Verification Page (`app/(auth)/verify-email/page.tsx`)
 
 New page that provides:
+
 - 6-digit OTP input with validation
 - Real-time code formatting
 - Resend verification code functionality
@@ -40,6 +44,7 @@ New page that provides:
 ### 4. Sign-up Page Updates (`app/(auth)/sign-up/page.tsx`)
 
 Enhanced sign-up flow with:
+
 - Password confirmation field
 - Password strength validation
 - Success message with redirect to verification
@@ -48,11 +53,13 @@ Enhanced sign-up flow with:
 ### 5. API Endpoints
 
 #### `/api/auth/verify-email` (POST)
+
 - Validates 6-digit OTP codes
 - Verifies email using Better Auth
 - Returns success/error responses
 
 #### `/api/auth/resend-verification` (POST)
+
 - Resends verification emails
 - Generates new OTP codes
 - Handles rate limiting and errors
@@ -60,6 +67,7 @@ Enhanced sign-up flow with:
 ### 6. Auth Client Updates (`lib/auth-client.ts`)
 
 Added functions for:
+
 - Email verification with OTP
 - Resending verification emails
 - Error handling and user feedback
@@ -67,6 +75,7 @@ Added functions for:
 ## Features
 
 ### Email Template
+
 - Professional HTML design with branding
 - Large, clearly visible 6-digit OTP code
 - Step-by-step instructions
@@ -74,12 +83,14 @@ Added functions for:
 - Responsive design with dark mode support
 
 ### OTP Generation
+
 - Cryptographically secure 6-digit codes
 - Generated from verification tokens using SHA-256
 - Consistent across email and verification
 - 10-minute expiration for security
 
 ### User Experience
+
 - Real-time OTP input validation
 - Auto-formatting of 6-digit codes
 - Loading states and progress indicators
@@ -87,6 +98,7 @@ Added functions for:
 - Resend functionality for missed emails
 
 ### Security
+
 - Token-based verification system
 - OTP expiration after 10 minutes
 - Secure code generation using crypto
@@ -95,6 +107,7 @@ Added functions for:
 ## User Flow
 
 ### 1. Sign-up Process
+
 1. User fills out sign-up form with name, email, and password
 2. Password validation ensures strength requirements
 3. Account is created but email is not verified
@@ -102,6 +115,7 @@ Added functions for:
 5. User is redirected to verification page
 
 ### 2. Email Verification
+
 1. User receives email with 6-digit OTP code
 2. User navigates to verification page
 3. User enters the 6-digit code
@@ -109,6 +123,7 @@ Added functions for:
 5. Email is verified and user can log in
 
 ### 3. Resend Functionality
+
 1. If user doesn't receive email, they can click "Resend code"
 2. New verification email is sent with fresh OTP
 3. Previous OTP codes become invalid
@@ -117,6 +132,7 @@ Added functions for:
 ## Configuration
 
 ### Environment Variables
+
 ```env
 # Resend Email Service (required)
 RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -128,6 +144,7 @@ BETTER_AUTH_SECRET="your-secret-key-here"
 ```
 
 ### Better Auth Settings
+
 - `autoSignIn: false` - Requires email verification before login
 - `sendVerificationEmail` - Custom function for OTP emails
 - `minPasswordLength: 8` - Strong password requirements
@@ -135,6 +152,7 @@ BETTER_AUTH_SECRET="your-secret-key-here"
 ## Testing
 
 ### Local Development
+
 1. Set up environment variables
 2. Start development server
 3. Navigate to `/sign-up`
@@ -144,6 +162,7 @@ BETTER_AUTH_SECRET="your-secret-key-here"
 7. Verify successful email verification
 
 ### Production Testing
+
 1. Deploy with proper environment variables
 2. Test with real email addresses
 3. Verify email delivery and formatting
@@ -177,6 +196,7 @@ BETTER_AUTH_SECRET="your-secret-key-here"
 ### Debug Mode
 
 Enable debug logging by adding to environment:
+
 ```env
 DEBUG=better-auth:*
 ```
@@ -206,6 +226,7 @@ DEBUG=better-auth:*
 ## Future Enhancements
 
 Potential improvements:
+
 1. **SMS Verification**
    - Add SMS OTP as alternative to email
    - Multi-factor authentication options
@@ -229,6 +250,7 @@ Potential improvements:
 ## Support
 
 For issues with:
+
 - **Resend**: Check [Resend documentation](https://resend.com/docs)
 - **Better Auth**: Check [Better Auth documentation](https://www.better-auth.com)
 - **Implementation**: Check this codebase and documentation
@@ -238,9 +260,11 @@ For issues with:
 ### Email Verification Endpoints
 
 #### POST `/api/auth/verify-email`
+
 Verify email with 6-digit OTP code.
 
 **Request Body:**
+
 ```json
 {
   "token": "verification_token_from_email",
@@ -249,6 +273,7 @@ Verify email with 6-digit OTP code.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -257,9 +282,11 @@ Verify email with 6-digit OTP code.
 ```
 
 #### POST `/api/auth/resend-verification`
+
 Resend verification email.
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com"
@@ -267,6 +294,7 @@ Resend verification email.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -277,9 +305,11 @@ Resend verification email.
 ### Frontend Functions
 
 #### `verifyEmail(token, otpCode)`
+
 Verify email with OTP code.
 
 #### `resendVerificationEmail(email)`
+
 Resend verification email to user.
 
 ## Conclusion

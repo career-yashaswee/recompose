@@ -3,9 +3,7 @@
 import {
   UserProfile,
   LearningActivity,
-  Performance,
   RecentCompositions,
-  ProfileDisplay,
 } from '@/components/@account';
 
 export default function AccountPage(): React.ReactElement {

@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from 'react';
 import Calendar from '@/components/ui/calendar';
 import { todayDateKeyIST } from '@/lib/utils';
 import { Check, Calendar as CalendarIcon } from 'lucide-react';
-import { useStreakCalendar, useStreakStats } from '@/hooks/api';
+import { useStreakCalendar } from '@/hooks/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 function getMonthKey(date: Date): { year: number; month0: number } {
@@ -51,7 +51,6 @@ export default function CompletionCalendar(): React.ReactElement {
 
   const { year, month0 } = getMonthKey(cursor);
   const { data: calendarData } = useStreakCalendar(year, month0 + 1);
-  const { data: stats } = useStreakStats();
   const queryClient = useQueryClient();
 
   // Fetch today's daily composition
@@ -73,11 +72,6 @@ export default function CompletionCalendar(): React.ReactElement {
   const todayDay = parseInt(todayKey.split('-')[2]);
   const isTodayCompleted =
     calendarData?.completedDays?.includes(todayDay) ?? false;
-
-  // Calculate missed days for the month
-  const missedDaysCount = calendarData?.missedDays?.length ?? 0;
-  const completedDaysCount = calendarData?.completedDays?.length ?? 0;
-  const totalDaysInMonth = new Date(year, month0 + 1, 0).getDate();
 
   return (
     <div className='space-y-4'>

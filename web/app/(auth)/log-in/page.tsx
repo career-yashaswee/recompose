@@ -1,24 +1,29 @@
 'use client';
 
 import React, { Suspense, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { signInWithGithub, signInWithEmail, resendVerificationEmail } from '@/lib/auth-client';
+import {
+  signInWithGithub,
+  signInWithEmail,
+  resendVerificationEmail,
+} from '@/lib/auth-client';
 import { Github } from 'lucide-react';
 
 function Login(): React.ReactElement {
   const params = useSearchParams();
-  const router = useRouter();
   const callbackURL = params.get('callbackURL') ?? '/stage';
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [showEmailVerification, setShowEmailVerification] = useState<boolean>(false);
+  const [showEmailVerification, setShowEmailVerification] =
+    useState<boolean>(false);
   const [otpCode, setOtpCode] = useState<string>('');
-  const [verificationLoading, setVerificationLoading] = useState<boolean>(false);
+  const [verificationLoading, setVerificationLoading] =
+    useState<boolean>(false);
 
   const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ''); // Only allow digits
@@ -34,14 +39,16 @@ function Login(): React.ReactElement {
     setLoading(true);
     setError(undefined);
     setShowEmailVerification(false);
-    
+
     const res = await signInWithEmail({ email, password }, { callbackURL });
-    
+
     if (!res.ok) {
       // Check if the error is due to unverified email
       if (res.error?.includes('email') && res.error?.includes('verify')) {
         setShowEmailVerification(true);
-        setError('Please verify your email address. A verification code has been sent to your email.');
+        setError(
+          'Please verify your email address. A verification code has been sent to your email.'
+        );
       } else {
         setError(res.error ?? 'Failed to sign in');
       }
@@ -71,19 +78,27 @@ function Login(): React.ReactElement {
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.error || 'Email verification failed. Please check your code and try again.');
+        setError(
+          result.error ||
+            'Email verification failed. Please check your code and try again.'
+        );
       } else {
         setError(undefined);
         setShowEmailVerification(false);
         // Now try to login again
-        const loginRes = await signInWithEmail({ email, password }, { callbackURL });
+        const loginRes = await signInWithEmail(
+          { email, password },
+          { callbackURL }
+        );
         if (!loginRes.ok) {
           setError('Email verified but login failed. Please try again.');
         }
       }
     } catch (err) {
       console.error('Email verification error:', err);
-      setError('An unexpected error occurred during verification. Please try again.');
+      setError(
+        'An unexpected error occurred during verification. Please try again.'
+      );
     } finally {
       setVerificationLoading(false);
     }
@@ -96,7 +111,9 @@ function Login(): React.ReactElement {
     try {
       const res = await resendVerificationEmail(email);
       if (!res.ok) {
-        setError(res.error ?? 'Failed to resend verification email. Please try again.');
+        setError(
+          res.error ?? 'Failed to resend verification email. Please try again.'
+        );
       } else {
         setError(undefined);
         // Show success message briefly
@@ -106,7 +123,9 @@ function Login(): React.ReactElement {
       }
     } catch (err) {
       console.error('Resend verification error:', err);
-      setError('An unexpected error occurred while resending. Please try again.');
+      setError(
+        'An unexpected error occurred while resending. Please try again.'
+      );
     } finally {
       setVerificationLoading(false);
     }
@@ -118,7 +137,8 @@ function Login(): React.ReactElement {
         <div className='text-center'>
           <h1 className='text-2xl font-bold'>Verify your email</h1>
           <p className='text-sm text-muted-foreground'>
-            A 6-digit verification code has been sent to <strong>{email}</strong>
+            A 6-digit verification code has been sent to{' '}
+            <strong>{email}</strong>
           </p>
         </div>
 
@@ -153,8 +173,18 @@ function Login(): React.ReactElement {
           >
             {verificationLoading ? (
               <div className='flex items-center gap-2'>
-                <svg className='w-4 h-4 animate-spin' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
+                <svg
+                  className='w-4 h-4 animate-spin'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                  />
                 </svg>
                 Verifying...
               </div>
@@ -226,8 +256,18 @@ function Login(): React.ReactElement {
         <Button type='submit' disabled={loading} className='w-full'>
           {loading ? (
             <div className='flex items-center gap-2'>
-              <svg className='w-4 h-4 animate-spin' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
+              <svg
+                className='w-4 h-4 animate-spin'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                />
               </svg>
               Logging in...
             </div>

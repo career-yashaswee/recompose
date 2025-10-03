@@ -48,7 +48,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
 
     // Create a set of solved composition IDs for efficient lookup
-    const solvedCompositionIds = new Set(userProgress.map(up => up.compositionId));
+    const solvedCompositionIds = new Set(
+      userProgress.map(up => up.compositionId)
+    );
 
     // Check which daily compositions are completed by checking if user solved them
     const completedDailyCompositions = new Set(
@@ -64,10 +66,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      
+
       // Check if there's a daily composition assigned for this date
-      const hasDailyComposition = dailyCompositions.some(dc => dc.dateKey === dateKey);
-      
+      const hasDailyComposition = dailyCompositions.some(
+        dc => dc.dateKey === dateKey
+      );
+
       if (hasDailyComposition) {
         if (completedDailyCompositions.has(dateKey)) {
           completedDays.push(day);
@@ -101,15 +105,20 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       select: { compositionId: true },
     });
 
-    const allSolvedCompositionIds = new Set(allUserProgress.map(up => up.compositionId));
+    const allSolvedCompositionIds = new Set(
+      allUserProgress.map(up => up.compositionId)
+    );
 
     // Filter to only completed daily compositions
-    const dailyCompletions = allDailyCompositions.filter(dc => 
+    const dailyCompletions = allDailyCompositions.filter(dc =>
       allSolvedCompositionIds.has(dc.compositionId)
     );
 
     // Calculate current and longest streaks
-    const sortedDateKeys = dailyCompletions.map(c => c.dateKey).sort().reverse();
+    const sortedDateKeys = dailyCompletions
+      .map(c => c.dateKey)
+      .sort()
+      .reverse();
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 0;
@@ -119,7 +128,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Check if today is completed
     const todayCompleted = dailyCompletions.some(c => c.dateKey === todayKey);
-    
+
     if (todayCompleted) {
       currentStreak = 1;
       tempStreak = 1;
@@ -132,7 +141,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       while (true) {
         const checkKey = checkDate.toISOString().split('T')[0];
         const dayCompleted = dailyCompletions.some(c => c.dateKey === checkKey);
-        
+
         if (dayCompleted) {
           currentStreak++;
           tempStreak++;
@@ -155,7 +164,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         const daysDiff = Math.floor(
           (prevDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
         );
-        
+
         if (daysDiff === 1) {
           tempStreak++;
         } else {

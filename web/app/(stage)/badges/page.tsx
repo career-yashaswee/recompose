@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge as BadgeComponent } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trophy, Filter, Share2, Download } from 'lucide-react';
+import { Trophy, Filter } from 'lucide-react';
 
 export default function BadgesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

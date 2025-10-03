@@ -20,23 +20,23 @@ export default function Page(): React.ReactElement {
 
   function validatePassword(password: string): string[] {
     const errors: string[] = [];
-    
+
     if (password.length < 8) {
       errors.push('Password must be at least 8 characters long');
     }
-    
+
     if (!/[A-Z]/.test(password)) {
       errors.push('Password must contain at least one uppercase letter');
     }
-    
+
     if (!/[a-z]/.test(password)) {
       errors.push('Password must contain at least one lowercase letter');
     }
-    
+
     if (!/\d/.test(password)) {
       errors.push('Password must contain at least one number');
     }
-    
+
     return errors;
   }
 
@@ -44,7 +44,7 @@ export default function Page(): React.ReactElement {
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     e.preventDefault();
-    
+
     if (!name.trim()) {
       setError('Please enter your name');
       return;
@@ -80,7 +80,9 @@ export default function Page(): React.ReactElement {
       if (!res.ok) {
         setError(res.error ?? 'Failed to create account');
       } else {
-        setMessage('Account created! A verification code has been sent to your email.');
+        setMessage(
+          'Account created! A verification code has been sent to your email.'
+        );
         // Redirect to verification page immediately
         router.push(`/verify-email?email=${encodeURIComponent(email)}`);
       }
@@ -112,7 +114,7 @@ export default function Page(): React.ReactElement {
             autoComplete='name'
           />
         </div>
-        
+
         <div className='grid gap-2'>
           <Label htmlFor='email'>Email address</Label>
           <Input
@@ -126,7 +128,7 @@ export default function Page(): React.ReactElement {
             autoComplete='email'
           />
         </div>
-        
+
         <div className='grid gap-2'>
           <Label htmlFor='password'>Password</Label>
           <Input
@@ -140,7 +142,8 @@ export default function Page(): React.ReactElement {
             autoComplete='new-password'
           />
           <p className='text-xs text-muted-foreground'>
-            Password must be at least 8 characters with uppercase, lowercase, and number
+            Password must be at least 8 characters with uppercase, lowercase,
+            and number
           </p>
         </div>
 
@@ -157,28 +160,46 @@ export default function Page(): React.ReactElement {
             autoComplete='new-password'
           />
         </div>
-        
+
         {error && (
           <div className='bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3'>
             <p className='text-sm text-red-700 dark:text-red-300'>{error}</p>
           </div>
         )}
-        
+
         {message && (
           <div className='bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3'>
-            <p className='text-sm text-green-700 dark:text-green-300'>{message}</p>
+            <p className='text-sm text-green-700 dark:text-green-300'>
+              {message}
+            </p>
           </div>
         )}
-        
-        <Button 
-          type='submit' 
-          disabled={loading || !name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()} 
+
+        <Button
+          type='submit'
+          disabled={
+            loading ||
+            !name.trim() ||
+            !email.trim() ||
+            !password.trim() ||
+            !confirmPassword.trim()
+          }
           className='w-full'
         >
           {loading ? (
             <div className='flex items-center gap-2'>
-              <svg className='w-4 h-4 animate-spin' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
+              <svg
+                className='w-4 h-4 animate-spin'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                />
               </svg>
               Creating account...
             </div>

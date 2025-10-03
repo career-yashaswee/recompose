@@ -10,7 +10,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   try {
     const dateKey = todayDateKeyIST();
-    
+
     // Get today's daily composition
     const dailyComposition = await prisma.dailyComposition.findUnique({
       where: { dateKey },

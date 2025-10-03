@@ -16,7 +16,14 @@ import { Input } from '@/components/ui/input';
 // import { Card, CardContent, CardHeader } from "@/components/ui/card";
 // import { Badge } from "@/components/ui/badge";
 import TagChip from '@/components/ui/tag-chip';
-import { Star, ThumbsUp, Shuffle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  Star,
+  ThumbsUp,
+  Shuffle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -120,7 +127,9 @@ function TableInner(): React.ReactElement {
             <span>Composition</span>
             {column.getCanSort() && (
               <button
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
               >
                 {column.getIsSorted() === 'asc' ? (
@@ -174,7 +183,9 @@ function TableInner(): React.ReactElement {
             <span>Difficulty</span>
             {column.getCanSort() && (
               <button
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
               >
                 {column.getIsSorted() === 'asc' ? (
@@ -197,7 +208,9 @@ function TableInner(): React.ReactElement {
             <span>Status</span>
             {column.getCanSort() && (
               <button
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
               >
                 {column.getIsSorted() === 'asc' ? (
@@ -222,7 +235,9 @@ function TableInner(): React.ReactElement {
             <span>Likes</span>
             {column.getCanSort() && (
               <button
-                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === 'asc')
+                }
                 className='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'
               >
                 {column.getIsSorted() === 'asc' ? (
@@ -255,7 +270,9 @@ function TableInner(): React.ReactElement {
           <button
             aria-label='toggle favorite'
             className={`p-2 rounded-full transition-colors ${
-              row.original.isFavorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-400 hover:text-slate-600'
+              row.original.isFavorite
+                ? 'text-amber-500 hover:text-amber-600'
+                : 'text-slate-400 hover:text-slate-600'
             }`}
             onClick={e => {
               e.stopPropagation();
@@ -417,12 +434,12 @@ function TableInner(): React.ReactElement {
                         key={header.id}
                         className='px-4 py-3 text-left font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/95'
                       >
-                        {header.isPlaceholder ? null : (
-                          flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
-                        )}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </th>
                     ))}
                   </tr>
@@ -431,7 +448,10 @@ function TableInner(): React.ReactElement {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td className='px-4 py-8 text-center' colSpan={columns.length}>
+                    <td
+                      className='px-4 py-8 text-center'
+                      colSpan={columns.length}
+                    >
                       <div className='flex items-center justify-center gap-2'>
                         <div className='w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
                         Loading compositions...
@@ -467,7 +487,10 @@ function TableInner(): React.ReactElement {
                   ))
                 ) : (
                   <tr>
-                    <td className='px-4 py-8 text-center' colSpan={columns.length}>
+                    <td
+                      className='px-4 py-8 text-center'
+                      colSpan={columns.length}
+                    >
                       <div className='text-slate-500 dark:text-slate-400'>
                         No compositions found
                       </div>
@@ -477,7 +500,7 @@ function TableInner(): React.ReactElement {
               </tbody>
             </table>
           </div>
-          
+
           {/* Fixed Pagination Footer */}
           <div className='sticky bottom-0 z-10 bg-white dark:bg-gray-900 border-t'>
             <div className='flex items-center justify-between gap-3 px-4 py-3'>

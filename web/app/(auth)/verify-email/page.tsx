@@ -31,7 +31,10 @@ function VerifyEmail(): React.ReactElement {
 
     // If token is present, auto-verify the email
     if (t && e) {
-      const handleTokenVerification = async (token: string, email: string): Promise<void> => {
+      const handleTokenVerification = async (
+        token: string,
+        email: string
+      ): Promise<void> => {
         setLoading(true);
         setError(undefined);
         setMessage(undefined);
@@ -49,7 +52,9 @@ function VerifyEmail(): React.ReactElement {
           const result = await response.json();
 
           if (!response.ok) {
-            setError(result.error || 'Email verification failed. Please try again.');
+            setError(
+              result.error || 'Email verification failed. Please try again.'
+            );
           } else {
             setSuccess(true);
             setMessage('Email verified successfully! Redirecting to login...');
@@ -57,7 +62,9 @@ function VerifyEmail(): React.ReactElement {
           }
         } catch (err) {
           console.error('Token verification error:', err);
-          setError('An unexpected error occurred during verification. Please try again.');
+          setError(
+            'An unexpected error occurred during verification. Please try again.'
+          );
         } finally {
           setLoading(false);
         }

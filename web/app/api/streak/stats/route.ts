@@ -27,10 +27,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       select: { compositionId: true },
     });
 
-    const solvedCompositionIds = new Set(userProgress.map(up => up.compositionId));
+    const solvedCompositionIds = new Set(
+      userProgress.map(up => up.compositionId)
+    );
 
     // Filter to only completed daily compositions
-    const dailyCompletions = allDailyCompositions.filter(dc => 
+    const dailyCompletions = allDailyCompositions.filter(dc =>
       solvedCompositionIds.has(dc.compositionId)
     );
 
@@ -38,9 +40,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     let currentStreak = 0;
     const today = new Date();
     const todayKey = today.toISOString().split('T')[0];
-    
+
     const todayCompleted = dailyCompletions.some(c => c.dateKey === todayKey);
-    
+
     if (todayCompleted) {
       currentStreak = 1;
       const checkDate = new Date(today);
@@ -49,7 +51,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       while (true) {
         const checkKey = checkDate.toISOString().split('T')[0];
         const dayCompleted = dailyCompletions.some(c => c.dateKey === checkKey);
-        
+
         if (dayCompleted) {
           currentStreak++;
           checkDate.setDate(checkDate.getDate() - 1);
@@ -60,7 +62,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 
     // Calculate longest streak
-    const sortedDateKeys = dailyCompletions.map(c => c.dateKey).sort().reverse();
+    const sortedDateKeys = dailyCompletions
+      .map(c => c.dateKey)
+      .sort()
+      .reverse();
     let longestStreak = 0;
     let tempStreak = 0;
 
@@ -73,7 +78,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         const daysDiff = Math.floor(
           (prevDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
         );
-        
+
         if (daysDiff === 1) {
           tempStreak++;
         } else {
@@ -87,13 +92,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // Calculate total completed and completion rate
     const totalCompleted = dailyCompletions.length;
     const totalDailyCompositions = allDailyCompositions.length;
-    const completionRate = totalDailyCompositions > 0 ? (totalCompleted / totalDailyCompositions) * 100 : 0;
+    const completionRate =
+      totalDailyCompositions > 0
+        ? (totalCompleted / totalDailyCompositions) * 100
+        : 0;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       currentStreak,
       longestStreak,
       totalCompleted,
-      completionRate: Math.round(completionRate * 100) / 100
+      completionRate: Math.round(completionRate * 100) / 100,
     });
   } catch (error) {
     console.error('stats error', error);

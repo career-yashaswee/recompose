@@ -10,10 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     console.log('Manual verification email request for:', email);
@@ -32,11 +29,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Verification email sent successfully' 
+    return NextResponse.json({
+      success: true,
+      message: 'Verification email sent successfully',
     });
-
   } catch (error) {
     console.error('Error in send verification API:', error);
     return NextResponse.json(

@@ -5,7 +5,6 @@ import {
   Check,
   MoreHorizontal,
   Search,
-  Settings,
   RefreshCw,
 } from 'lucide-react';
 import { useState } from 'react';

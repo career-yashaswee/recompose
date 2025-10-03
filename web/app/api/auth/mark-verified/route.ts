@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
 /**
@@ -11,10 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     console.log('Marking email as verified for:', email);
@@ -35,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           id: updatedUser.id,
           email: updatedUser.email,
           emailVerified: updatedUser.emailVerified,
-        }
+        },
       });
     } catch (error) {
       console.error('Failed to mark email as verified:', error);
@@ -44,7 +40,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         { status: 400 }
       );
     }
-
   } catch (error) {
     console.error('Error in mark verified API:', error);
     return NextResponse.json(

@@ -10,13 +10,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     const { token, otpCode, email } = body;
 
-    console.log('Email verification request:', { email, otpCode, token: token ? 'present' : 'missing' });
+    console.log('Email verification request:', {
+      email,
+      otpCode,
+      token: token ? 'present' : 'missing',
+    });
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     // If token is provided, use Better Auth's built-in verification
@@ -29,11 +30,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         });
 
         console.log('Token verification successful for:', email);
-        
-        return NextResponse.json({ 
-          success: true, 
+
+        return NextResponse.json({
+          success: true,
           message: 'Email verified successfully',
-          verified: true
+          verified: true,
         });
       } catch (error) {
         console.error('Token verification failed:', error);
@@ -54,14 +55,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Find the user first
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.emailVerified) {
@@ -76,17 +74,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       where: {
         identifier: email,
         expiresAt: {
-          gt: new Date()
-        }
+          gt: new Date(),
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     if (!verification) {
       return NextResponse.json(
-        { error: 'No valid verification token found. Please request a new verification email.' },
+        {
+          error:
+            'No valid verification token found. Please request a new verification email.',
+        },
         { status: 400 }
       );
     }
@@ -100,7 +101,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Validate the OTP
     if (otpCode !== expectedOTP) {
       return NextResponse.json(
-        { error: 'Invalid verification code. Please check your email and try again.' },
+        {
+          error:
+            'Invalid verification code. Please check your email and try again.',
+        },
         { status: 400 }
       );
     }
@@ -114,20 +118,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       // Delete the used verification token
       await prisma.verification.delete({
-        where: { id: verification.id }
+        where: { id: verification.id },
       });
 
       console.log('Email verification completed for:', email);
-      
-      return NextResponse.json({ 
-        success: true, 
+
+      return NextResponse.json({
+        success: true,
         message: 'Email verified successfully',
         verified: true,
         user: {
           id: updatedUser.id,
           email: updatedUser.email,
           emailVerified: updatedUser.emailVerified,
-        }
+        },
       });
     } catch (error) {
       console.error('Email verification failed:', error);
@@ -136,7 +140,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         { status: 400 }
       );
     }
-
   } catch (error) {
     console.error('Email verification error:', error);
     return NextResponse.json(
@@ -145,4 +148,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 }
-

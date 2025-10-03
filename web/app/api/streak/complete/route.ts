@@ -10,8 +10,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const userId = session.user.id;
   const dateKey = todayDateKeyIST();
-  const body = await req.json().catch(() => ({}));
-  const compositionId: string | undefined = body?.compositionId;
 
   try {
     // Get today's daily composition
@@ -49,10 +47,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const created = await prisma.compositionCompletion.upsert({
       where: { userId_dateKey: { userId, dateKey } },
       update: {},
-      create: { 
-        userId, 
-        dateKey, 
-        compositionId: dailyComposition.compositionId 
+      create: {
+        userId,
+        dateKey,
+        compositionId: dailyComposition.compositionId,
       },
     });
 
@@ -70,7 +68,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     // Filter to only daily composition completions
     const dailyCompletions = allCompletions.filter(completion => {
-      const dailyComp = allDailyCompositions.find(dc => dc.dateKey === completion.dateKey);
+      const dailyComp = allDailyCompositions.find(
+        dc => dc.dateKey === completion.dateKey
+      );
       return dailyComp && completion.compositionId === dailyComp.compositionId;
     });
 
@@ -78,9 +78,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     let currentStreak = 0;
     const today = new Date();
     const todayKey = today.toISOString().split('T')[0];
-    
+
     const todayCompleted = dailyCompletions.some(c => c.dateKey === todayKey);
-    
+
     if (todayCompleted) {
       currentStreak = 1;
       const checkDate = new Date(today);
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       while (true) {
         const checkKey = checkDate.toISOString().split('T')[0];
         const dayCompleted = dailyCompletions.some(c => c.dateKey === checkKey);
-        
+
         if (dayCompleted) {
           currentStreak++;
           checkDate.setDate(checkDate.getDate() - 1);
@@ -100,7 +100,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Calculate longest streak
-    const sortedDateKeys = dailyCompletions.map(c => c.dateKey).sort().reverse();
+    const sortedDateKeys = dailyCompletions
+      .map(c => c.dateKey)
+      .sort()
+      .reverse();
     let longestStreak = 0;
     let tempStreak = 0;
 
@@ -113,7 +116,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const daysDiff = Math.floor(
           (prevDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
         );
-        
+
         if (daysDiff === 1) {
           tempStreak++;
         } else {
@@ -124,12 +127,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
     longestStreak = Math.max(longestStreak, tempStreak);
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Daily composition marked as complete',
       currentStreak,
       longestStreak,
-      completionId: created.id 
+      completionId: created.id,
     });
   } catch (error) {
     console.error('complete error', error);

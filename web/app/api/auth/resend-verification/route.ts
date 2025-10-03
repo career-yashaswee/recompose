@@ -10,10 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     // Use Better Auth to resend verification email
@@ -30,11 +27,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Verification email sent successfully' 
+    return NextResponse.json({
+      success: true,
+      message: 'Verification email sent successfully',
     });
-
   } catch (error) {
     console.error('Resend verification error:', error);
     return NextResponse.json(

@@ -34,7 +34,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Assign the daily composition
     const dailyComposition = await prisma.dailyComposition.upsert({
       where: { dateKey },
-      update: { 
+      update: {
         compositionId,
         isActive: true,
         updatedAt: new Date(),
