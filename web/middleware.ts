@@ -11,7 +11,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     pathname.startsWith('/log-in') ||
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/forget-password') ||
-    pathname.startsWith('/reset-password')
+    pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/verify-email')
   ) {
     return NextResponse.next();
   }

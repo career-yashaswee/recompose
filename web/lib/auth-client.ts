@@ -68,3 +68,57 @@ export async function resetPassword(
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
+
+export async function verifyEmail(
+  token: string,
+  otpCode: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const response = await fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, otpCode }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return { ok: false, error: result.error || 'Email verification failed' };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    console.error('Email verification error:', error);
+    return { ok: false, error: 'An unexpected error occurred' };
+  }
+}
+
+export async function resendVerificationEmail(
+  email: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const response = await fetch('/api/auth/resend-verification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: result.error || 'Failed to resend verification email',
+      };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    return { ok: false, error: 'An unexpected error occurred' };
+  }
+}
