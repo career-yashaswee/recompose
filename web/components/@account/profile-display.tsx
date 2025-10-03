@@ -76,12 +76,10 @@ export function ProfileDisplay({
     label,
     value,
     icon: Icon,
-    showEdit = true,
   }: {
     label: string;
     value: string | null;
     icon?: React.ComponentType<{ className?: string }>;
-    showEdit?: boolean;
   }) => (
     <div className='flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0'>
       <div className='flex items-center gap-3 flex-1'>
@@ -92,19 +90,10 @@ export function ProfileDisplay({
           {label}
         </span>
       </div>
-      <div className='flex items-center gap-3 flex-1'>
+      <div className='flex-1'>
         <span className='text-sm text-gray-900 truncate'>
           {value || <span className='text-gray-400 italic'>Not provided</span>}
         </span>
-        {showEdit && (
-          <Button
-            variant='ghost'
-            size='sm'
-            className='text-blue-600 hover:text-blue-700'
-          >
-            Edit
-          </Button>
-        )}
       </div>
     </div>
   );
@@ -126,22 +115,32 @@ export function ProfileDisplay({
 
         {/* Basic Info Section */}
         <div className='space-y-1'>
-          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-4'>
+          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-6'>
             <User className='w-5 h-5' />
             Basic Info
           </h3>
 
+          {/* Name - Full width */}
           <ProfileField label='Name' value={profile.name} icon={User} />
-          <ProfileField label='Gender' value={profile.gender} />
+
+          {/* Gender and Birthday - Side by side */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-0'>
+            <div className='border-b border-gray-100 md:border-r md:border-b-0'>
+              <ProfileField label='Gender' value={profile.gender} />
+            </div>
+            <div className='border-b border-gray-100'>
+              <ProfileField
+                label='Birthday'
+                value={formatDate(profile.birthday)}
+                icon={Calendar}
+              />
+            </div>
+          </div>
+
           <ProfileField
             label='Location'
             value={profile.location}
             icon={MapPin}
-          />
-          <ProfileField
-            label='Birthday'
-            value={formatDate(profile.birthday)}
-            icon={Calendar}
           />
           <ProfileField label='Summary' value={profile.summary} />
           <ProfileField
@@ -168,7 +167,7 @@ export function ProfileDisplay({
 
         {/* Experience Section */}
         <div className='space-y-1'>
-          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-4'>
+          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-6'>
             <Briefcase className='w-5 h-5' />
             Experience
           </h3>
@@ -183,12 +182,12 @@ export function ProfileDisplay({
 
         {/* Skills Section */}
         <div className='space-y-1'>
-          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-4'>
+          <h3 className='text-lg font-medium text-gray-900 flex items-center gap-2 mb-6'>
             <Code className='w-5 h-5' />
             Technical Skills
           </h3>
 
-          <div className='flex justify-between items-start py-3'>
+          <div className='flex justify-between items-start py-3 border-b border-gray-100'>
             <div className='flex items-center gap-3 flex-1'>
               <div className='w-6 flex justify-center'>
                 <Code className='w-4 h-4 text-gray-500' />
@@ -211,13 +210,6 @@ export function ProfileDisplay({
                   No skills added
                 </span>
               )}
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-blue-600 hover:text-blue-700 ml-2'
-              >
-                Edit
-              </Button>
             </div>
           </div>
         </div>
@@ -235,13 +227,6 @@ export function ProfileDisplay({
                 <span className='text-sm text-gray-900'>
                   {profile.leetcodeId}
                 </span>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='text-blue-600 hover:text-blue-700'
-                >
-                  Edit
-                </Button>
               </div>
             </div>
           </div>

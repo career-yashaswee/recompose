@@ -18,13 +18,10 @@ export default function AccountPage(): React.ReactElement {
         {/* Right Content - Dashboard Cards */}
         <div className='flex-1 space-y-6'>
           {/* Profile Display with Edit Functionality */}
-          <ProfileDisplay />
+          {/* <ProfileDisplay /> */}
 
           {/* Learning Activity Card */}
           <LearningActivity />
-
-          {/* Performance Card */}
-          <Performance />
 
           {/* Recent Compositions Card */}
           <RecentCompositions />

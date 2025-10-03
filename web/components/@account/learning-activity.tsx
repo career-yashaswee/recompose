@@ -91,9 +91,9 @@ export function LearningActivity({
             <select className='px-3 py-1 border rounded-md text-sm'>
               <option>This Week</option>
             </select>
-            <Button variant='ghost' size='icon'>
+            {/* <Button variant='ghost' size='icon'>
               <MoreHorizontal className='w-4 h-4' />
-            </Button>
+            </Button> */}
           </div>
         </div>
       </CardHeader>

@@ -111,7 +111,13 @@ export function EditProfileForm({
     }
 
     try {
-      await updateProfile.mutateAsync(formData);
+      // Ensure technical skills is always an array
+      const submitData = {
+        ...formData,
+        technicalSkills: formData.technicalSkills || [],
+      };
+
+      await updateProfile.mutateAsync(submitData);
       onClose();
     } catch {
       // Error is handled by the mutation

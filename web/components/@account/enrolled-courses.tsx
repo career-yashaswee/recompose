@@ -134,7 +134,7 @@ export function RecentCompositions({
               />
             </div>
             <select
-              className='px-3 py-1 border rounded-md text-sm'
+              className='px-4 py-2.5 border rounded-md text-sm'
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
             >
@@ -142,7 +142,7 @@ export function RecentCompositions({
               <option value='SOLVED'>Solved</option>
               <option value='ATTEMPTING'>Attempting</option>
             </select>
-            <Button className='bg-blue-500 hover:bg-blue-600'>View All</Button>
+            {/* <Button className='bg-blue-500 hover:bg-blue-600'>View All</Button> */}
           </div>
         </div>
       </CardHeader>
