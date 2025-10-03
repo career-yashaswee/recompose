@@ -12,8 +12,10 @@ import {
   Instagram,
   Edit3,
   PlayCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { useProfile } from '@/hooks/api/use-profile';
 
 interface UserProfileProps {
   className?: string;
@@ -23,11 +25,22 @@ export function UserProfile({
   className,
 }: UserProfileProps): React.ReactElement {
   const { data: session } = authClient.useSession();
+  const { data: profile, isLoading } = useProfile();
 
   const user = session?.user || {
-    name: 'Ava Mitchell',
-    email: 'avamitchell@email.com',
+    name: 'Loading...',
+    email: 'loading@email.com',
     image: 'https://ui.shadcn.com/placeholder.svg',
+  };
+
+  const formatUrl = (url: string | null) => {
+    if (!url) return null;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.hostname.replace('www.', '');
+    } catch {
+      return url;
+    }
   };
 
   return (
@@ -52,15 +65,24 @@ export function UserProfile({
         </div>
         <div className='mt-4 text-center'>
           <div className='flex items-center justify-center gap-2 mb-2'>
-            <Badge variant='secondary' className='bg-blue-100 text-blue-800'>
-              STU-005
-            </Badge>
+            {profile?.leetcodeId && (
+              <Badge variant='secondary' className='bg-blue-100 text-blue-800'>
+                {profile.leetcodeId}
+              </Badge>
+            )}
             <Badge variant='secondary' className='bg-pink-100 text-pink-800'>
               Active
             </Badge>
           </div>
-          <h2 className='text-xl font-semibold text-gray-900'>{user.name}</h2>
-          <p className='text-sm text-gray-600'>Enrolled on Jan 30, 2028</p>
+          <h2 className='text-xl font-semibold text-gray-900'>
+            {profile?.name || user.name}
+          </h2>
+          <p className='text-sm text-gray-600'>
+            {profile?.createdAt 
+              ? `Joined ${new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+              : 'Loading...'
+            }
+          </p>
         </div>
       </div>
 
@@ -88,14 +110,20 @@ export function UserProfile({
             <Mail className='w-4 h-4 text-gray-500' />
             <span className='text-sm'>{user.email}</span>
           </div>
-          <div className='flex items-center gap-3'>
-            <Phone className='w-4 h-4 text-gray-500' />
-            <span className='text-sm'>+1 555-3344</span>
-          </div>
-          <div className='flex items-center gap-3'>
-            <Home className='w-4 h-4 text-gray-500' />
-            <span className='text-sm'>78 Maple Drive, New York, NY, USA</span>
-          </div>
+          {profile?.location && (
+            <div className='flex items-center gap-3'>
+              <Home className='w-4 h-4 text-gray-500' />
+              <span className='text-sm'>{profile.location}</span>
+            </div>
+          )}
+          {profile?.birthday && (
+            <div className='flex items-center gap-3'>
+              <Phone className='w-4 h-4 text-gray-500' />
+              <span className='text-sm'>
+                Born {new Date(profile.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -103,18 +131,37 @@ export function UserProfile({
       <div className='space-y-4'>
         <h3 className='font-semibold text-gray-900'>Social Media</h3>
         <div className='space-y-3'>
-          <div className='flex items-center gap-3'>
-            <Linkedin className='w-4 h-4 text-blue-600' />
-            <span className='text-sm'>ava-mitchell</span>
-          </div>
-          <div className='flex items-center gap-3'>
-            <Twitter className='w-4 h-4 text-gray-500' />
-            <span className='text-sm'>@mitchellava</span>
-          </div>
-          <div className='flex items-center gap-3'>
-            <Instagram className='w-4 h-4 text-pink-600' />
-            <span className='text-sm'>@iamavamitchell</span>
-          </div>
+          {profile?.linkedin && (
+            <div className='flex items-center gap-3'>
+              <Linkedin className='w-4 h-4 text-blue-600' />
+              <span className='text-sm'>{formatUrl(profile.linkedin)}</span>
+              <ExternalLink className='w-3 h-3 text-gray-400' />
+            </div>
+          )}
+          {profile?.twitter && (
+            <div className='flex items-center gap-3'>
+              <Twitter className='w-4 h-4 text-gray-500' />
+              <span className='text-sm'>{formatUrl(profile.twitter)}</span>
+              <ExternalLink className='w-3 h-3 text-gray-400' />
+            </div>
+          )}
+          {profile?.github && (
+            <div className='flex items-center gap-3'>
+              <Instagram className='w-4 h-4 text-pink-600' />
+              <span className='text-sm'>{formatUrl(profile.github)}</span>
+              <ExternalLink className='w-3 h-3 text-gray-400' />
+            </div>
+          )}
+          {profile?.website && (
+            <div className='flex items-center gap-3'>
+              <Home className='w-4 h-4 text-green-600' />
+              <span className='text-sm'>{formatUrl(profile.website)}</span>
+              <ExternalLink className='w-3 h-3 text-gray-400' />
+            </div>
+          )}
+          {!profile?.linkedin && !profile?.twitter && !profile?.github && !profile?.website && (
+            <p className='text-sm text-gray-400 italic'>No social links added</p>
+          )}
         </div>
       </div>
 

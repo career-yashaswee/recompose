@@ -5,6 +5,7 @@ import {
   LearningActivity,
   Performance,
   EnrolledCourses,
+  ProfileDisplay,
 } from '@/components/@account';
 
 export default function AccountPage(): React.ReactElement {
@@ -16,6 +17,9 @@ export default function AccountPage(): React.ReactElement {
 
         {/* Right Content - Dashboard Cards */}
         <div className='flex-1 space-y-6'>
+          {/* Profile Display with Edit Functionality */}
+          <ProfileDisplay />
+
           {/* Learning Activity Card */}
           <LearningActivity />
 
