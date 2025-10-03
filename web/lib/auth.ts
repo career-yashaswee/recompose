@@ -2,12 +2,16 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import prisma from '@/lib/prisma';
 import { nextCookies } from 'better-auth/next-js';
+import { sendPasswordResetEmail } from '@/lib/email-service';
 
 type SendEmailParams = { to: string; subject: string; text: string };
 
+// This function is used for general email sending
+// For password reset, we use the dedicated sendPasswordResetEmail function
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function sendEmail(params: SendEmailParams): Promise<void> {
-  // Replace with your email provider (Resend, Postmark, SES, etc.)
   if (!params.to || !params.subject || !params.text) return;
+  console.log('General email send requested:', params.subject);
 }
 
 export const auth = betterAuth({
@@ -19,11 +23,16 @@ export const auth = betterAuth({
     maxPasswordLength: 128,
     autoSignIn: true,
     sendResetPassword: async ({ user, url }): Promise<void> => {
-      await sendEmail({
-        to: user.email,
-        subject: 'Reset your password',
-        text: `Click to reset your password: ${url}`,
-      });
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          resetUrl: url,
+          userName: user.name || 'User',
+        });
+      } catch (error) {
+        console.error('Failed to send password reset email:', error);
+        throw error;
+      }
     },
   },
   socialProviders: {
