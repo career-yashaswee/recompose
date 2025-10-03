@@ -107,7 +107,7 @@ async function getLeaderboardData(
           points: true,
         },
       },
-      CompositionProgress: {
+      compositionProgresses: {
         where: {
           status: 'SOLVED',
           ...(startDate && {
@@ -158,7 +158,7 @@ async function getLeaderboardData(
         (sum, point) => sum + point.points,
         0
       );
-      const compositionsCompleted = user.CompositionProgress.length;
+      const compositionsCompleted = user.compositionProgresses.length;
 
       return {
         id: user.id,

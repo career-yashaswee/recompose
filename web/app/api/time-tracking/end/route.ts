@@ -21,17 +21,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the active session
+    // Find the session (active or inactive)
     const userSession = await prisma.userSession.findFirst({
       where: {
         sessionId,
         userId: session.user.id,
-        isActive: true,
       },
     });
 
     if (!userSession) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    // If session is already ended, return current state
+    if (!userSession.isActive) {
+      return NextResponse.json({
+        totalTime: userSession.totalTime,
+        endTime: userSession.endTime,
+        message: 'Session was already ended',
+      });
     }
 
     const now = new Date();

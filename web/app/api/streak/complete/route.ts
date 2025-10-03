@@ -17,7 +17,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const created = await prisma.compositionCompletion.upsert({
       where: { userId_dateKey: { userId, dateKey } },
       update: {},
-      create: { userId, dateKey, compositionId },
+      create: { userId, dateKey, compositionId: compositionId || 'unknown' },
     });
     return NextResponse.json({ ok: true, completionId: created.id });
   } catch (error) {

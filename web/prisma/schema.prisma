@@ -14,35 +14,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Custom enums for better validation
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
 model User {
-  id                    String                  @id
-  email                 String                  @unique
-  name                  String?
+  id                    String                  @id @db.VarChar(255)
+  email                 String                  @unique @db.VarChar(255)
+  name                  String?                 @db.VarChar(100)
   emailVerified         Boolean                 @default(false)
-  image                 String?
+  image                 String?                 @db.VarChar(500)
+  status                UserStatus              @default(ACTIVE)
   // Profile fields
-  gender                String?
-  location              String?
+  gender                Gender?
+  location              String?                 @db.VarChar(100)
   birthday              DateTime?
-  summary               String?
-  website               String?
-  github                String?
-  linkedin              String?
-  twitter               String?
-  leetcodeId            String?
+  summary               String?                 @db.Text
+  website               String?                 @db.VarChar(255)
+  github                String?                 @db.VarChar(100)
+  linkedin              String?                 @db.VarChar(255)
+  twitter               String?                 @db.VarChar(100)
+  leetcodeId            String?                 @db.VarChar(100)
   // Work and Education
-  work                  String?
-  education             String?
+  work                  String?                 @db.VarChar(255)
+  education             String?                 @db.VarChar(255)
   technicalSkills       String[]
+  timezone              String?                 @default("Asia/Kolkata") @db.VarChar(50)
+  preferences           Json?                   // User preferences as JSON
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @default(now()) @updatedAt
+  deletedAt             DateTime?               // Soft delete
+  
+  // Relations
   sessions              Session[]
   accounts              Account[]
-  Composition           Composition[]
-  CompositionCompletion CompositionCompletion[]
-  CompositionProgress   CompositionProgress[]
-  CompositionFavorite   CompositionFavorite[]
-  CompositionReaction   CompositionReaction[]
+  compositions          Composition[]
+  compositionCompletions CompositionCompletion[]
+  compositionProgresses  CompositionProgress[]
+  compositionFavorites   CompositionFavorite[]
+  compositionReactions   CompositionReaction[]
   notifications         Notification[]
   kanbanTasks          KanbanTask[]
   points               UserPoint[]
@@ -50,124 +71,145 @@ model User {
   userSessions         UserSession[]
   dailyTimeTracking    DailyTimeTracking[]
 
-  @@map("user")
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@map("users")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @db.VarChar(255)
   expiresAt DateTime
-  token     String
+  token     String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
+  ipAddress String?  @db.VarChar(45) // IPv6 compatible
+  userAgent String?  @db.Text
+  userId    String   @db.VarChar(255)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@map("session")
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
 }
 
 model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
+  id                    String    @id @db.VarChar(255)
+  accountId             String    @db.VarChar(255)
+  providerId            String    @db.VarChar(50)
+  userId                String    @db.VarChar(255)
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
+  scope                 String?   @db.VarChar(255)
+  password              String?   @db.VarChar(255)
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@map("account")
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
 }
 
 model Verification {
-  id         String   @id
-  identifier String
-  value      String
+  id         String   @id @db.VarChar(255)
+  identifier String   @db.VarChar(255)
+  value      String   @db.VarChar(255)
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 
-  @@map("verification")
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("verifications")
 }
 
 model Composition {
   id          String                  @id @default(cuid())
-  title       String
-  description String?
+  title       String                  @db.VarChar(255)
+  description String?                 @db.Text
   difficulty  Difficulty              @default(MEDIUM)
   tags        String[]                @default([])
+  isActive    Boolean                 @default(true)
   createdAt   DateTime                @default(now())
   updatedAt   DateTime                @default(now()) @updatedAt
-  createdById String?
+  createdById String?                 @db.VarChar(255)
   createdBy   User?                   @relation(fields: [createdById], references: [id])
+  
+  // Relations
   completions CompositionCompletion[]
   progresses  CompositionProgress[]
   favorites   CompositionFavorite[]
   reactions   CompositionReaction[]
 
-  @@map("composition")
+  @@index([difficulty])
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([createdById])
+  @@map("compositions")
 }
 
 /// Records that a user completed at least one composition on a specific day (Asia/Kolkata).
 model CompositionCompletion {
   id            String       @id @default(cuid())
-  userId        String
+  userId        String       @db.VarChar(255)
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  compositionId String?
-  composition   Composition? @relation(fields: [compositionId], references: [id])
+  compositionId String       @db.VarChar(255) // Made required
+  composition   Composition  @relation(fields: [compositionId], references: [id], onDelete: Cascade)
   /// YYYY-MM-DD string for the day in Asia/Kolkata timezone
-  dateKey       String
+  dateKey       String       @db.VarChar(10)
   completedAt   DateTime     @default(now())
 
   @@unique([userId, dateKey])
   @@index([userId, dateKey])
-  @@map("composition_completion")
+  @@index([compositionId])
+  @@index([completedAt])
+  @@map("composition_completions")
 }
 
 /// Track per-user progress on compositions (Solved/Attempting/Unsolved)
 model CompositionProgress {
   id            String         @id @default(cuid())
-  userId        String
+  userId        String         @db.VarChar(255)
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  compositionId String
-  composition   Composition    @relation(fields: [compositionId], references: [id])
+  compositionId String         @db.VarChar(255)
+  composition   Composition    @relation(fields: [compositionId], references: [id], onDelete: Cascade)
   status        ProgressStatus
   updatedAt     DateTime       @default(now()) @updatedAt
 
   @@unique([userId, compositionId])
   @@index([userId, status])
+  @@index([compositionId])
   @@map("composition_progress")
 }
 
 /// Track user favorites for compositions
 model CompositionFavorite {
   id            String      @id @default(cuid())
-  userId        String
+  userId        String      @db.VarChar(255)
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  compositionId String
+  compositionId String      @db.VarChar(255)
   composition   Composition @relation(fields: [compositionId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
 
   @@unique([userId, compositionId])
   @@index([userId])
   @@index([compositionId])
-  @@map("composition_favorite")
+  @@index([createdAt])
+  @@map("composition_favorites")
 }
 
 /// Track user reactions (like/dislike) for compositions
 model CompositionReaction {
   id            String       @id @default(cuid())
-  userId        String
+  userId        String       @db.VarChar(255)
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  compositionId String
+  compositionId String       @db.VarChar(255)
   composition   Composition  @relation(fields: [compositionId], references: [id], onDelete: Cascade)
   value         ReactionType
   createdAt     DateTime     @default(now())
@@ -176,7 +218,8 @@ model CompositionReaction {
   @@unique([userId, compositionId])
   @@index([compositionId, value])
   @@index([userId])
-  @@map("composition_reaction")
+  @@index([createdAt])
+  @@map("composition_reactions")
 }
 
 enum Difficulty {
@@ -199,11 +242,11 @@ enum ReactionType {
 /// User notifications for real-time updates
 model Notification {
   id        String           @id @default(cuid())
-  userId    String
+  userId    String           @db.VarChar(255)
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
-  title     String
-  message   String
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
   category  NotificationCategory
   isRead    Boolean          @default(false)
   metadata  Json?
@@ -213,7 +256,8 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt])
   @@index([userId, category])
-  @@map("notification")
+  @@index([type])
+  @@map("notifications")
 }
 
 enum NotificationType {
@@ -231,19 +275,20 @@ enum NotificationCategory {
 
 /// Kanban board tasks for user workflow management
 model KanbanTask {
-  id        String        @id @default(cuid())
-  userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  description String?
-  status    KanbanStatus  @default(SOURCED)
-  order     Int           @default(0)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @default(now()) @updatedAt
+  id          String        @id @default(cuid())
+  userId      String        @db.VarChar(255)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String        @db.VarChar(255)
+  description String?       @db.Text
+  status      KanbanStatus  @default(SOURCED)
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
 
   @@index([userId, status])
   @@index([userId, order])
-  @@map("kanban_task")
+  @@index([createdAt])
+  @@map("kanban_tasks")
 }
 
 enum KanbanStatus {
@@ -255,17 +300,19 @@ enum KanbanStatus {
 /// User points system for gamification
 model UserPoint {
   id          String      @id @default(cuid())
-  userId      String
+  userId      String      @db.VarChar(255)
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  points      Int
-  reason      String      // e.g., "Completed composition", "Daily streak", etc.
+  points      Int         // Can be negative for penalties
+  reason      String      @db.VarChar(255) // e.g., "Completed composition", "Daily streak", etc.
   category    PointCategory
   metadata    Json?       // Additional data like compositionId, difficulty, etc.
   createdAt   DateTime    @default(now())
 
   @@index([userId, createdAt])
   @@index([userId, category])
-  @@map("user_point")
+  @@index([points])
+  @@index([createdAt])
+  @@map("user_points")
 }
 
 enum PointCategory {
@@ -281,9 +328,9 @@ enum PointCategory {
 /// Badge system for gamification
 model Badge {
   id          String      @id @default(cuid())
-  name        String      @unique
-  description String
-  icon        String?     // Icon name or URL
+  name        String      @unique @db.VarChar(100)
+  description String      @db.Text
+  icon        String?     @db.VarChar(255) // Icon name or URL
   criteria    Json        // Badge criteria (e.g., { type: "compositions_completed", count: 5 })
   tier        BadgeTier   @default(BRONZE)
   category    BadgeCategory
@@ -291,19 +338,39 @@ model Badge {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now()) @updatedAt
   userBadges  UserBadge[]
+  badgeCriteria BadgeCriteria[]
 
-  @@map("badge")
+  @@index([category])
+  @@index([tier])
+  @@index([isActive])
+  @@map("badges")
+}
+
+/// Structured badge criteria for better querying and validation
+model BadgeCriteria {
+  id        String      @id @default(cuid())
+  badgeId   String      @db.VarChar(255)
+  badge     Badge       @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  type      String      @db.VarChar(50) // e.g., "compositions_completed", "streak_days", "points_earned"
+  operator  String      @db.VarChar(10) // e.g., "gte", "eq", "lte"
+  value     Int         // Target value
+  metadata  Json?       // Additional criteria data
+  createdAt DateTime    @default(now())
+
+  @@index([badgeId])
+  @@index([type])
+  @@map("badge_criteria")
 }
 
 /// User's badge progress and achievements
 model UserBadge {
   id          String      @id @default(cuid())
-  userId      String
+  userId      String      @db.VarChar(255)
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeId     String
+  badgeId     String      @db.VarChar(255)
   badge       Badge       @relation(fields: [badgeId], references: [id], onDelete: Cascade)
   isEarned    Boolean     @default(false)
-  progress    Int         @default(0) // Current progress towards badge
+  progress    Int         @default(0) // Current progress towards badge (0-100)
   earnedAt    DateTime?   // When the badge was earned
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @default(now()) @updatedAt
@@ -311,7 +378,8 @@ model UserBadge {
   @@unique([userId, badgeId])
   @@index([userId])
   @@index([badgeId])
-  @@map("user_badge")
+  @@index([isEarned])
+  @@map("user_badges")
 }
 
 enum BadgeTier {
@@ -331,29 +399,30 @@ enum BadgeCategory {
 /// User session tracking for time spent on platform
 model UserSession {
   id          String      @id @default(cuid())
-  userId      String
+  userId      String      @db.VarChar(255)
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessionId   String      @unique // Unique session identifier
+  sessionId   String      @unique @db.VarChar(255) // Unique session identifier
   startTime   DateTime    @default(now())
   lastActive  DateTime    @default(now()) @updatedAt
   endTime     DateTime?   // When session ended (null if active)
   totalTime   Int         @default(0) // Total time in seconds
   isActive    Boolean     @default(true)
-  userAgent   String?
-  ipAddress   String?
+  userAgent   String?     @db.Text
+  ipAddress   String?     @db.VarChar(45) // IPv6 compatible
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([userId, isActive])
   @@index([userId, createdAt])
   @@index([sessionId])
-  @@map("user_session")
+  @@index([startTime])
+  @@map("user_sessions")
 }
 
 /// Daily time aggregation for efficient querying
 model DailyTimeTracking {
   id          String      @id @default(cuid())
-  userId      String
+  userId      String      @db.VarChar(255)
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   date        DateTime    // Date in Asia/Kolkata timezone (YYYY-MM-DD)
   totalSeconds Int        @default(0) // Total time spent in seconds
@@ -363,5 +432,7 @@ model DailyTimeTracking {
 
   @@unique([userId, date])
   @@index([userId, date])
+  @@index([date])
+  @@index([totalSeconds])
   @@map("daily_time_tracking")
 }
