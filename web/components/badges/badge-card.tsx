@@ -55,9 +55,9 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
         className
       )}
     >
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
+      <CardHeader className='pb-3'>
+        <div className='flex items-start justify-between'>
+          <div className='flex items-center space-x-3'>
             <div
               className={cn(
                 'flex h-16 w-16 items-center justify-center rounded-full text-2xl',
@@ -67,12 +67,12 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
               )}
             >
               {isEarned ? (
-                badge.icon || <Trophy className="h-8 w-8" />
+                badge.icon || <Trophy className='h-8 w-8' />
               ) : (
-                <Lock className="h-6 w-6" />
+                <Lock className='h-6 w-6' />
               )}
             </div>
-            <div className="flex-1">
+            <div className='flex-1'>
               <h3
                 className={cn(
                   'font-semibold text-lg',
@@ -94,18 +94,18 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
           </div>
           {isEarned && (
             <Button
-              variant="ghost"
-              size="sm"
+              variant='ghost'
+              size='sm'
               onClick={handleDownloadBadge}
-              className="h-8 w-8 p-0"
+              className='h-8 w-8 p-0'
             >
-              <Download className="h-4 w-4" />
+              <Download className='h-4 w-4' />
             </Button>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className='space-y-4'>
         <p
           className={cn(
             'text-sm leading-relaxed',
@@ -115,8 +115,8 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
           {badge.description}
         </p>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
+        <div className='space-y-2'>
+          <div className='flex items-center justify-between text-sm'>
             <span
               className={cn(
                 'font-medium',
@@ -143,13 +143,13 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-gray-500">
+        <div className='flex items-center justify-between'>
+          <div className='text-xs text-gray-500'>
             {badge.category} • {badge.criteria.type.replace('_', ' ')}
           </div>
           <Button
             variant={isEarned ? 'default' : 'outline'}
-            size="sm"
+            size='sm'
             onClick={handleViewBadge}
             disabled={!isEarned}
             className={cn(
@@ -162,16 +162,16 @@ export function BadgeCard({ badge, className }: BadgeCardProps) {
         </div>
 
         {isEarned && userProgress.earnedAt && (
-          <div className="text-xs text-green-600 font-medium">
+          <div className='text-xs text-green-600 font-medium'>
             Earned on {new Date(userProgress.earnedAt).toLocaleDateString()}
           </div>
         )}
       </CardContent>
 
       {isEarned && (
-        <div className="absolute top-2 right-2">
-          <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
-            <Trophy className="h-3 w-3 text-white" />
+        <div className='absolute top-2 right-2'>
+          <div className='h-6 w-6 rounded-full bg-green-500 flex items-center justify-center'>
+            <Trophy className='h-3 w-3 text-white' />
           </div>
         </div>
       )}

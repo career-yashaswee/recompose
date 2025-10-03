@@ -86,11 +86,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
 
         // Update badge progress for composition completion
-        await updateBadgeProgress(
-          session.user.id,
-          'compositions_completed',
-          1
-        );
+        await updateBadgeProgress(session.user.id, 'compositions_completed', 1);
       } catch (notificationError) {
         console.error(
           'Failed to create notification or award points:',

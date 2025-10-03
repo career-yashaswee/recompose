@@ -79,12 +79,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
 
       // Update badge progress for new likes only
-      if (value === 'LIKE' && (!existingReaction || existingReaction.value !== 'LIKE')) {
-        await updateBadgeProgress(
-          session.user.id,
-          'compositions_liked',
-          1
-        );
+      if (
+        value === 'LIKE' &&
+        (!existingReaction || existingReaction.value !== 'LIKE')
+      ) {
+        await updateBadgeProgress(session.user.id, 'compositions_liked', 1);
       }
     }
     const [likes, dislikes] = await Promise.all([

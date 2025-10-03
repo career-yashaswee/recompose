@@ -46,23 +46,23 @@ export function useProfile() {
     queryKey: ['profile'],
     queryFn: async (): Promise<UserProfile> => {
       const response = await fetch('/api/profile');
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Unauthorized');
         }
         throw new Error('Failed to fetch profile');
       }
-      
+
       const data = await response.json();
-      
+
       // Convert date strings to Date objects
       if (data.birthday) {
         data.birthday = new Date(data.birthday);
       }
       data.createdAt = new Date(data.createdAt);
       data.updatedAt = new Date(data.updatedAt);
-      
+
       return data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -97,23 +97,23 @@ export function useUpdateProfile() {
       }
 
       const result = await response.json();
-      
+
       // Convert date strings to Date objects
       if (result.birthday) {
         result.birthday = new Date(result.birthday);
       }
       result.createdAt = new Date(result.createdAt);
       result.updatedAt = new Date(result.updatedAt);
-      
+
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Update the profile cache
       queryClient.setQueryData(['profile'], data);
-      
+
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      
+
       toast.success('Profile updated successfully!');
     },
     onError: (error: Error) => {

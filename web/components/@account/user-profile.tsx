@@ -78,10 +78,9 @@ export function UserProfile({
             {profile?.name || user.name}
           </h2>
           <p className='text-sm text-gray-600'>
-            {profile?.createdAt 
+            {profile?.createdAt
               ? `Joined ${new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-              : 'Loading...'
-            }
+              : 'Loading...'}
           </p>
         </div>
       </div>
@@ -120,7 +119,12 @@ export function UserProfile({
             <div className='flex items-center gap-3'>
               <Phone className='w-4 h-4 text-gray-500' />
               <span className='text-sm'>
-                Born {new Date(profile.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                Born{' '}
+                {new Date(profile.birthday).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
               </span>
             </div>
           )}
@@ -159,9 +163,14 @@ export function UserProfile({
               <ExternalLink className='w-3 h-3 text-gray-400' />
             </div>
           )}
-          {!profile?.linkedin && !profile?.twitter && !profile?.github && !profile?.website && (
-            <p className='text-sm text-gray-400 italic'>No social links added</p>
-          )}
+          {!profile?.linkedin &&
+            !profile?.twitter &&
+            !profile?.github &&
+            !profile?.website && (
+              <p className='text-sm text-gray-400 italic'>
+                No social links added
+              </p>
+            )}
         </div>
       </div>
 

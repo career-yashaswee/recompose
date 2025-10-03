@@ -9,13 +9,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     console.log('Profile API: Starting GET request');
     const session = await auth.api.getSession({
-      headers: req.headers
+      headers: req.headers,
     });
 
-    console.log('Profile API: Session:', { 
-      hasSession: !!session, 
-      hasUser: !!session?.user, 
-      userId: session?.user?.id 
+    console.log('Profile API: Session:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: session?.user?.id,
     });
 
     if (!session?.user?.id) {
@@ -47,10 +47,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       },
     });
 
-    console.log('Profile API: User found:', { 
-      hasUser: !!user, 
+    console.log('Profile API: User found:', {
+      hasUser: !!user,
       userId: user?.id,
-      userName: user?.name 
+      userName: user?.name,
     });
 
     if (!user) {
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 export async function PUT(request: NextRequest): Promise<NextResponse> {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: request.headers,
     });
 
     if (!session?.user?.id) {
@@ -101,10 +101,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
 
     // Validate required fields
     if (!name || name.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
     // Validate URLs if provided
@@ -137,8 +134,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     // Validate technical skills array
     let skillsArray: string[] = [];
     if (technicalSkills && Array.isArray(technicalSkills)) {
-      skillsArray = technicalSkills.filter(skill => 
-        typeof skill === 'string' && skill.trim().length > 0
+      skillsArray = technicalSkills.filter(
+        skill => typeof skill === 'string' && skill.trim().length > 0
       );
     }
 

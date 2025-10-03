@@ -25,20 +25,25 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Calculate statistics
     const earnedBadges = userBadges.filter(ub => ub.isEarned);
-    const inProgressBadges = userBadges.filter(ub => !ub.isEarned && ub.progress > 0);
+    const inProgressBadges = userBadges.filter(
+      ub => !ub.isEarned && ub.progress > 0
+    );
 
     // Get badges by category
-    const badgesByCategory = userBadges.reduce((acc, userBadge) => {
-      const category = userBadge.badge.category;
-      if (!acc[category]) {
-        acc[category] = { earned: 0, total: 0 };
-      }
-      acc[category].total++;
-      if (userBadge.isEarned) {
-        acc[category].earned++;
-      }
-      return acc;
-    }, {} as Record<string, { earned: number; total: number }>);
+    const badgesByCategory = userBadges.reduce(
+      (acc, userBadge) => {
+        const category = userBadge.badge.category;
+        if (!acc[category]) {
+          acc[category] = { earned: 0, total: 0 };
+        }
+        acc[category].total++;
+        if (userBadge.isEarned) {
+          acc[category].earned++;
+        }
+        return acc;
+      },
+      {} as Record<string, { earned: number; total: number }>
+    );
 
     return NextResponse.json({
       totalBadges,
@@ -49,6 +54,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
   } catch (error) {
     console.error('User badge progress error:', error);
-    return NextResponse.json({ error: 'Failed to fetch badge progress' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch badge progress' },
+      { status: 500 }
+    );
   }
 }

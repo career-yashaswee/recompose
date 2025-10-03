@@ -24,9 +24,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     });
 
     // Create a map of user badge progress
-    const userBadgeMap = new Map(
-      userBadges.map(ub => [ub.badgeId, ub])
-    );
+    const userBadgeMap = new Map(userBadges.map(ub => [ub.badgeId, ub]));
 
     // Combine badges with user progress
     const badgesWithProgress = badges.map(badge => {
@@ -47,7 +45,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ badges: badgesWithProgress });
   } catch (error) {
     console.error('Badges GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch badges' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch badges' },
+      { status: 500 }
+    );
   }
 }
 
@@ -84,6 +85,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ badge });
   } catch (error) {
     console.error('Badge creation error:', error);
-    return NextResponse.json({ error: 'Failed to create badge' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create badge' },
+      { status: 500 }
+    );
   }
 }

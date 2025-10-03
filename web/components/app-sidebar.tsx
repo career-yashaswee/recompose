@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Command, SquareTerminal, Trophy } from 'lucide-react';
+import { Command, SquareTerminal, Trophy, BarChart3 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { NavProjects } from '@/components/nav-projects';
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
 import { UserDisplayData } from '@/lib/types';
+import { Premium } from './common/premium';
 
 const data = {
   navMain: [
@@ -41,6 +42,12 @@ const data = {
       title: 'Badges',
       url: 'badges',
       icon: Trophy,
+      isActive: false,
+    },
+    {
+      title: 'Leaderboard',
+      url: 'leaderboard',
+      icon: BarChart3,
       isActive: false,
     },
   ],
@@ -79,6 +86,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
+        <div className='p-1'>
+          <Premium />
+        </div>
         {session?.user && (
           <NavUser
             user={

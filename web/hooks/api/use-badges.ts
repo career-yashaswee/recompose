@@ -7,7 +7,11 @@ export interface Badge {
   description: string;
   icon?: string;
   criteria: {
-    type: 'compositions_completed' | 'compositions_liked' | 'streak_days' | 'points_earned';
+    type:
+      | 'compositions_completed'
+      | 'compositions_liked'
+      | 'streak_days'
+      | 'points_earned';
     count: number;
     difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
   };
@@ -69,7 +73,10 @@ export function useBadge(badgeId: string) {
 
   return useQuery({
     queryKey: ['badge', badgeId],
-    queryFn: async (): Promise<{ badge: Badge; userProgress: Badge['userProgress'] }> => {
+    queryFn: async (): Promise<{
+      badge: Badge;
+      userProgress: Badge['userProgress'];
+    }> => {
       const response = await fetch(`/api/badges/${badgeId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch badge');

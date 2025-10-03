@@ -46,7 +46,10 @@ export async function GET(
     });
   } catch (error) {
     console.error('Badge GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch badge' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch badge' },
+      { status: 500 }
+    );
   }
 }
 
@@ -64,7 +67,8 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-    const { name, description, icon, criteria, tier, category, isActive } = body;
+    const { name, description, icon, criteria, tier, category, isActive } =
+      body;
 
     const badge = await prisma.badge.update({
       where: { id },
@@ -82,7 +86,10 @@ export async function PUT(
     return NextResponse.json({ badge });
   } catch (error) {
     console.error('Badge update error:', error);
-    return NextResponse.json({ error: 'Failed to update badge' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update badge' },
+      { status: 500 }
+    );
   }
 }
 
@@ -106,6 +113,9 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Badge delete error:', error);
-    return NextResponse.json({ error: 'Failed to delete badge' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to delete badge' },
+      { status: 500 }
+    );
   }
 }

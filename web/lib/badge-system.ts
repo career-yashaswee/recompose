@@ -1,7 +1,11 @@
 import prisma from './prisma';
 
 export interface BadgeCriteria {
-  type: 'compositions_completed' | 'compositions_liked' | 'streak_days' | 'points_earned';
+  type:
+    | 'compositions_completed'
+    | 'compositions_liked'
+    | 'streak_days'
+    | 'points_earned';
   count: number;
   difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
 }
@@ -69,7 +73,11 @@ export async function initializeDefaultBadges(): Promise<void> {
  */
 export async function updateBadgeProgress(
   userId: string,
-  activityType: 'compositions_completed' | 'compositions_liked' | 'streak_days' | 'points_earned',
+  activityType:
+    | 'compositions_completed'
+    | 'compositions_liked'
+    | 'streak_days'
+    | 'points_earned',
   increment: number = 1
 ): Promise<void> {
   try {
@@ -82,7 +90,7 @@ export async function updateBadgeProgress(
 
     for (const badge of badges) {
       const criteria = badge.criteria as unknown as BadgeCriteria;
-      
+
       if (criteria.type === activityType) {
         // Get or create user badge progress
         let userBadge = await prisma.userBadge.findUnique({
@@ -135,7 +143,10 @@ export async function updateBadgeProgress(
 /**
  * Create a notification when a badge is earned
  */
-async function createBadgeNotification(userId: string, badge: { id: string; name: string; icon?: string | null }): Promise<void> {
+async function createBadgeNotification(
+  userId: string,
+  badge: { id: string; name: string; icon?: string | null }
+): Promise<void> {
   try {
     await prisma.notification.create({
       data: {
@@ -194,7 +205,9 @@ export async function getUserBadgeProgress(
 /**
  * Get all user's badge progress
  */
-export async function getAllUserBadgeProgress(userId: string): Promise<BadgeProgress[]> {
+export async function getAllUserBadgeProgress(
+  userId: string
+): Promise<BadgeProgress[]> {
   try {
     const userBadges = await prisma.userBadge.findMany({
       where: { userId },
