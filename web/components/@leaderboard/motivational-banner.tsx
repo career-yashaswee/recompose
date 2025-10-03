@@ -2,13 +2,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface MotivationalBannerProps {
-  message: string;
   pointsToNext: number;
   showMotivation: boolean;
 }
 
 export function MotivationalBanner({
-  message,
   pointsToNext,
   showMotivation,
 }: MotivationalBannerProps) {
@@ -21,7 +19,7 @@ export function MotivationalBanner({
       <div className='flex items-center justify-between'>
         <div className='flex-1'>
           <h3 className='text-xl font-bold mb-2'>
-            You're closer than you think!
+            You&apos;re closer than you think!
           </h3>
           <p className='text-purple-100 mb-4'>
             Just <strong>{pointsToNext} points</strong> away from breaking into

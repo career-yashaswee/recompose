@@ -15,7 +15,7 @@ export interface UserPoint {
     | 'FIRST_COMPLETION'
     | 'DIFFICULTY_BONUS'
     | 'ACHIEVEMENT';
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -41,7 +41,7 @@ const createPoint = async (data: {
   points: number;
   reason: string;
   category: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }): Promise<{ success: boolean; point: UserPoint }> => {
   const response = await fetch('/api/points', {
     method: 'POST',

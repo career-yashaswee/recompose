@@ -72,7 +72,6 @@ export function BreadcrumbsProvider({
       overridesRef.current = { ...overridesRef.current, ...overrides };
       // When overrides change and we're using derived mode, trigger recompute by nudging state
       if (manualTrail === null) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         setManualTrail(prev => prev);
       }
     },

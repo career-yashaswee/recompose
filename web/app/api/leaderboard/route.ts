@@ -202,7 +202,7 @@ async function calculateCurrentStreak(userId: string): Promise<number> {
   const todayKey = formatDateKey(today);
 
   // Check if user completed today
-  let currentDate = new Date(today);
+  const currentDate = new Date(today);
   let hasCompletedToday = completions.some(c => c.dateKey === todayKey);
 
   if (!hasCompletedToday) {

@@ -25,7 +25,7 @@ export function UserProfile({
   className,
 }: UserProfileProps): React.ReactElement {
   const { data: session } = authClient.useSession();
-  const { data: profile, isLoading } = useProfile();
+  const { data: profile } = useProfile();
 
   const user = session?.user || {
     name: 'Loading...',

@@ -113,7 +113,7 @@ export function EditProfileForm({
     try {
       await updateProfile.mutateAsync(formData);
       onClose();
-    } catch (error) {
+    } catch {
       // Error is handled by the mutation
     }
   };

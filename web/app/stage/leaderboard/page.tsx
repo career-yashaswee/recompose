@@ -56,7 +56,6 @@ export default function LeaderboardPage() {
         <>
           {/* Motivational Banner */}
           <MotivationalBanner
-            message={data.motivationalData.message}
             pointsToNext={data.motivationalData.pointsToNext}
             showMotivation={data.motivationalData.showMotivation}
           />
@@ -64,7 +63,7 @@ export default function LeaderboardPage() {
           {/* Top 3 Users */}
           {data.leaderboard.length > 0 && (
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-              {data.leaderboard.slice(0, 3).map((user, index) => (
+              {data.leaderboard.slice(0, 3).map(user => (
                 <LeaderboardCard key={user.id} user={user} rank={user.rank} />
               ))}
             </div>
@@ -72,10 +71,7 @@ export default function LeaderboardPage() {
 
           {/* Leaderboard Table */}
           {data.leaderboard.length > 3 && (
-            <LeaderboardTable
-              data={data.leaderboard.slice(3)}
-              currentUserRank={data.currentUserRank}
-            />
+            <LeaderboardTable data={data.leaderboard.slice(3)} />
           )}
 
           {/* Empty State */}

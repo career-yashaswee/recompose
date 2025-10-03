@@ -12,7 +12,6 @@ import {
   Briefcase,
   GraduationCap,
   Code,
-  ExternalLink,
 } from 'lucide-react';
 import { useProfile } from '@/hooks/api/use-profile';
 import { EditProfileForm } from './edit-profile-form';

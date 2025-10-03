@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { WebSocketServer } = require("ws");
-const http = require("http");
-const { PrismaClient } = require("../app/generated/prisma");
+import { WebSocketServer } from "ws";
+import http from "http";
+import { PrismaClient } from "../app/generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
@@ -263,4 +263,4 @@ process.on("SIGTERM", () => {
 });
 
 // Export for use in other processes
-module.exports = server;
+export default server;

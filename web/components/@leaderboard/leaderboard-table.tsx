@@ -1,5 +1,4 @@
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -13,29 +12,27 @@ import { authClient } from '@/lib/auth-client';
 
 interface LeaderboardTableProps {
   data: LeaderboardUser[];
-  currentUserRank: number;
 }
 
-const columnHelper = createColumnHelper<LeaderboardUser>();
-
-export function LeaderboardTable({
-  data,
-  currentUserRank,
-}: LeaderboardTableProps) {
+export function LeaderboardTable({ data }: LeaderboardTableProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
   const columns: ColumnDef<LeaderboardUser>[] = [
-    columnHelper.accessor('rank', {
+    {
+      accessorKey: 'rank',
       header: 'Rank',
-      cell: info => (
-        <div className='font-semibold text-gray-900'>{info.getValue()}</div>
+      cell: ({ getValue }) => (
+        <div className='font-semibold text-gray-900'>
+          {getValue() as number}
+        </div>
       ),
-    }),
-    columnHelper.accessor('name', {
+    },
+    {
+      accessorKey: 'name',
       header: 'User',
-      cell: info => {
-        const rowUser = info.row.original;
+      cell: ({ row }) => {
+        const rowUser = row.original;
         const isCurrentUser = rowUser.id === user?.id;
 
         return (
@@ -57,29 +54,32 @@ export function LeaderboardTable({
           </div>
         );
       },
-    }),
-    columnHelper.accessor('compositionsCompleted', {
+    },
+    {
+      accessorKey: 'compositionsCompleted',
       header: 'Compositions Completed',
-      cell: info => (
+      cell: ({ getValue }) => (
         <div className='flex items-center text-gray-600'>
           <Circle className='w-4 h-4 mr-2' />
-          {info.getValue()}
+          {getValue() as number}
         </div>
       ),
-    }),
-    columnHelper.accessor('currentStreak', {
+    },
+    {
+      accessorKey: 'currentStreak',
       header: 'Streak',
-      cell: info => (
+      cell: ({ getValue }) => (
         <div className='flex items-center text-gray-600'>
           <Flame className='w-4 h-4 mr-2 text-orange-500' />
-          {info.getValue()} days
+          {getValue() as number} days
         </div>
       ),
-    }),
-    columnHelper.accessor('badges', {
+    },
+    {
+      accessorKey: 'badges',
       header: 'Badges',
-      cell: info => {
-        const badges = info.getValue();
+      cell: ({ getValue }) => {
+        const badges = getValue() as LeaderboardUser['badges'];
         return (
           <div className='flex flex-wrap gap-1'>
             {badges.slice(0, 2).map(badge => (
@@ -95,16 +95,17 @@ export function LeaderboardTable({
           </div>
         );
       },
-    }),
-    columnHelper.accessor('totalPoints', {
+    },
+    {
+      accessorKey: 'totalPoints',
       header: 'Points',
-      cell: info => (
+      cell: ({ getValue }) => (
         <div className='flex items-center font-semibold text-gray-900'>
           <Star className='w-4 h-4 mr-1 text-yellow-500' />
-          {info.getValue().toLocaleString()}
+          {(getValue() as number).toLocaleString()}
         </div>
       ),
-    }),
+    },
   ];
 
   const table = useReactTable({

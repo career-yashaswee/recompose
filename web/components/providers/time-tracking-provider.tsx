@@ -7,9 +7,9 @@ interface TimeTrackingContextType {
   sessionId: string | null;
   isTracking: boolean;
   startTracking: () => Promise<string | null>;
-  updateSession: () => Promise<any>;
-  endTracking: () => Promise<any>;
-  getDailyTimeData: (days?: number) => Promise<any>;
+  updateSession: () => Promise<unknown>;
+  endTracking: () => Promise<unknown>;
+  getDailyTimeData: (days?: number) => Promise<unknown>;
 }
 
 const TimeTrackingContext = createContext<TimeTrackingContextType | undefined>(
@@ -32,7 +32,7 @@ export function TimeTrackingProvider({ children }: TimeTrackingProviderProps) {
     };
 
     initializeTracking();
-  }, [timeTracking.isTracking]);
+  }, [timeTracking]);
 
   return (
     <TimeTrackingContext.Provider value={timeTracking}>
