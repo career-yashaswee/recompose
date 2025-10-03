@@ -166,7 +166,7 @@ export default async function Page(
           </h1>
           {composition.tags && composition.tags.length > 0 && (
             <div className='mt-3 flex flex-wrap gap-2'>
-              {composition.tags.map(tag => (
+              {composition.tags.map((tag: string) => (
                 <TagChip key={tag} tag={tag} size='md' variant='default' />
               ))}
             </div>
